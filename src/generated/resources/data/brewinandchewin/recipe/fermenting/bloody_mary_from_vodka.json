@@ -1,0 +1,23 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "base_fluid": {
+    "amount": 1000,
+    "ingredient": {
+      "tag": "#brewinandchewin:vodka"
+    },
+    "unit": "millibuckets"
+  },
+  "experience": 1,
+  "fermenting_time": 4800,
+  "ingredients": [
+    "#c:crops/tomato",
+    "#c:crops/cabbage",
+    "minecraft:sweet_berries"
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "brewinandchewin:bloody_mary"
+  },
+  "temperature": 4,
+  "unit": "millibuckets"
+}

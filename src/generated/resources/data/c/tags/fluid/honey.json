@@ -1,0 +1,21 @@
+{
+  "replace": false,
+  "values": [
+    {
+      "id": "create:honey",
+      "required": false
+    },
+    {
+      "id": "create:flowing_honey",
+      "required": false
+    },
+    {
+      "id": "brewinandchewin:honey",
+      "required": false
+    },
+    {
+      "id": "brewinandchewin:flowing_honey",
+      "required": false
+    }
+  ]
+}

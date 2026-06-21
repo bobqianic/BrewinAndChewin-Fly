@@ -1,0 +1,24 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "base_fluid": {
+    "amount": 1000,
+    "ingredient": {
+      "tag": "#brewinandchewin:rice_wine"
+    },
+    "unit": "millibuckets"
+  },
+  "experience": 1,
+  "fermenting_time": 4800,
+  "ingredients": [
+    "minecraft:honey_bottle",
+    "farmersdelight:tree_bark",
+    "minecraft:lily_of_the_valley",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "brewinandchewin:pale_jane"
+  },
+  "temperature": 4,
+  "unit": "millibuckets"
+}

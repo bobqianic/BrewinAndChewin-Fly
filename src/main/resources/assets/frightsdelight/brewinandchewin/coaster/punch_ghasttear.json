@@ -1,0 +1,9 @@
+{
+  "item": "frightsdelight:punch_ghasttear",
+  "models": [
+    {
+      "model": "frightsdelight:block/punch_ghasttear_servings1",
+      "offset": [4.5, 0.0, 4.5]
+    }
+  ]
+}

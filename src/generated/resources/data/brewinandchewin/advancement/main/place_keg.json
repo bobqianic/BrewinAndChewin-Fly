@@ -1,0 +1,46 @@
+{
+  "parent": "brewinandchewin:main/root",
+  "criteria": {
+    "placed_keg": {
+      "conditions": {
+        "location": [
+          {
+            "block": "brewinandchewin:keg",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    },
+    "placed_large_keg": {
+      "conditions": {
+        "location": [
+          {
+            "block": "brewinandchewin:large_keg",
+            "condition": "minecraft:block_state_property"
+          }
+        ]
+      },
+      "trigger": "minecraft:placed_block"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "brewinandchewin.advancement.place_keg.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "brewinandchewin:keg"
+    },
+    "title": {
+      "translate": "brewinandchewin.advancement.place_keg"
+    }
+  },
+  "requirements": [
+    [
+      "placed_keg",
+      "placed_large_keg"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

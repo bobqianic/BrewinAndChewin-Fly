@@ -1,0 +1,28 @@
+{
+  "criteria": {
+    "beer": {
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "announce_to_chat": false,
+    "background": "minecraft:textures/block/spruce_planks.png",
+    "description": {
+      "translate": "brewinandchewin.advancement.root.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "brewinandchewin:beer"
+    },
+    "show_toast": false,
+    "title": {
+      "translate": "brewinandchewin.advancement.root"
+    }
+  },
+  "requirements": [
+    [
+      "beer"
+    ]
+  ],
+  "sends_telemetry_event": true
+}

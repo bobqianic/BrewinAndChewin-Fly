@@ -1,0 +1,178 @@
+{
+  "parent": "brewinandchewin:main/brew_drink",
+  "criteria": {
+    "brewinandchewin:beer": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:beer"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:bloody_mary": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:bloody_mary"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:dread_nog": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:dread_nog"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:egg_grog": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:egg_grog"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:glittering_grenadine": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:glittering_grenadine"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:mead": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:mead"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:pale_jane": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:pale_jane"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:red_rum": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:red_rum"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:saccharine_rum": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:saccharine_rum"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:salty_folly": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:salty_folly"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:steel_toe_stout": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:steel_toe_stout"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:strongroot_ale": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:strongroot_ale"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:vodka": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:vodka"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    },
+    "brewinandchewin:withering_dross": {
+      "conditions": {
+        "item": {
+          "items": "brewinandchewin:withering_dross"
+        }
+      },
+      "trigger": "minecraft:consume_item"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "brewinandchewin.advancement.crafting_problem.desc"
+    },
+    "frame": "challenge",
+    "icon": {
+      "count": 1,
+      "id": "brewinandchewin:steel_toe_stout"
+    },
+    "title": {
+      "translate": "brewinandchewin.advancement.crafting_problem"
+    }
+  },
+  "requirements": [
+    [
+      "brewinandchewin:beer"
+    ],
+    [
+      "brewinandchewin:vodka"
+    ],
+    [
+      "brewinandchewin:mead"
+    ],
+    [
+      "brewinandchewin:egg_grog"
+    ],
+    [
+      "brewinandchewin:strongroot_ale"
+    ],
+    [
+      "brewinandchewin:saccharine_rum"
+    ],
+    [
+      "brewinandchewin:pale_jane"
+    ],
+    [
+      "brewinandchewin:salty_folly"
+    ],
+    [
+      "brewinandchewin:steel_toe_stout"
+    ],
+    [
+      "brewinandchewin:glittering_grenadine"
+    ],
+    [
+      "brewinandchewin:bloody_mary"
+    ],
+    [
+      "brewinandchewin:red_rum"
+    ],
+    [
+      "brewinandchewin:withering_dross"
+    ],
+    [
+      "brewinandchewin:dread_nog"
+    ]
+  ],
+  "rewards": {
+    "experience": 100
+  },
+  "sends_telemetry_event": true
+}

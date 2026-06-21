@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_strongroot_ale": {
+      "conditions": {
+        "items": [
+          {
+            "items": "brewinandchewin:strongroot_ale"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    },
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "brewinandchewin:fermenting/steel_toe_stout_from_strongroot_ale"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    }
+  },
+  "requirements": [
+    [
+      "has_strongroot_ale",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "brewinandchewin:fermenting/steel_toe_stout_from_strongroot_ale"
+    ]
+  },
+  "sends_telemetry_event": true
+}

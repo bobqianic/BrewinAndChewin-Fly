@@ -1,0 +1,12 @@
+{
+  "type": "brewinandchewin:keg_pouring",
+  "fluid": {
+    "amount": 250,
+    "id": "brewinandchewin:beer"
+  },
+  "output": {
+    "count": 1,
+    "id": "brewinandchewin:beer"
+  },
+  "unit": "millibuckets"
+}

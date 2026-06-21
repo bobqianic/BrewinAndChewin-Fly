@@ -1,0 +1,124 @@
+{
+  "variants": {
+    "facing=north,has_liquid=false,vertical=false,waterlogged=false": {
+      "model": "brewinandchewin:block/keg"
+    },
+    "facing=north,has_liquid=true,vertical=false,waterlogged=false": {
+      "model": "brewinandchewin:block/keg"
+    },
+    "facing=north,has_liquid=false,vertical=false,waterlogged=true": {
+      "model": "brewinandchewin:block/keg"
+    },
+    "facing=north,has_liquid=true,vertical=false,waterlogged=true": {
+      "model": "brewinandchewin:block/keg"
+    },
+    "facing=north,has_liquid=false,vertical=true,waterlogged=false": {
+      "model": "brewinandchewin:block/vertical_keg"
+    },
+    "facing=north,has_liquid=true,vertical=true,waterlogged=false": {
+      "model": "brewinandchewin:block/vertical_keg"
+    },
+    "facing=north,has_liquid=false,vertical=true,waterlogged=true": {
+      "model": "brewinandchewin:block/vertical_keg"
+    },
+    "facing=north,has_liquid=true,vertical=true,waterlogged=true": {
+      "model": "brewinandchewin:block/vertical_keg"
+    },
+    "facing=south,has_liquid=false,vertical=false,waterlogged=false": {
+      "model": "brewinandchewin:block/keg",
+      "y": 180
+    },
+    "facing=south,has_liquid=true,vertical=false,waterlogged=false": {
+      "model": "brewinandchewin:block/keg",
+      "y": 180
+    },
+    "facing=south,has_liquid=false,vertical=false,waterlogged=true": {
+      "model": "brewinandchewin:block/keg",
+      "y": 180
+    },
+    "facing=south,has_liquid=true,vertical=false,waterlogged=true": {
+      "model": "brewinandchewin:block/keg",
+      "y": 180
+    },
+    "facing=south,has_liquid=false,vertical=true,waterlogged=false": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 180
+    },
+    "facing=south,has_liquid=true,vertical=true,waterlogged=false": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 180
+    },
+    "facing=south,has_liquid=false,vertical=true,waterlogged=true": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 180
+    },
+    "facing=south,has_liquid=true,vertical=true,waterlogged=true": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 180
+    },
+    "facing=west,has_liquid=false,vertical=false,waterlogged=false": {
+      "model": "brewinandchewin:block/keg",
+      "y": 270
+    },
+    "facing=west,has_liquid=true,vertical=false,waterlogged=false": {
+      "model": "brewinandchewin:block/keg",
+      "y": 270
+    },
+    "facing=west,has_liquid=false,vertical=false,waterlogged=true": {
+      "model": "brewinandchewin:block/keg",
+      "y": 270
+    },
+    "facing=west,has_liquid=true,vertical=false,waterlogged=true": {
+      "model": "brewinandchewin:block/keg",
+      "y": 270
+    },
+    "facing=west,has_liquid=false,vertical=true,waterlogged=false": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 270
+    },
+    "facing=west,has_liquid=true,vertical=true,waterlogged=false": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 270
+    },
+    "facing=west,has_liquid=false,vertical=true,waterlogged=true": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 270
+    },
+    "facing=west,has_liquid=true,vertical=true,waterlogged=true": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 270
+    },
+    "facing=east,has_liquid=false,vertical=false,waterlogged=false": {
+      "model": "brewinandchewin:block/keg",
+      "y": 90
+    },
+    "facing=east,has_liquid=true,vertical=false,waterlogged=false": {
+      "model": "brewinandchewin:block/keg",
+      "y": 90
+    },
+    "facing=east,has_liquid=false,vertical=false,waterlogged=true": {
+      "model": "brewinandchewin:block/keg",
+      "y": 90
+    },
+    "facing=east,has_liquid=true,vertical=false,waterlogged=true": {
+      "model": "brewinandchewin:block/keg",
+      "y": 90
+    },
+    "facing=east,has_liquid=false,vertical=true,waterlogged=false": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 90
+    },
+    "facing=east,has_liquid=true,vertical=true,waterlogged=false": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 90
+    },
+    "facing=east,has_liquid=false,vertical=true,waterlogged=true": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 90
+    },
+    "facing=east,has_liquid=true,vertical=true,waterlogged=true": {
+      "model": "brewinandchewin:block/vertical_keg",
+      "y": 90
+    }
+  }
+}

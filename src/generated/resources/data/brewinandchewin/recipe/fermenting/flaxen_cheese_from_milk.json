@@ -1,0 +1,23 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "base_fluid": {
+    "amount": 1000,
+    "ingredient": {
+      "tag": "#c:milk"
+    },
+    "unit": "millibuckets"
+  },
+  "category": "meals",
+  "experience": 1,
+  "ingredients": [
+    "minecraft:brown_mushroom",
+    "minecraft:pumpkin_seeds",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "brewinandchewin:flaxen_cheese"
+  },
+  "temperature": 4,
+  "unit": "millibuckets"
+}

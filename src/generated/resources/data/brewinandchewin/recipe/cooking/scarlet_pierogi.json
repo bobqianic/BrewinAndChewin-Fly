@@ -1,0 +1,20 @@
+{
+  "type": "farmersdelight:cooking",
+  "container": {
+    "count": 1,
+    "id": "minecraft:bowl"
+  },
+  "experience": 1,
+  "ingredients": [
+    "brewinandchewin:scarlet_cheese_wedge",
+    "#c:crops/potato",
+    "#c:foods/dough",
+    "minecraft:nether_wart",
+    "#c:crops/cabbage"
+  ],
+  "recipe_book_tab": "meals",
+  "result": {
+    "count": 1,
+    "id": "brewinandchewin:scarlet_pierogi"
+  }
+}

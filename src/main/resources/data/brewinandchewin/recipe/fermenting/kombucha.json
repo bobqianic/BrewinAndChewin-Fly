@@ -1,0 +1,31 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "base_fluid": {
+    "amount": 1000,
+    "ingredient": {
+      "id": "brewinandchewin:vodka"
+    },
+    "unit": "millibuckets"
+  },
+  "experience": 1,
+  "ingredients": [
+    "#c:crops/carrot",
+    "minecraft:sweet_berries",
+    "farmersrespite:black_tea_leaves"
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "brewinandchewin:kombucha"
+  },
+  "temperature": 3,
+  "unit": "millibuckets",
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "farmersrespite"
+      ]
+    }
+  ],
+  "fermenting_time": 9600
+}

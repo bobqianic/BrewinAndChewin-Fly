@@ -1,0 +1,53 @@
+package umpaz.brewinandchewin.fabric.loot.modifier;
+
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import it.unimi.dsi.fastutil.objects.ObjectArrayList;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.storage.loot.LootContext;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
+import umpaz.brewinandchewin.BrewinAndChewin;
+import umpaz.brewinandchewin.common.block.CheeseWheelBlock;
+import umpaz.brewinandchewin.common.block.PizzaBlock;
+import vectorwing.farmersdelight.common.tag.CommonTags;
+import vectorwing.farmersdelight.refabricated.LootModifier;
+
+// TODO: Port Me!
+@Deprecated
+public class BnCSlicingModifier extends LootModifier
+{
+    public static final ResourceLocation ID = BrewinAndChewin.asResource("slicing");
+    private final Item slice;
+
+    protected BnCSlicingModifier(LootItemCondition[] conditionsIn, Item sliceIn) {
+        super(conditionsIn);
+        this.slice = sliceIn;
+    }
+
+    @Override
+    protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
+        BlockState state = context.getOptionalParameter(LootContextParams.BLOCK_STATE);
+        if (state != null) {
+            Block targetBlock = state.getBlock();
+            if (targetBlock instanceof PizzaBlock) {
+                int servings = state.getValue(PizzaBlock.SERVINGS);
+                generatedLoot.add(new ItemStack(slice, servings + 1));
+            } else if (targetBlock instanceof CheeseWheelBlock) {
+                int servings = state.getValue(CheeseWheelBlock.SERVINGS);
+                if (servings == 3 && !context.getParameter(LootContextParams.TOOL).is(CommonTags.TOOLS_KNIFE)) {
+                    generatedLoot.add(new ItemStack(targetBlock.asItem()));
+                } else {
+                    generatedLoot.add(new ItemStack(slice, servings + 1));
+                }
+            }
+        }
+
+        return generatedLoot;
+    }
+}

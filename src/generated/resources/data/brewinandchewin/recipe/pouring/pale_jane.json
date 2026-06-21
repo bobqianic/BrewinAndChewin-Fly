@@ -1,0 +1,12 @@
+{
+  "type": "brewinandchewin:keg_pouring",
+  "fluid": {
+    "amount": 250,
+    "id": "brewinandchewin:pale_jane"
+  },
+  "output": {
+    "count": 1,
+    "id": "brewinandchewin:pale_jane"
+  },
+  "unit": "millibuckets"
+}

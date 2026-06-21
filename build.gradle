@@ -1,0 +1,327 @@
+import org.gradle.authentication.http.BasicAuthentication
+
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+    id 'java-library'
+    id 'maven-publish'
+    id 'me.modmuss50.mod-publish-plugin' version "${mod_publish_plugin_version}"
+}
+
+version = "${mod_version}+${minecraft_version}"
+group = maven_group
+
+base {
+    archivesName = archives_base_name
+}
+
+repositories {
+    mavenCentral()
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Sponge'
+                url = 'https://repo.spongepowered.org/repository/maven-public'
+            }
+        }
+        filter {
+            includeGroupAndSubgroups 'org.spongepowered'
+        }
+    }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'ParchmentMC'
+                url = 'https://maven.parchmentmc.org/'
+            }
+        }
+        filter {
+            includeGroup 'org.parchmentmc.data'
+        }
+    }
+
+    maven {
+        name = 'Fabric'
+        url = 'https://maven.fabricmc.net/'
+    }
+    maven {
+        name = 'Ryanliptak'
+        url = 'https://maven.ryanliptak.com/'
+    }
+    maven {
+        name = "Jared's maven"
+        url = 'https://maven.blamejared.com/'
+    }
+    maven {
+        name = 'TerraformersMC'
+        url = 'https://maven.terraformersmc.com/'
+    }
+    maven {
+        name = 'Greenhouse'
+        url = 'https://maven.greenhouse.lgbt/releases/'
+    }
+    maven {
+        name = 'Greenhouse Snapshots'
+        url = 'https://maven.greenhouse.lgbt/snapshots/'
+    }
+    maven {
+        name = 'DevOS'
+        url = 'https://mvn.devos.one/snapshots/'
+    }
+    maven {
+        name = 'Shedaniel'
+        url = 'https://maven.shedaniel.me/'
+    }
+    maven {
+        url = 'https://maven.createmod.net'
+    }
+    maven {
+        url = 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/'
+    }
+    maven {
+        url = 'https://maven.nucleoid.xyz'
+    }
+    maven {
+        url = 'https://jitpack.io/'
+        content {
+            excludeGroup 'io.github.fabricators_of_create'
+        }
+    }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Modrinth'
+                url = 'https://api.modrinth.com/maven'
+            }
+        }
+        filter {
+            includeGroup 'maven.modrinth'
+        }
+    }
+
+    exclusiveContent {
+        forRepository {
+            maven {
+                url = 'https://jitpack.io'
+            }
+        }
+        filter {
+            includeGroup 'com.github.Chocohead'
+        }
+    }
+}
+
+loom {
+    def aw = file("src/main/resources/${mod_id}.accesswidener")
+    if (aw.exists()) {
+        accessWidenerPath = aw
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+
+    runs {
+        client {
+            client()
+            name = 'Fabric Client'
+            ideConfigGenerated = true
+            vmArgs '-Dmixin.debug.verbose=true', '-Dmixin.debug.export=true'
+        }
+        server {
+            server()
+            name = 'Fabric Server'
+            ideConfigGenerated = true
+            vmArgs '-Dmixin.debug.verbose=true', '-Dmixin.debug.export=true'
+        }
+    }
+}
+
+sourceSets {
+    main {
+        java {
+            exclude 'umpaz/brewinandchewin/integration/emi/**'
+            exclude 'umpaz/brewinandchewin/common/mixin/client/ModelBakeryAccessor.java'
+            exclude 'umpaz/brewinandchewin/common/mixin/client/RecipeBookComponentAccessor.java'
+        }
+        resources {
+            srcDir 'src/generated/resources'
+            exclude '**/.cache/**', '**/.cache'
+        }
+    }
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${minecraft_version}"
+    mappings loom.officialMojangMappings()
+
+    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    modLocalRuntime "com.terraformersmc:modmenu:${mod_menu_version}"
+
+    compileOnly "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
+    annotationProcessor "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
+    compileOnly "net.fabricmc:sponge-mixin:${fabric_mixin_version}"
+    implementation 'org.jetbrains:annotations:24.1.0'
+
+    modApi "house.greenhouse:greenhouseconfig:${greenhouse_config_version}-fabric"
+    include "house.greenhouse:greenhouseconfig:${greenhouse_config_version}-fabric"
+    api "house.greenhouse:greenhouseconfig_toml:${greenhouse_config_toml_version}"
+    include "house.greenhouse:greenhouseconfig_toml:${greenhouse_config_toml_version}"
+
+    modImplementation("maven.modrinth:farmers-delight-refabricated:${farmers_delight_refabricated_version}") {
+        exclude group: 'net.fabricmc'
+    }
+
+    modCompileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
+    modLocalRuntime "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
+    modCompileOnly "squeek.appleskin:appleskin-fabric:${appleskin_version}"
+    modLocalRuntime "squeek.appleskin:appleskin-fabric:${appleskin_version}"
+    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
+        exclude group: 'net.fabricmc.fabric-api'
+    }
+    modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
+        exclude group: 'net.fabricmc.fabric-api'
+    }
+
+    modImplementation("com.github.Chocohead:Fabric-ASM:${fabric_asm_version}") {
+        exclude group: 'net.fabricmc.fabric-api'
+    }
+    include("com.github.Chocohead:Fabric-ASM:${fabric_asm_version}") {
+        exclude group: 'net.fabricmc.fabric-api'
+    }
+
+    modCompileOnly "maven.modrinth:create-fly:${create_fly_version}"
+    modLocalRuntime "maven.modrinth:create-fly:${create_fly_version}"
+
+    modCompileOnly "maven.modrinth:styled-chat:${styled_chat_version}"
+    modCompileOnly "eu.pb4:placeholder-api:${pb4_placeholder_api_version}"
+
+    modLocalRuntime "maven.modrinth:styled-chat:${styled_chat_version}"
+    modLocalRuntime "eu.pb4:predicate-api:${pb4_predicate_api_version}"
+    modLocalRuntime "eu.pb4:placeholder-api:${pb4_placeholder_api_version}"
+    modLocalRuntime "me.lucko:fabric-permissions-api:${permissions_api_version}"
+    modLocalRuntime "eu.pb4:player-data-api:${pb4_player_data_api_version}"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(java_version as int)
+    }
+    withSourcesJar()
+}
+
+def resourceProperties = [
+        mod_version                         : mod_version,
+        group                               : project.group,
+        minecraft_version                   : minecraft_version,
+        fabric_api_version                  : fabric_version,
+        fabric_loader_version               : loader_version,
+        fabric_minecraft_version_range      : fabric_minecraft_version_range,
+        fabric_loader_range                 : fabric_loader_range,
+        mod_name                            : mod_name,
+        fabric_mod_authors                  : mod_authors.split(',').collect { it.trim() }.join('",\n    "'),
+        mod_id                              : mod_id,
+        mod_license                         : mod_license,
+        mod_description                     : mod_description,
+        java_version                        : java_version,
+        curseforge_page                     : curseforge_page,
+        modrinth_page                       : modrinth_page,
+        sources                             : github_repo,
+        create_fly_fabric_range            : create_fly_fabric_range,
+        fabric_greenhouse_config_range      : greenhouse_config_fabric_range,
+        farmers_delight_refabricated_range  : farmers_delight_refabricated_range,
+        HotCocoa                            : '$HotCocoa',
+        MilkBottle                          : '$MilkBottle',
+        LootParamsBuilderMixin              : '$LootParamsBuilderMixin',
+        LootParamsMixin                     : '$LootParamsMixin',
+        TipsyCanvasSignRenderMixin          : '$TipsyCanvasSignRenderMixin',
+        TipsySignRenderMixin                : '$TipsySignRenderMixin'
+]
+
+tasks.withType(ProcessResources).configureEach {
+    inputs.properties resourceProperties
+    filesMatching(['fabric.mod.json', '*.mixins.json']) {
+        expand resourceProperties
+    }
+    exclude "${mod_id}.cfg"
+    exclude '**/.cache/**', '**/.cache'
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+tasks.withType(Jar).configureEach {
+    from('LICENSE') {
+        rename { "${it}_${mod_name}" }
+    }
+}
+
+tasks.named('jar', Jar).configure {
+    manifest {
+        attributes([
+                'Specification-Title'     : mod_name,
+                'Specification-Vendor'    : mod_authors,
+                'Specification-Version'   : archiveVersion,
+                'Implementation-Title'    : project.name,
+                'Implementation-Version'  : archiveVersion,
+                'Implementation-Vendor'   : mod_authors,
+                'Built-On-Minecraft'      : minecraft_version
+        ])
+    }
+}
+
+publishing {
+    publications {
+        create('mavenJava', MavenPublication) {
+            artifactId = archives_base_name
+            from components.java
+        }
+    }
+    repositories {
+        maven {
+            name = 'Greenhouse'
+            url = uri('https://maven.greenhouse.lgbt/releases')
+            credentials {
+                username = System.getenv('MAVEN_USERNAME')
+                password = System.getenv('MAVEN_PASSWORD')
+            }
+            authentication {
+                basic(BasicAuthentication)
+            }
+        }
+    }
+}
+
+publishMods {
+    file = tasks.named('remapJar').flatMap { it.archiveFile }
+    modLoaders.add 'fabric'
+    changelog = rootProject.file('CHANGELOG.md').text
+    displayName = "v${mod_version} (Fabric ${minecraft_version})"
+    version = "${mod_version}+${minecraft_version}-fabric"
+    type = STABLE
+
+    if (curseforge_project_id) {
+        curseforge {
+            projectId = curseforge_project_id
+            accessToken = providers.environmentVariable('CURSEFORGE_TOKEN')
+            minecraftVersions.add minecraft_version
+            javaVersions.add JavaVersion.VERSION_21
+            clientRequired = true
+            serverRequired = true
+        }
+    }
+
+    if (modrinth_project_id) {
+        modrinth {
+            projectId = modrinth_project_id
+            accessToken = providers.environmentVariable('MODRINTH_TOKEN')
+            minecraftVersions.add minecraft_version
+        }
+    }
+}

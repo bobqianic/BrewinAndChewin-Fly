@@ -1,0 +1,14 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "c": "farmersdelight:canvas"
+  },
+  "pattern": [
+    "cc"
+  ],
+  "result": {
+    "count": 4,
+    "id": "brewinandchewin:coaster"
+  }
+}

@@ -1,0 +1,23 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "base_fluid": {
+    "amount": 1000,
+    "ingredient": {
+      "tag": "#brewinandchewin:beer"
+    },
+    "unit": "millibuckets"
+  },
+  "experience": 1,
+  "fermenting_time": 4800,
+  "ingredients": [
+    "#c:crops/beetroot",
+    "#c:crops/potato",
+    "minecraft:brown_mushroom",
+    "brewinandchewin:jerky"
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "brewinandchewin:strongroot_ale"
+  },
+  "unit": "millibuckets"
+}

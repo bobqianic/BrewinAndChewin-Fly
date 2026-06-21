@@ -1,0 +1,112 @@
+package umpaz.brewinandchewin.common.block;
+
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.BlockGetter;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.ScheduledTickAccess;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.state.StateDefinition;
+import net.minecraft.world.level.block.state.properties.IntegerProperty;
+import net.minecraft.util.RandomSource;
+import net.minecraft.world.level.storage.loot.LootParams;
+import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
+import net.minecraft.world.level.pathfinder.PathComputationType;
+import net.minecraft.world.phys.BlockHitResult;
+import net.minecraft.world.phys.shapes.CollisionContext;
+import net.minecraft.world.phys.shapes.Shapes;
+import net.minecraft.world.phys.shapes.VoxelShape;
+import umpaz.brewinandchewin.common.utility.BnCTextUtils;
+import vectorwing.farmersdelight.common.tag.ModTags;
+
+import java.util.List;
+import java.util.function.Supplier;
+
+public class CheeseWheelBlock extends Block {
+    public static final IntegerProperty SERVINGS = IntegerProperty.create("servings", 0, 3);
+    protected static final VoxelShape[] SHAPES = new VoxelShape[]{
+            Block.box(2.0D, 0.0D, 2.0D, 8.0D, 6.0D, 8.0D),
+            Block.box(2.0D, 0.0D, 2.0D, 14.0D, 6.0D, 8.0D),
+            Shapes.or(Block.box(2.0D, 0.0D, 2.0D, 14.0D, 6.0D, 8.0D), Block.box(2.0D, 0.0D, 8.0D, 8.0D, 6.0D, 14.0D)),
+            Block.box(2.0D, 0.0D, 2.0D, 14.0D, 6.0D, 14.0D),
+    };
+
+    public final Supplier<Item> cheeseWedgeType;
+
+    public CheeseWheelBlock(Supplier<Item> cheeseWedgeType, Properties properties) {
+        super(properties);
+        this.registerDefaultState(this.stateDefinition.any().setValue(SERVINGS, 3));
+        this.cheeseWedgeType = cheeseWedgeType;
+    }
+
+    @Override
+    protected VoxelShape getShape(BlockState state, BlockGetter worldIn, BlockPos pos, CollisionContext context) {
+        return SHAPES[state.getValue(SERVINGS)];
+    }
+
+    @Override
+    protected BlockState updateShape(BlockState state, LevelReader level, ScheduledTickAccess scheduledTickAccess, BlockPos pos, Direction facing, BlockPos facingPos, BlockState facingState, RandomSource random) {
+        return facing == Direction.DOWN && !this.canSurvive(state, level, pos) ? Blocks.AIR.defaultBlockState() : super.updateShape(state, level, scheduledTickAccess, pos, facing, facingPos, facingState, random);
+    }
+
+    @Override
+    protected boolean canSurvive(BlockState state, LevelReader level, BlockPos pos) {
+        return canSupportCenter(level, pos.below(), Direction.UP);
+    }
+
+    @Override
+    protected InteractionResult useItemOn(ItemStack stack, BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hitResult) {
+        int servings = state.getValue(SERVINGS);
+        if (stack.is(ModTags.KNIVES)) {
+            level.playSound(null, pos, SoundEvents.WOOL_BREAK, SoundSource.PLAYERS, 1.0F, 1.0F);
+            popResource(level, pos, new ItemStack(cheeseWedgeType.get(), 1));
+            if (servings > 0) {
+                level.setBlock(pos, state.setValue(SERVINGS, servings - 1), 3);
+            } else if (servings == 0) {
+                level.destroyBlock(pos, false);
+            }
+            return InteractionResult.SUCCESS;
+        }
+        player.displayClientMessage(BnCTextUtils.getTranslation("block.feast.use_knife"), true);
+        return InteractionResult.TRY_WITH_EMPTY_HAND;
+    }
+
+    @Override
+    protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
+        builder.add(SERVINGS);
+    }
+
+    @Override
+    protected int getAnalogOutputSignal(BlockState blockState, Level worldIn, BlockPos pos, Direction direction) {
+        return blockState.getValue(SERVINGS);
+    }
+
+    @Override
+    protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
+        ItemStack tool = params.getParameter(LootContextParams.TOOL);
+        int servings = state.getValue(SERVINGS);
+        if (servings == 3 && !tool.is(ModTags.KNIVES)) {
+            return List.of(new ItemStack(this));
+        }
+        return List.of(new ItemStack(cheeseWedgeType.get(), servings + 1));
+    }
+
+    @Override
+    protected boolean hasAnalogOutputSignal(BlockState state) {
+        return true;
+    }
+
+    protected boolean isPathfindable(BlockState state, PathComputationType type) {
+        return false;
+    }
+}

@@ -1,0 +1,21 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "base_fluid": {
+    "amount": 1000,
+    "ingredient": {
+      "tag": "#c:water"
+    },
+    "unit": "millibuckets"
+  },
+  "experience": 1,
+  "ingredients": [
+    "minecraft:wheat",
+    "minecraft:wheat_seeds",
+    "minecraft:brown_mushroom"
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "brewinandchewin:beer"
+  },
+  "unit": "millibuckets"
+}

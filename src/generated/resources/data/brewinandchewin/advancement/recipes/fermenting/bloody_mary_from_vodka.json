@@ -1,0 +1,33 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_the_recipe": {
+      "conditions": {
+        "recipe": "brewinandchewin:fermenting/bloody_mary_from_vodka"
+      },
+      "trigger": "minecraft:recipe_unlocked"
+    },
+    "has_vodka": {
+      "conditions": {
+        "items": [
+          {
+            "items": "brewinandchewin:vodka"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "requirements": [
+    [
+      "has_vodka",
+      "has_the_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "brewinandchewin:fermenting/bloody_mary_from_vodka"
+    ]
+  },
+  "sends_telemetry_event": true
+}

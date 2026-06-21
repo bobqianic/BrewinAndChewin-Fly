@@ -1,0 +1,23 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "base_fluid": {
+    "amount": 250,
+    "ingredient": {
+      "tag": "#c:honey"
+    },
+    "unit": "millibuckets"
+  },
+  "category": "meals",
+  "experience": 1,
+  "ingredients": [
+    "minecraft:sea_pickle",
+    "minecraft:sea_pickle",
+    "minecraft:glow_berries"
+  ],
+  "result": {
+    "count": 2,
+    "id": "brewinandchewin:pickled_pickles"
+  },
+  "temperature": 2,
+  "unit": "millibuckets"
+}

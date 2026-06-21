@@ -1,0 +1,22 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+    "egg": "brewinandchewin:block/egg",
+		"particle": "#egg"
+	},
+	"elements": [
+		{
+			"from": [6, 0, 6],
+			"to": [10, 5, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 0, 6]},
+			"faces": {
+				"north": {"uv": [1, 6, 5, 11], "texture": "#egg"},
+				"east": {"uv": [1, 6, 5, 11], "texture": "#egg"},
+				"south": {"uv": [1, 6, 5, 11], "texture": "#egg"},
+				"west": {"uv": [1, 6, 5, 11], "texture": "#egg"},
+				"up": {"uv": [5, 5, 1, 1], "texture": "#egg"},
+				"down": {"uv": [6, 1, 10, 5], "texture": "#egg"}
+			}
+		}
+	]
+}

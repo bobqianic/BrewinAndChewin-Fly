@@ -1,0 +1,23 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "base_fluid": {
+    "amount": 1000,
+    "ingredient": {
+      "tag": "#c:milk"
+    },
+    "unit": "millibuckets"
+  },
+  "category": "meals",
+  "experience": 1,
+  "ingredients": [
+    "minecraft:crimson_fungus",
+    "minecraft:nether_wart",
+    "minecraft:sugar"
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "brewinandchewin:scarlet_cheese"
+  },
+  "temperature": 5,
+  "unit": "millibuckets"
+}

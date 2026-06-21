@@ -1,0 +1,12 @@
+{
+  "type": "brewinandchewin:keg_pouring",
+  "fluid": {
+    "amount": 250,
+    "id": "brewinandchewin:strongroot_ale"
+  },
+  "output": {
+    "count": 1,
+    "id": "brewinandchewin:strongroot_ale"
+  },
+  "unit": "millibuckets"
+}

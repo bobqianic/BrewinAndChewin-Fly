@@ -1,0 +1,22 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"slice": "brewinandchewin:block/kelp_roll_slice",
+		"particle": "#slice"
+	},
+	"elements": [
+		{
+			"from": [6.5, 0, 6.5],
+			"to": [9.5, 3, 9.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6.5, 0, 6.5]},
+			"faces": {
+				"north": {"uv": [1, 1, 4, 4], "texture": "#slice"},
+				"east": {"uv": [1, 1, 4, 4], "texture": "#slice"},
+				"south": {"uv": [1, 1, 4, 4], "texture": "#slice"},
+				"west": {"uv": [1, 1, 4, 4], "texture": "#slice"},
+				"up": {"uv": [5, 1, 8, 4], "texture": "#slice"},
+				"down": {"uv": [5, 1, 8, 4], "texture": "#slice"}
+			}
+		}
+	]
+}

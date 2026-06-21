@@ -1,0 +1,23 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "base_fluid": {
+    "amount": 1000,
+    "ingredient": {
+      "tag": "#brewinandchewin:mead"
+    },
+    "unit": "millibuckets"
+  },
+  "experience": 1,
+  "fermenting_time": 4800,
+  "ingredients": [
+    "minecraft:sweet_berries",
+    "minecraft:sugar_cane",
+    "minecraft:melon"
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "brewinandchewin:saccharine_rum"
+  },
+  "temperature": 4,
+  "unit": "millibuckets"
+}

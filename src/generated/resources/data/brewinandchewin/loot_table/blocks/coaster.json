@@ -1,0 +1,28 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "bonus_rolls": 0.0,
+      "conditions": [
+        {
+          "block": "brewinandchewin:coaster",
+          "condition": "minecraft:block_state_property",
+          "properties": {
+            "invisible": "false"
+          }
+        },
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ],
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "brewinandchewin:coaster"
+        }
+      ],
+      "rolls": 1.0
+    }
+  ],
+  "random_sequence": "brewinandchewin:blocks/coaster"
+}

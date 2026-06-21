@@ -1,0 +1,14 @@
+{
+  "type": "brewinandchewin:keg_pouring",
+  "fluid": {
+    "ingredient": {
+      "tag": "#c:milk"
+    },
+    "amount": 1000
+  },
+  "output": {
+    "count": 1,
+    "id": "minecraft:milk_bucket"
+  },
+  "unit": "millibuckets"
+}

@@ -1,0 +1,6 @@
+{
+  "parent": "brewinandchewin:block/coaster_mutton",
+  "textures": {
+    "mutton": "brewinandchewin:block/cooked_mutton"
+  }
+}

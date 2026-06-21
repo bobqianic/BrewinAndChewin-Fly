@@ -1,0 +1,9 @@
+{
+  "item": "frightsdelight:punch_rotten_flesh",
+  "models": [
+    {
+      "model": "frightsdelight:block/punch_rotten_flesh_servings1",
+      "offset": [4.5, 0.0, 4.5]
+    }
+  ]
+}

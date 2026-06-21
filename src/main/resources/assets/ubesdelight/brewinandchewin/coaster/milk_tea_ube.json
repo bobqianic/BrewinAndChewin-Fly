@@ -1,0 +1,9 @@
+{
+  "item": "ubesdelight:milk_tea_ube",
+  "models": [
+    {
+      "model": "ubesdelight:block/glass_cup_milk_tea_ube_servings1",
+      "offset": [4.5, 0.0, 4.5]
+    }
+  ]
+}

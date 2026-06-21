@@ -1,0 +1,12 @@
+{
+  "type": "brewinandchewin:keg_pouring",
+  "fluid": {
+    "amount": 250,
+    "id": "brewinandchewin:steel_toe_stout"
+  },
+  "output": {
+    "count": 1,
+    "id": "brewinandchewin:steel_toe_stout"
+  },
+  "unit": "millibuckets"
+}

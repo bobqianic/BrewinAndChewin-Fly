@@ -1,0 +1,20 @@
+{
+  "type": "create:filling",
+  "ingredient": "brewinandchewin:tankard",
+  "fluid_ingredient": {
+    "type": "fluid_stack",
+    "amount": 20250,
+    "fluid": "brewinandchewin:bloody_mary"
+  },
+  "result": {
+    "id": "brewinandchewin:bloody_mary"
+  },
+  "fabric:load_conditions": [
+    {
+      "condition": "fabric:all_mods_loaded",
+      "values": [
+        "create"
+      ]
+    }
+  ]
+}

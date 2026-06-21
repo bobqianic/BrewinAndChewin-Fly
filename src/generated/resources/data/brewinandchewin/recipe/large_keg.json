@@ -1,0 +1,15 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "key": {
+    "k": "brewinandchewin:keg"
+  },
+  "pattern": [
+    "kk",
+    "kk"
+  ],
+  "result": {
+    "count": 1,
+    "id": "brewinandchewin:large_keg"
+  }
+}

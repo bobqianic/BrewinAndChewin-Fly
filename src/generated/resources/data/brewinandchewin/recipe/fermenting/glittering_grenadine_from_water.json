@@ -1,0 +1,22 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "base_fluid": {
+    "amount": 1000,
+    "ingredient": {
+      "tag": "#c:water"
+    },
+    "unit": "millibuckets"
+  },
+  "experience": 1,
+  "ingredients": [
+    "minecraft:glow_berries",
+    "minecraft:glowstone_dust",
+    "minecraft:glow_ink_sac"
+  ],
+  "result": {
+    "amount": 1000,
+    "id": "brewinandchewin:glittering_grenadine"
+  },
+  "temperature": 2,
+  "unit": "millibuckets"
+}

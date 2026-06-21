@@ -1,0 +1,34 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+    "mutton": "brewinandchewin:block/raw_mutton",
+		"particle": "#mutton"
+	},
+	"elements": [
+		{
+			"from": [5, 0, 4],
+			"to": [11, 2, 8],
+			"rotation": {"angle": 0, "axis": "y", "origin": [5, 0, 3]},
+			"faces": {
+				"north": {"uv": [0, 6, 6, 8], "texture": "#mutton"},
+				"east": {"uv": [11, 0, 7, 2], "texture": "#mutton"},
+				"south": {"uv": [6, 9, 0, 11], "texture": "#mutton"},
+				"west": {"uv": [7, 3, 11, 5], "texture": "#mutton"},
+				"up": {"uv": [6, 4, 0, 0], "texture": "#mutton"},
+				"down": {"uv": [6, 0, 0, 4], "texture": "#mutton"}
+			}
+		},
+		{
+			"from": [5, 0, 8],
+			"to": [7, 2, 12],
+			"rotation": {"angle": 0, "axis": "y", "origin": [5, 0, 8]},
+			"faces": {
+				"east": {"uv": [7, 9, 11, 11], "texture": "#mutton"},
+				"south": {"uv": [15, 6, 13, 8], "texture": "#mutton"},
+				"west": {"uv": [7, 6, 11, 8], "texture": "#mutton"},
+				"up": {"uv": [15, 4, 13, 0], "texture": "#mutton"},
+				"down": {"uv": [15, 0, 13, 4], "texture": "#mutton"}
+			}
+		}
+	]
+}

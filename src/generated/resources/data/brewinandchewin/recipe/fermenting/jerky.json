@@ -1,0 +1,15 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "category": "meals",
+  "experience": 1,
+  "ingredients": [
+    "#brewinandchewin:foods/jerky_meat",
+    "#brewinandchewin:foods/jerky_meat",
+    "#brewinandchewin:foods/jerky_meat"
+  ],
+  "result": {
+    "count": 3,
+    "id": "brewinandchewin:jerky"
+  },
+  "temperature": 4
+}

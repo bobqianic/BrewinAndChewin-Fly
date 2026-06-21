@@ -1,0 +1,263 @@
+package umpaz.brewinandchewin.fabric;
+
+import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.networking.v1.*;
+import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
+import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.sounds.SoundEvents;
+import net.minecraft.sounds.SoundSource;
+import net.minecraft.world.InteractionResult;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
+import net.minecraft.world.level.block.ComposterBlock;
+import net.minecraft.world.level.block.FireBlock;
+import net.minecraft.world.level.block.Blocks;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
+import umpaz.brewinandchewin.common.block.KegBlock;
+import umpaz.brewinandchewin.common.block.LargeKegFootprintBlock;
+import umpaz.brewinandchewin.common.block.entity.KegBlockEntity;
+import umpaz.brewinandchewin.BrewinAndChewin;
+import umpaz.brewinandchewin.client.recipebook.BnCRecipeBookCategories;
+import umpaz.brewinandchewin.common.attachment.RagingAttachment;
+import umpaz.brewinandchewin.common.attachment.TipsyHeartsAttachment;
+import umpaz.brewinandchewin.common.network.clientbound.*;
+import umpaz.brewinandchewin.common.network.serverbound.EMIFillFermentingRecipeServerboundPacket;
+import umpaz.brewinandchewin.common.network.serverbound.EMIFillPouringRecipeServerboundPacket;
+import umpaz.brewinandchewin.common.network.serverbound.JEITransferKegRecipeServerboundPacket;
+import umpaz.brewinandchewin.common.registry.BnCBlockEntityTypes;
+import umpaz.brewinandchewin.common.registry.BnCBlocks;
+import umpaz.brewinandchewin.common.registry.BnCCreativeTabs;
+import umpaz.brewinandchewin.common.registry.BnCEffects;
+import umpaz.brewinandchewin.common.registry.BnCFluids;
+import umpaz.brewinandchewin.common.registry.BnCItems;
+import umpaz.brewinandchewin.common.registry.BnCLootConditions;
+import umpaz.brewinandchewin.common.registry.BnCLootFunctions;
+import umpaz.brewinandchewin.common.registry.BnCMenuTypes;
+import umpaz.brewinandchewin.common.registry.BnCParticleTypes;
+import umpaz.brewinandchewin.common.registry.BnCRecipeSerializers;
+import umpaz.brewinandchewin.common.registry.BnCRecipeTypes;
+import umpaz.brewinandchewin.fabric.container.KegFluidTankFabric;
+import umpaz.brewinandchewin.fabric.container.SidedKegWrapperFabric;
+import umpaz.brewinandchewin.fabric.fluid.BnCFluidVariantAttributeHandler;
+import umpaz.brewinandchewin.fabric.platform.BnCPlatformHelperFabric;
+import umpaz.brewinandchewin.fabric.registry.BnCAttachments;
+import umpaz.brewinandchewin.fabric.registry.BnCFluidsImpl;
+import umpaz.brewinandchewin.fabric.registry.BnCLootModificationEvents;
+
+import java.util.List;
+import java.util.Optional;
+
+public class BrewinAndChewinFabric implements ModInitializer {
+    private static MinecraftServer server;
+
+    @Override
+    public void onInitialize() {
+        BrewinAndChewin.init(new BnCPlatformHelperFabric());
+        registerContents();
+        registerNetwork();
+        registerCompostables();
+        registerFlammables();
+        registerFluidAttributeHandlers();
+        registerKegBlockInteractions();
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            BrewinAndChewinFabric.server = server;
+        });
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            BrewinAndChewinFabric.server = null;
+        });
+
+        EntityTrackingEvents.START_TRACKING.register((entity, player) -> {
+            if (entity instanceof LivingEntity living) {
+                if (entity.hasAttached(BnCAttachments.TIPSY_HEARTS)) {
+                    TipsyHeartsAttachment attachment = entity.getAttached(BnCAttachments.TIPSY_HEARTS);
+                    BrewinAndChewin.getHelper().sendClientbound(player, new SyncNumbedHeartsClientboundPacket(living.getId(), attachment.getNumbedHealth(), attachment.getTicksUntilDamage()));
+                }
+                if (entity.hasAttached(BnCAttachments.RAGING)) {
+                    RagingAttachment attachment = entity.getAttached(BnCAttachments.RAGING);
+                    BrewinAndChewin.getHelper().sendClientbound(player, new SyncRagingStacksClientboundPacket(living.getId(), Optional.of(attachment.getStacks())));
+                }
+            }
+        });
+        ServerEntityEvents.ENTITY_LOAD.register((entity, level) -> {
+            if (entity instanceof ServerPlayer) {
+                if (entity.hasAttached(BnCAttachments.TIPSY_HEARTS)) {
+                    TipsyHeartsAttachment attachment = entity.getAttached(BnCAttachments.TIPSY_HEARTS);
+                    BrewinAndChewin.getHelper().sendClientboundTracking(entity, new SyncNumbedHeartsClientboundPacket(entity.getId(), attachment.getNumbedHealth(), attachment.getTicksUntilDamage()));
+                }
+                if (entity.hasAttached(BnCAttachments.RAGING)) {
+                    RagingAttachment attachment = entity.getAttached(BnCAttachments.RAGING);
+                    BrewinAndChewin.getHelper().sendClientboundTracking(entity, new SyncRagingStacksClientboundPacket(entity.getId(), Optional.of(attachment.getStacks())));
+                }
+            }
+        });
+    }
+
+    public static MinecraftServer getServer() {
+        return server;
+    }
+
+    private static void registerContents() {
+        BnCRecipeBookCategories.registerAll();
+        BnCAttachments.registerAll();
+        BnCBlocks.registerAll();
+        BnCBlockEntityTypes.registerAll();
+        BnCCreativeTabs.registerAll();
+        BnCEffects.registerAll();
+        BnCFluids.registerAll();
+        BnCItems.registerAll();
+        BnCLootConditions.registerAll();
+        BnCLootFunctions.registerAll();
+        BnCLootModificationEvents.init();
+        BnCMenuTypes.registerAll();
+        BnCParticleTypes.registerAll();
+        BnCRecipeTypes.registerAll();
+        BnCRecipeSerializers.registerAll();
+        RecipeSynchronization.synchronizeRecipeSerializer(BnCRecipeSerializers.FERMENTING);
+        RecipeSynchronization.synchronizeRecipeSerializer(BnCRecipeSerializers.KEG_POURING);
+        if (BnCRecipeSerializers.CREATE_POTION_POURING != null)
+            RecipeSynchronization.synchronizeRecipeSerializer(BnCRecipeSerializers.CREATE_POTION_POURING);
+
+        ItemStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> (SidedKegWrapperFabric) blockEntity.getSidedHandler(direction), BnCBlockEntityTypes.KEG);
+        ItemStorage.SIDED.registerForBlocks((level, pos, state, blockEntity, direction) -> {
+            if (level.getBlockEntity(LargeKegFootprintBlock.getKegPos(pos, state)) instanceof KegBlockEntity kegBlockEntity) {
+                return (SidedKegWrapperFabric) kegBlockEntity.getSidedHandler(null);
+            }
+            return null;
+        }, BnCBlocks.LARGE_KEG_FOOTPRINT);
+        FluidStorage.SIDED.registerForBlockEntity((blockEntity, direction) -> (KegFluidTankFabric) blockEntity.getFluidTank(), BnCBlockEntityTypes.KEG);
+        FluidStorage.SIDED.registerForBlocks((level, pos, state, blockEntity, direction) -> {
+            if (level.getBlockEntity(LargeKegFootprintBlock.getKegPos(pos, state)) instanceof KegBlockEntity kegBlockEntity) {
+                return (KegFluidTankFabric) kegBlockEntity.getFluidTank();
+            }
+            return null;
+        }, BnCBlocks.LARGE_KEG_FOOTPRINT);
+    }
+
+    private static void registerKegBlockInteractions() {
+        UseBlockCallback.EVENT.register((player, level, hand, hitResult) -> {
+            if (player.isSpectator()) {
+                return InteractionResult.PASS;
+            }
+
+            ItemStack stack = player.getItemInHand(hand);
+            if (!stack.is(Items.BUCKET) && !stack.is(BnCItems.TANKARD)) {
+                return InteractionResult.PASS;
+            }
+
+            BlockPos pos = hitResult.getBlockPos();
+            BlockState state = level.getBlockState(pos);
+            BlockPos kegPos = pos;
+            if (state.is(BnCBlocks.LARGE_KEG_FOOTPRINT)) {
+                kegPos = LargeKegFootprintBlock.getKegPos(pos, state);
+            } else if (!state.is(BnCBlocks.KEG) && !state.is(BnCBlocks.LARGE_KEG)) {
+                return InteractionResult.PASS;
+            }
+
+            BlockEntity blockEntity = level.getBlockEntity(kegPos);
+            if (!(blockEntity instanceof KegBlockEntity kegBlockEntity)) {
+                return InteractionResult.PASS;
+            }
+
+            if (level.isClientSide()) {
+                return InteractionResult.SUCCESS;
+            }
+
+            List<ItemStack> items = kegBlockEntity.extractInWorld(stack, 1, player.getAbilities().instabuild);
+            if (items.isEmpty()) {
+                return InteractionResult.PASS;
+            }
+
+            KegBlock.applyExtractedItems(player, hand, items);
+            level.playSound(null, kegPos, SoundEvents.BOTTLE_FILL, SoundSource.BLOCKS, 1, 1);
+            return InteractionResult.SUCCESS;
+        });
+    }
+
+    private static void registerNetwork() {
+        PayloadTypeRegistry.playS2C().register(ClearKegFluidContainerComponentsClientboundPacket.TYPE, ClearKegFluidContainerComponentsClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(MakeNextPlayerChatTipsyClientboundPacket.TYPE, MakeNextPlayerChatTipsyClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(SendRecipeBookValuesClientboundPacket.TYPE, SendRecipeBookValuesClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(SyncNumbedHeartsClientboundPacket.TYPE, SyncNumbedHeartsClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(SyncRagingStacksClientboundPacket.TYPE, SyncRagingStacksClientboundPacket.STREAM_CODEC);
+
+        PayloadTypeRegistry.playC2S().register(JEITransferKegRecipeServerboundPacket.TYPE, JEITransferKegRecipeServerboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(EMIFillFermentingRecipeServerboundPacket.TYPE, EMIFillFermentingRecipeServerboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(EMIFillPouringRecipeServerboundPacket.TYPE, EMIFillPouringRecipeServerboundPacket.STREAM_CODEC);
+
+        ServerPlayNetworking.registerGlobalReceiver(JEITransferKegRecipeServerboundPacket.TYPE, (payload, context) -> payload.handle(context.player()));
+        ServerPlayNetworking.registerGlobalReceiver(EMIFillFermentingRecipeServerboundPacket.TYPE, (payload, context) -> payload.handle(context.player()));
+        ServerPlayNetworking.registerGlobalReceiver(EMIFillPouringRecipeServerboundPacket.TYPE, (payload, context) -> payload.handle(context.player()));
+    }
+
+    private static void registerCompostables() {
+        ComposterBlock.COMPOSTABLES.put(BnCItems.KIMCHI, 0.5F);
+        ComposterBlock.COMPOSTABLES.put(BnCItems.PICKLED_PICKLES, 0.5F);
+        ComposterBlock.COMPOSTABLES.put(BnCItems.QUICHE_SLICE, 0.85F);
+        ComposterBlock.COMPOSTABLES.put(BnCItems.QUICHE, 1.0F);
+    }
+
+    private static void registerFlammables() {
+        ((FireBlock) Blocks.FIRE).setFlammable(BnCBlocks.KEG, 3, 5);
+        ((FireBlock) Blocks.FIRE).setFlammable(BnCBlocks.LARGE_KEG, 3, 5);
+        ((FireBlock) Blocks.FIRE).setFlammable(BnCBlocks.HEATING_CASK, 5, 8);
+    }
+
+    private static void registerFluidAttributeHandlers() {
+        if (BnCFluidsImpl.isBnCMilk()) {
+            FluidVariantAttributes.register(BnCFluidsImpl.MILK, BnCFluidVariantAttributeHandler.INSTANCE);
+            FluidVariantAttributes.register(BnCFluidsImpl.FLOWING_MILK, BnCFluidVariantAttributeHandler.INSTANCE);
+        }
+        if (!BrewinAndChewin.getHelper().isModLoaded("create")) {
+            FluidVariantAttributes.register(BnCFluids.HONEY, BnCFluidVariantAttributeHandler.INSTANCE);
+            FluidVariantAttributes.register(BnCFluids.FLOWING_HONEY, BnCFluidVariantAttributeHandler.INSTANCE);
+        }
+
+        FluidVariantAttributes.register(BnCFluids.BEER, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_BEER, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.VODKA, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_VODKA, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.MEAD, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_MEAD, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.EGG_GROG, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_EGG_GROG, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.STRONGROOT_ALE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_STRONGROOT_ALE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.RICE_WINE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_RICE_WINE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.GLITTERING_GRENADINE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_GLITTERING_GRENADINE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.STEEL_TOE_STOUT, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_STEEL_TOE_STOUT, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.DREAD_NOG, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_DREAD_NOG, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.SACCHARINE_RUM, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_SACCHARINE_RUM, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.PALE_JANE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_PALE_JANE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.SALTY_FOLLY, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_SALTY_FOLLY, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.BLOODY_MARY, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_BLOODY_MARY, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.RED_RUM, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_RED_RUM, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.WITHERING_DROSS, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_WITHERING_DROSS, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.KOMBUCHA, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_KOMBUCHA, BnCFluidVariantAttributeHandler.INSTANCE);
+
+        FluidVariantAttributes.register(BnCFluids.FLAXEN_CHEESE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_FLAXEN_CHEESE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.SCARLET_CHEESE, BnCFluidVariantAttributeHandler.INSTANCE);
+        FluidVariantAttributes.register(BnCFluids.FLOWING_SCARLET_CHEESE, BnCFluidVariantAttributeHandler.INSTANCE);
+    }
+}

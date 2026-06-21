@@ -1,0 +1,34 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+    "popsicle": "brewinandchewin:block/melon_popsicle",
+		"particle": "#popsicle"
+	},
+	"elements": [
+		{
+			"from": [6, 0, 6],
+			"to": [12, 2, 10],
+			"rotation": {"angle": 0, "axis": "y", "origin": [6, 0, 6]},
+			"faces": {
+				"north": {"uv": [1, 6, 7, 8], "texture": "#popsicle"},
+				"east": {"uv": [8, 9, 12, 11], "texture": "#popsicle"},
+				"south": {"uv": [7, 9, 1, 11], "texture": "#popsicle"},
+				"west": {"uv": [8, 6, 12, 8], "texture": "#popsicle"},
+				"up": {"uv": [7, 5, 1, 1], "texture": "#popsicle"},
+				"down": {"uv": [7, 1, 1, 5], "texture": "#popsicle"}
+			}
+		},
+		{
+			"from": [2, 0.5, 7.5],
+			"to": [6, 1.5, 8.5],
+			"rotation": {"angle": 0, "axis": "y", "origin": [2, -1.5, 6.5]},
+			"faces": {
+				"north": {"uv": [11, 2, 7, 3], "texture": "#popsicle"},
+				"south": {"uv": [7, 2, 11, 3], "texture": "#popsicle"},
+				"west": {"uv": [7, 2, 8, 3], "texture": "#popsicle"},
+				"up": {"uv": [7, 2, 11, 3], "texture": "#popsicle"},
+				"down": {"uv": [7, 2, 11, 3], "texture": "#popsicle"}
+			}
+		}
+	]
+}

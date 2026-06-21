@@ -1,0 +1,12 @@
+{
+  "type": "brewinandchewin:keg_pouring",
+  "fluid": {
+    "amount": 250,
+    "id": "brewinandchewin:saccharine_rum"
+  },
+  "output": {
+    "count": 1,
+    "id": "brewinandchewin:saccharine_rum"
+  },
+  "unit": "millibuckets"
+}

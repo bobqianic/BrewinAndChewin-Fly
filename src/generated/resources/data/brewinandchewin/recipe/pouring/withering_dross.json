@@ -1,0 +1,12 @@
+{
+  "type": "brewinandchewin:keg_pouring",
+  "fluid": {
+    "amount": 250,
+    "id": "brewinandchewin:withering_dross"
+  },
+  "output": {
+    "count": 1,
+    "id": "brewinandchewin:withering_dross"
+  },
+  "unit": "millibuckets"
+}

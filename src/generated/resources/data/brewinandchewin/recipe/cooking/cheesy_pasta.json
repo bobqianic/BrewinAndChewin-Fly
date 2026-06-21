@@ -1,0 +1,19 @@
+{
+  "type": "farmersdelight:cooking",
+  "container": {
+    "count": 1,
+    "id": "minecraft:bowl"
+  },
+  "experience": 1,
+  "ingredients": [
+    "brewinandchewin:flaxen_cheese_wedge",
+    "#c:foods/pasta",
+    "#c:foods/tomato",
+    "#c:foods/safe_raw_fish"
+  ],
+  "recipe_book_tab": "meals",
+  "result": {
+    "count": 1,
+    "id": "brewinandchewin:cheesy_pasta"
+  }
+}

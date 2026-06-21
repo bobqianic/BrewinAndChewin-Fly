@@ -1,0 +1,15 @@
+{
+  "type": "farmersdelight:cutting",
+  "ingredients": [
+    "brewinandchewin:scarlet_cheese_wheel"
+  ],
+  "result": [
+    {
+      "item": {
+        "count": 4,
+        "id": "brewinandchewin:scarlet_cheese_wedge"
+      }
+    }
+  ],
+  "tool": "#c:tools/knife"
+}

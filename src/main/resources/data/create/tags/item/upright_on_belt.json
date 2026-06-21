@@ -1,0 +1,22 @@
+{
+  "replace": false,
+  "values": [
+    "brewinandchewin:tankard",
+    "brewinandchewin:beer",
+    "brewinandchewin:vodka",
+    "brewinandchewin:mead",
+    "brewinandchewin:rice_wine",
+    "brewinandchewin:pale_jane",
+    "brewinandchewin:egg_grog",
+    "brewinandchewin:glittering_grenadine",
+    "brewinandchewin:saccharine_rum",
+    "brewinandchewin:salty_folly",
+    "brewinandchewin:bloody_mary",
+    "brewinandchewin:red_rum",
+    "brewinandchewin:strongroot_ale",
+    "brewinandchewin:steel_toe_stout",
+    "brewinandchewin:dread_nog",
+    "brewinandchewin:withering_dross",
+    "brewinandchewin:kombucha"
+  ]
+}

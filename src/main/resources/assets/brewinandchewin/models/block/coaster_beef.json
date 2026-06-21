@@ -1,0 +1,22 @@
+{
+	"credit": "Made with Blockbench",
+	"textures": {
+		"beef": "brewinandchewin:block/raw_beef",
+		"particle": "#beef"
+	},
+	"elements": [
+		{
+			"from": [4, 0, 5],
+			"to": [12, 2, 11],
+			"rotation": {"angle": 0, "axis": "y", "origin": [4, 0, 5]},
+			"faces": {
+				"north": {"uv": [8, 7, 0, 9], "texture": "#beef"},
+				"east": {"uv": [6, 10, 0, 12], "texture": "#beef"},
+				"south": {"uv": [0, 7, 8, 9], "texture": "#beef"},
+				"west": {"uv": [6, 10, 0, 12], "texture": "#beef"},
+				"up": {"uv": [0, 0, 8, 6], "texture": "#beef"},
+				"down": {"uv": [0, 0, 8, 6], "texture": "#beef"}
+			}
+		}
+	]
+}

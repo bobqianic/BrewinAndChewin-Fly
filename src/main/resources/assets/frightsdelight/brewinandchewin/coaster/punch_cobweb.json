@@ -1,0 +1,9 @@
+{
+  "item": "frightsdelight:punch_cobweb",
+  "models": [
+    {
+      "model": "frightsdelight:block/punch_cobweb_servings1",
+      "offset": [4.5, 0.0, 4.5]
+    }
+  ]
+}

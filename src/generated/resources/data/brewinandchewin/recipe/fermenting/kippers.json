@@ -1,0 +1,15 @@
+{
+  "type": "brewinandchewin:fermenting",
+  "category": "meals",
+  "experience": 1,
+  "ingredients": [
+    "#c:foods/safe_raw_fish",
+    "#c:foods/safe_raw_fish",
+    "minecraft:dried_kelp"
+  ],
+  "result": {
+    "count": 2,
+    "id": "brewinandchewin:kippers"
+  },
+  "temperature": 4
+}

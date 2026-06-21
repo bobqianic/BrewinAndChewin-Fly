@@ -1,0 +1,22 @@
+{
+  "type": "farmersdelight:cooking",
+  "container": {
+    "count": 1,
+    "id": "minecraft:cauldron"
+  },
+  "cookingtime": 400,
+  "experience": 2,
+  "ingredients": [
+    "farmersdelight:tomato_sauce",
+    "#c:crops/potato",
+    "#c:foods/milk",
+    "brewinandchewin:scarlet_cheese_wheel",
+    "farmersdelight:ham",
+    "#c:foods/bread"
+  ],
+  "recipe_book_tab": "meals",
+  "result": {
+    "count": 1,
+    "id": "brewinandchewin:fiery_fondue_pot"
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "create:potion": {
+    "base": {
+      "id": "minecraft:potion"
+    },
+    "remaps": {
+      "minecraft:potion_contents": {
+        "component": "minecraft:potion_contents"
+      }
+    },
+    "optional": true
+  },
+  "create:flowing_potion": {
+    "base": {
+      "id": "minecraft:potion"
+    },
+    "remaps": {
+      "minecraft:potion_contents": {
+        "component": "minecraft:potion_contents"
+      }
+    },
+    "optional": true
+  },
+  "create:tea": {
+    "id": "create:builders_tea",
+    "optional": true
+  }
+}

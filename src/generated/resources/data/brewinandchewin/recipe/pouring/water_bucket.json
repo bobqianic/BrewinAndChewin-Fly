@@ -1,0 +1,12 @@
+{
+  "type": "brewinandchewin:keg_pouring",
+  "fluid": {
+    "amount": 1000,
+    "id": "minecraft:water"
+  },
+  "output": {
+    "count": 1,
+    "id": "minecraft:water_bucket"
+  },
+  "unit": "millibuckets"
+}

@@ -1,0 +1,9 @@
+{
+  "item": "frightsdelight:punch_wither_berry",
+  "models": [
+    {
+      "model": "frightsdelight:block/punch_wither_berry_servings1",
+      "offset": [4.5, 0.0, 4.5]
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "schemaVersion": 1,
+  "id": "${mod_id}",
+  "version": "${mod_version}",
+  "name": "${mod_name}",
+  "description": "${mod_description}",
+  "authors": [
+    "${fabric_mod_authors}"
+  ],
+  "license": "${mod_license}",
+  "icon": "assets/brewinandchewin/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "mm:early_risers": [
+      "umpaz.brewinandchewin.fabric.BrewinAndChewinASM"
+    ],
+    "main": [
+      "umpaz.brewinandchewin.fabric.BrewinAndChewinFabric"
+    ],
+    "client": [
+      "umpaz.brewinandchewin.fabric.client.BrewinAndChewinFabricClient"
+    ],
+    "jei_mod_plugin": [
+      "umpaz.brewinandchewin.integration.jei.JEIPlugin"
+    ]
+  },
+  "mixins": [
+    "brewinandchewin.mixins.json",
+    "brewinandchewin.fabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": "${fabric_loader_range}",
+    "fabric-api": "*",
+    "mm": "*",
+    "minecraft": "${fabric_minecraft_version_range}",
+    "java": ">=${java_version}",
+    "farmersdelight": "${farmers_delight_refabricated_range}",
+    "greenhouseconfig": "${fabric_greenhouse_config_range}"
+  },
+  "suggests": {
+    "create": "${create_fly_fabric_range}"
+  }
+}

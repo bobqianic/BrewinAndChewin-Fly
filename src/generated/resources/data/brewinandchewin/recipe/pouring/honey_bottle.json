@@ -1,0 +1,14 @@
+{
+  "type": "brewinandchewin:keg_pouring",
+  "fluid": {
+    "ingredient": {
+      "tag": "#c:honey"
+    },
+    "amount": 250
+  },
+  "output": {
+    "count": 1,
+    "id": "minecraft:honey_bottle"
+  },
+  "unit": "millibuckets"
+}

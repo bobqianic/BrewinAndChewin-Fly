@@ -1,0 +1,20 @@
+{
+  "type": "farmersdelight:cooking",
+  "container": {
+    "count": 1,
+    "id": "minecraft:bowl"
+  },
+  "experience": 1,
+  "ingredients": [
+    "brewinandchewin:scarlet_cheese_wedge",
+    "#c:crops/beetroot",
+    "farmersdelight:tomato_sauce",
+    "#c:foods/pasta",
+    "#brewinandchewin:foods/cheese_wedge"
+  ],
+  "recipe_book_tab": "meals",
+  "result": {
+    "count": 1,
+    "id": "brewinandchewin:horror_lasagna"
+  }
+}

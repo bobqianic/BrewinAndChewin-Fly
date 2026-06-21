@@ -1,0 +1,33 @@
+{
+  "parent": "brewinandchewin:main/place_keg",
+  "criteria": {
+    "has_drink": {
+      "conditions": {
+        "items": [
+          {
+            "items": "#brewinandchewin:fermented_drinks"
+          }
+        ]
+      },
+      "trigger": "minecraft:inventory_changed"
+    }
+  },
+  "display": {
+    "description": {
+      "translate": "brewinandchewin.advancement.brew_drink.desc"
+    },
+    "icon": {
+      "count": 1,
+      "id": "brewinandchewin:vodka"
+    },
+    "title": {
+      "translate": "brewinandchewin.advancement.brew_drink"
+    }
+  },
+  "requirements": [
+    [
+      "has_drink"
+    ]
+  ],
+  "sends_telemetry_event": true
+}
