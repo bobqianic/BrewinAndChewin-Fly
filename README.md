@@ -1,6 +1,6 @@
 # Brewin' And Chewin' Fly
 
-**Brewin' And Chewin' Fly** is a Fabric fork of Brewin' And Chewin' for Minecraft 1.21.10.
+**Brewin' And Chewin' Fly** is a Fabric fork of [Brewin' And Chewin'](https://github.com/ChefsDelights/BrewinAndChewin?) for Minecraft 1.21.10.
 
 This fork keeps the original `brewinandchewin` mod id for world, resource-pack, datapack, and recipe compatibility.
 
