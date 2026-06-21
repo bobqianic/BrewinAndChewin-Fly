@@ -13,7 +13,7 @@ This fork keeps the original `brewinandchewin` mod id for world, resource-pack, 
 
 ## What's New
 
-- Wine can be drunk directly from barrels.
+- Players can drink directly from barrels.
 - Satiety and saturation values have been recalculated for better food balance.
 - Fermentation tanks can hold any liquid, and their temperature now changes gradually.
 - Large kegs have been added.
