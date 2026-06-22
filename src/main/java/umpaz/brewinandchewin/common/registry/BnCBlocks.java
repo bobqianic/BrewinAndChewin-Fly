@@ -32,6 +32,7 @@ public class BnCBlocks {
             blockProperties("large_keg_footprint", Blocks.OAK_PLANKS)
                     .noLootTable()
                     .noOcclusion()
+                    .dynamicShape()
                     .overrideDescription("block.brewinandchewin.large_keg")
                     .isSuffocating((state, level, pos) -> false)
                     .isViewBlocking((state, level, pos) -> false));

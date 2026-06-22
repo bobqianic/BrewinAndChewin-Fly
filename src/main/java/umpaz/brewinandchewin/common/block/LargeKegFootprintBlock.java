@@ -18,6 +18,7 @@ import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelAccessor;
 import net.minecraft.world.level.LevelReader;
+import net.minecraft.world.level.block.BaseEntityBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RenderShape;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -34,12 +35,13 @@ import org.jetbrains.annotations.Nullable;
 import umpaz.brewinandchewin.BrewinAndChewin;
 import umpaz.brewinandchewin.common.block.entity.KegBlockEntity;
 import umpaz.brewinandchewin.common.container.AbstractedItemHandler;
+import umpaz.brewinandchewin.common.registry.BnCBlockEntityTypes;
 import umpaz.brewinandchewin.common.registry.BnCBlocks;
 import umpaz.brewinandchewin.common.registry.BnCItems;
 
 import java.util.List;
 
-public class LargeKegFootprintBlock extends Block implements WorldlyContainerHolder {
+public class LargeKegFootprintBlock extends BaseEntityBlock implements WorldlyContainerHolder {
     public static final MapCodec<LargeKegFootprintBlock> CODEC = simpleCodec(LargeKegFootprintBlock::new);
     public static final IntegerProperty OFFSET_X = IntegerProperty.create("offset_x", 0, 2);
     public static final IntegerProperty OFFSET_Y = IntegerProperty.create("offset_y", 0, 1);
@@ -57,7 +59,7 @@ public class LargeKegFootprintBlock extends Block implements WorldlyContainerHol
     }
 
     @Override
-    protected MapCodec<LargeKegFootprintBlock> codec() {
+    protected MapCodec<? extends BaseEntityBlock> codec() {
         return CODEC;
     }
 
@@ -170,6 +172,17 @@ public class LargeKegFootprintBlock extends Block implements WorldlyContainerHol
     @Override
     protected boolean isPathfindable(BlockState state, PathComputationType pathComputationType) {
         return false;
+    }
+
+    @Nullable
+    @Override
+    public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
+        return BnCBlockEntityTypes.LARGE_KEG_FOOTPRINT.create(pos, state);
+    }
+
+    @Override
+    protected boolean shouldChangedStateKeepBlockEntity(BlockState state) {
+        return state.is(this);
     }
 
     @Override

@@ -322,6 +322,13 @@ publishMods {
             projectId = modrinth_project_id
             accessToken = providers.environmentVariable('MODRINTH_TOKEN')
             minecraftVersions.add minecraft_version
+            requires 'fabric-api'
+            requires 'farmers-delight-refabricated'
+            requires 'greenhouse-config'
+            optional 'create-fly'
+            optional 'jei'
+            optional 'appleskin'
+            optional 'styled-chat'
         }
     }
 }
