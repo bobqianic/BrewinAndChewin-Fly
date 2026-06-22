@@ -1,5 +1,3 @@
-import org.gradle.authentication.http.BasicAuthentication
-
 plugins {
     id 'fabric-loom' version "${loom_version}"
     id 'java-library'
@@ -17,37 +15,9 @@ base {
 repositories {
     mavenCentral()
 
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = 'Sponge'
-                url = 'https://repo.spongepowered.org/repository/maven-public'
-            }
-        }
-        filter {
-            includeGroupAndSubgroups 'org.spongepowered'
-        }
-    }
-
-    exclusiveContent {
-        forRepository {
-            maven {
-                name = 'ParchmentMC'
-                url = 'https://maven.parchmentmc.org/'
-            }
-        }
-        filter {
-            includeGroup 'org.parchmentmc.data'
-        }
-    }
-
     maven {
         name = 'Fabric'
         url = 'https://maven.fabricmc.net/'
-    }
-    maven {
-        name = 'Ryanliptak'
-        url = 'https://maven.ryanliptak.com/'
     }
     maven {
         name = "Jared's maven"
@@ -62,31 +32,11 @@ repositories {
         url = 'https://maven.greenhouse.lgbt/releases/'
     }
     maven {
-        name = 'Greenhouse Snapshots'
-        url = 'https://maven.greenhouse.lgbt/snapshots/'
-    }
-    maven {
-        name = 'DevOS'
-        url = 'https://mvn.devos.one/snapshots/'
-    }
-    maven {
         name = 'Shedaniel'
         url = 'https://maven.shedaniel.me/'
     }
     maven {
-        url = 'https://maven.createmod.net'
-    }
-    maven {
-        url = 'https://raw.githubusercontent.com/Fuzss/modresources/main/maven/'
-    }
-    maven {
         url = 'https://maven.nucleoid.xyz'
-    }
-    maven {
-        url = 'https://jitpack.io/'
-        content {
-            excludeGroup 'io.github.fabricators_of_create'
-        }
     }
 
     exclusiveContent {
@@ -179,8 +129,8 @@ dependencies {
 
     modCompileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
     modLocalRuntime "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
-    modCompileOnly "squeek.appleskin:appleskin-fabric:${appleskin_version}"
-    modLocalRuntime "squeek.appleskin:appleskin-fabric:${appleskin_version}"
+    modCompileOnly "maven.modrinth:appleskin:${appleskin_version}"
+    modLocalRuntime "maven.modrinth:appleskin:${appleskin_version}"
     modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
         exclude group: 'net.fabricmc.fabric-api'
     }
@@ -281,19 +231,6 @@ publishing {
         create('mavenJava', MavenPublication) {
             artifactId = archives_base_name
             from components.java
-        }
-    }
-    repositories {
-        maven {
-            name = 'Greenhouse'
-            url = uri('https://maven.greenhouse.lgbt/releases')
-            credentials {
-                username = System.getenv('MAVEN_USERNAME')
-                password = System.getenv('MAVEN_PASSWORD')
-            }
-            authentication {
-                basic(BasicAuthentication)
-            }
         }
     }
 }

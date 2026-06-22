@@ -37,12 +37,10 @@ This fork keeps the original `brewinandchewin` mod id for world, resource-pack, 
 
 ## Gradle
 
+Use the full Modrinth version string, for example `4.4.3-fly+1.21.10-fabric`.
+
 ```groovy
 repositories {
-    maven {
-        name = "Greenhouse Maven"
-        url = "https://maven.greenhouse.lgbt/releases/"
-    }
     maven {
         name = "Modrinth"
         url = "https://api.modrinth.com/maven"
@@ -50,7 +48,7 @@ repositories {
 }
 
 dependencies {
-    modImplementation "umpaz.brewinandchewin:BrewinAndChewin-Fly:${bnc_fly_version}+${minecraft_version}"
+    modImplementation "maven.modrinth:brewinandchewin-fly:${bnc_fly_version}"
     modCompileOnly "maven.modrinth:create-fly:${create_fly_version}"
     modLocalRuntime "maven.modrinth:create-fly:${create_fly_version}"
 }
