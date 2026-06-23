@@ -1,93 +1,349 @@
 package umpaz.brewinandchewin.common;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.DataResult;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import house.greenhouse.greenhouseconfig.api.GreenhouseConfigHolder;
-import house.greenhouse.greenhouseconfig.api.util.DefaultFieldUtil;
-import house.greenhouse.greenhouseconfig.impl.codec.OrderCorrectedRecordCodec;
-import house.greenhouse.greenhouseconfig.toml.TomlLang;
-import io.netty.buffer.ByteBuf;
-import net.minecraft.network.codec.ByteBufCodecs;
-import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.util.ExtraCodecs;
 import net.minecraft.util.StringRepresentable;
-import org.jetbrains.annotations.NotNull;
+import umpaz.brewinandchewin.BrewinAndChewin;
 import umpaz.brewinandchewin.common.utility.FluidUnit;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
 public class BnCConfiguration {
+    public static final int CONFIG_VERSION = 2;
+    private static final int CLIENT_CONFIG_VERSION = 2;
+    private static final String COMMON_CONFIG_FILE = "brewinandchewin-common.toml";
+    private static final String CLIENT_CONFIG_FILE = "brewinandchewin-client.toml";
 
-    public static final GreenhouseConfigHolder<Common> COMMON_CONFIG = GreenhouseConfigHolder.common("brewinandchewin-common",
-                    BnCConfiguration.Common.CODEC,
-                    BnCConfiguration.Common.DEFAULT,
-                    TomlLang.INSTANCE)
-            .networkSynchronized(BnCConfiguration.Common.STREAM_CODEC.cast())
-            .build();
+    public static final ConfigHolder<Common> COMMON_CONFIG = ConfigHolder.of(Common.DEFAULT);
+    public static final ConfigHolder<Client> CLIENT_CONFIG = ConfigHolder.of(Client.DEFAULT);
 
-    public static final GreenhouseConfigHolder<BnCConfiguration.Client> CLIENT_CONFIG = GreenhouseConfigHolder.client("brewinandchewin-client",
-                    BnCConfiguration.Client.CODEC,
-                    BnCConfiguration.Client.DEFAULT,
-                    TomlLang.INSTANCE)
-            .build();
+    private static Common localCommonConfig = Common.DEFAULT;
 
-    public static void init() {}
+    public static void init() {
+        Path configDirectory = BrewinAndChewin.getHelper().getConfigDirectory();
+
+        localCommonConfig = loadCommon(configDirectory.resolve(COMMON_CONFIG_FILE));
+        COMMON_CONFIG.set(localCommonConfig);
+        CLIENT_CONFIG.set(loadClient(configDirectory.resolve(CLIENT_CONFIG_FILE)));
+    }
+
+    public static Common getLocalCommonConfig() {
+        return localCommonConfig;
+    }
+
+    public static void applySyncedCommonConfig(Common common) {
+        COMMON_CONFIG.set(common);
+    }
+
+    public static void resetSyncedCommonConfig() {
+        COMMON_CONFIG.set(localCommonConfig);
+    }
+
+    private static Common loadCommon(Path path) {
+        ReadState state = readVersioned(path, CONFIG_VERSION);
+        Common common = new Common(
+                new Common.Root(
+                        readInt(state, "root.levelChatScramble", Common.DEFAULT.root().levelChatScramble(), 1, 10),
+                        readInt(state, "root.levelSignScramble", Common.DEFAULT.root().levelSignScramble(), 1, 10),
+                        readInt(state, "root.levelNameScramble", Common.DEFAULT.root().levelNameScramble(), 1, 10)
+                ),
+                new Common.Keg(
+                        readEnum(state, "keg.kegCapacityUnit", Common.DEFAULT.keg().capacityUnit(), FluidUnit.values()),
+                        readLong(state, "keg.kegCapacity", Common.DEFAULT.keg().capacity(), 1L, Long.MAX_VALUE),
+                        readInt(state, "keg.kegCold", Common.DEFAULT.keg().cold(), 1, Integer.MAX_VALUE),
+                        readInt(state, "keg.kegChilly", Common.DEFAULT.keg().chilly(), 1, Integer.MAX_VALUE),
+                        readInt(state, "keg.kegWarm", Common.DEFAULT.keg().warm(), 1, Integer.MAX_VALUE),
+                        readInt(state, "keg.kegHot", Common.DEFAULT.keg().hot(), 1, Integer.MAX_VALUE),
+                        readBoolean(state, "keg.kegBiomeTemp", Common.DEFAULT.keg().biomeTemp()),
+                        readBoolean(state, "keg.kegDimTemp", Common.DEFAULT.keg().dimTemp())
+                ),
+                new Common.RecipeBook(
+                        readBoolean(state, "recipe_book.enableRecipeBookKeg", Common.DEFAULT.recipeBook().enabled())
+                )
+        );
+
+        if (state.needsSave()) {
+            save(path, writeCommon(common));
+        }
+        return common;
+    }
+
+    private static Client loadClient(Path path) {
+        ReadState state = readVersioned(path, CLIENT_CONFIG_VERSION);
+        Client client = new Client(
+                readBoolean(state, "client.numbedHeartFlickering", Client.DEFAULT.numbedHeartFlickering()),
+                readBoolean(state, "client.intoxicationFoodOverlay", Client.DEFAULT.intoxicationFoodOverlay()),
+                readBoolean(state, "client.scrambleChat", Client.DEFAULT.scrambleChat()),
+                readBoolean(state, "client.scrambleName", Client.DEFAULT.scrambleName()),
+                readBoolean(state, "client.scrambleSign", Client.DEFAULT.scrambleSign()),
+                readBoolean(state, "client.renderFluidInKeg", Client.DEFAULT.renderFluidInKeg())
+        );
+
+        if (state.needsSave()) {
+            save(path, writeClient(client));
+        }
+        return client;
+    }
+
+    private static ReadState readVersioned(Path path, int configVersion) {
+        if (!Files.exists(path)) {
+            return new ReadState(Map.of(), true);
+        }
+
+        Map<String, String> values;
+        try {
+            values = readToml(path);
+        } catch (IOException ex) {
+            BrewinAndChewin.LOG.warn("Failed to read Brewin' And Chewin' config {}, using defaults.", path, ex);
+            return new ReadState(Map.of(), true);
+        }
+
+        Integer version = parseInteger(values.get("version"));
+        if (version == null || version != configVersion) {
+            BrewinAndChewin.LOG.info("Ignoring old or incompatible Brewin' And Chewin' config {} and writing version {} defaults.", path.getFileName(), configVersion);
+            return new ReadState(Map.of(), true);
+        }
+
+        return new ReadState(values, false);
+    }
+
+    private static Map<String, String> readToml(Path path) throws IOException {
+        Map<String, String> values = new HashMap<>();
+        String section = "";
+        for (String line : Files.readAllLines(path, StandardCharsets.UTF_8)) {
+            String trimmed = stripComment(line).trim();
+            if (trimmed.isEmpty()) {
+                continue;
+            }
+            if (trimmed.startsWith("[") && trimmed.endsWith("]")) {
+                section = trimmed.substring(1, trimmed.length() - 1).trim();
+                continue;
+            }
+            int separator = trimmed.indexOf('=');
+            if (separator < 0) {
+                continue;
+            }
+            String key = trimmed.substring(0, separator).trim();
+            String value = trimmed.substring(separator + 1).trim();
+            values.put(section.isEmpty() ? key : section + "." + key, value);
+        }
+        return values;
+    }
+
+    private static String stripComment(String line) {
+        boolean quoted = false;
+        char quote = '\0';
+        for (int i = 0; i < line.length(); i++) {
+            char c = line.charAt(i);
+            if ((c == '"' || c == '\'') && (i == 0 || line.charAt(i - 1) != '\\')) {
+                if (!quoted) {
+                    quoted = true;
+                    quote = c;
+                } else if (quote == c) {
+                    quoted = false;
+                }
+            } else if (c == '#' && !quoted) {
+                return line.substring(0, i);
+            }
+        }
+        return line;
+    }
+
+    private static int readInt(ReadState state, String key, int fallback, int min, int max) {
+        Integer value = parseInteger(state.values().get(key));
+        if (value == null || value < min || value > max) {
+            state.markNeedsSave();
+            return fallback;
+        }
+        return value;
+    }
+
+    private static long readLong(ReadState state, String key, long fallback, long min, long max) {
+        Long value = parseLong(state.values().get(key));
+        if (value == null || value < min || value > max) {
+            state.markNeedsSave();
+            return fallback;
+        }
+        return value;
+    }
+
+    private static boolean readBoolean(ReadState state, String key, boolean fallback) {
+        String raw = state.values().get(key);
+        if (raw == null) {
+            state.markNeedsSave();
+            return fallback;
+        }
+        String normalized = unquote(raw).toLowerCase(Locale.ROOT);
+        if ("true".equals(normalized)) {
+            return true;
+        }
+        if ("false".equals(normalized)) {
+            return false;
+        }
+        state.markNeedsSave();
+        return fallback;
+    }
+
+    private static <T extends Enum<T> & StringRepresentable> T readEnum(ReadState state, String key, T fallback, T[] values) {
+        String raw = state.values().get(key);
+        if (raw == null) {
+            state.markNeedsSave();
+            return fallback;
+        }
+
+        String normalized = unquote(raw);
+        for (T value : values) {
+            if (value.getSerializedName().equalsIgnoreCase(normalized) || value.name().equalsIgnoreCase(normalized)) {
+                return value;
+            }
+        }
+
+        state.markNeedsSave();
+        return fallback;
+    }
+
+    private static Integer parseInteger(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        try {
+            return Integer.parseInt(unquote(raw));
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+    }
+
+    private static Long parseLong(String raw) {
+        if (raw == null) {
+            return null;
+        }
+        try {
+            return Long.parseLong(unquote(raw));
+        } catch (NumberFormatException ex) {
+            return null;
+        }
+    }
+
+    private static String unquote(String raw) {
+        String trimmed = raw.trim();
+        if (trimmed.length() >= 2 && ((trimmed.startsWith("\"") && trimmed.endsWith("\"")) || (trimmed.startsWith("'") && trimmed.endsWith("'")))) {
+            return trimmed.substring(1, trimmed.length() - 1);
+        }
+        return trimmed;
+    }
+
+    private static void save(Path path, String content) {
+        try {
+            Files.createDirectories(path.getParent());
+            Files.writeString(path, content, StandardCharsets.UTF_8);
+        } catch (IOException ex) {
+            BrewinAndChewin.LOG.warn("Failed to write Brewin' And Chewin' config {}.", path, ex);
+        }
+    }
+
+    private static String writeCommon(Common common) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("# Brewin' And Chewin' common config\n");
+        builder.append("# Changing version makes the mod ignore this file and write defaults.\n");
+        builder.append("version = ").append(CONFIG_VERSION).append("\n\n");
+        builder.append("[root]\n");
+        builder.append("levelChatScramble = ").append(common.root().levelChatScramble()).append("\n");
+        builder.append("levelSignScramble = ").append(common.root().levelSignScramble()).append("\n");
+        builder.append("levelNameScramble = ").append(common.root().levelNameScramble()).append("\n\n");
+        builder.append("[keg]\n");
+        builder.append("# Valid units: \"liters\", \"millibuckets\", \"droplets\". Capacity is converted to droplets internally.\n");
+        builder.append("# 1 liter = 1 millibucket = 81 droplets.\n");
+        builder.append("kegCapacityUnit = ").append(quote(common.keg().capacityUnit().getSerializedName())).append("\n");
+        builder.append("kegCapacity = ").append(common.keg().capacity()).append("\n");
+        builder.append("kegCold = ").append(common.keg().cold()).append("\n");
+        builder.append("kegChilly = ").append(common.keg().chilly()).append("\n");
+        builder.append("kegWarm = ").append(common.keg().warm()).append("\n");
+        builder.append("kegHot = ").append(common.keg().hot()).append("\n");
+        builder.append("kegBiomeTemp = ").append(common.keg().biomeTemp()).append("\n");
+        builder.append("kegDimTemp = ").append(common.keg().dimTemp()).append("\n\n");
+        builder.append("[recipe_book]\n");
+        builder.append("enableRecipeBookKeg = ").append(common.recipeBook().enabled()).append("\n");
+        return builder.toString();
+    }
+
+    private static String writeClient(Client client) {
+        StringBuilder builder = new StringBuilder();
+        builder.append("# Brewin' And Chewin' client config\n");
+        builder.append("# Changing version makes the mod ignore this file and write defaults.\n");
+        builder.append("version = ").append(CLIENT_CONFIG_VERSION).append("\n\n");
+        builder.append("[client]\n");
+        builder.append("numbedHeartFlickering = ").append(client.numbedHeartFlickering()).append("\n");
+        builder.append("intoxicationFoodOverlay = ").append(client.intoxicationFoodOverlay()).append("\n");
+        builder.append("scrambleChat = ").append(client.scrambleChat()).append("\n");
+        builder.append("scrambleName = ").append(client.scrambleName()).append("\n");
+        builder.append("scrambleSign = ").append(client.scrambleSign()).append("\n");
+        builder.append("renderFluidInKeg = ").append(client.renderFluidInKeg()).append("\n");
+        return builder.toString();
+    }
+
+    private static String quote(String value) {
+        return "\"" + value.replace("\\", "\\\\").replace("\"", "\\\"") + "\"";
+    }
+
+    public static final class ConfigHolder<T> {
+        private volatile T value;
+
+        private ConfigHolder(T value) {
+            this.value = value;
+        }
+
+        public static <T> ConfigHolder<T> of(T value) {
+            return new ConfigHolder<>(value);
+        }
+
+        public T get() {
+            return value;
+        }
+
+        private void set(T value) {
+            this.value = value;
+        }
+    }
+
+    private static final class ReadState {
+        private final Map<String, String> values;
+        private boolean needsSave;
+
+        private ReadState(Map<String, String> values, boolean needsSave) {
+            this.values = values;
+            this.needsSave = needsSave;
+        }
+
+        private Map<String, String> values() {
+            return values;
+        }
+
+        private boolean needsSave() {
+            return needsSave;
+        }
+
+        private void markNeedsSave() {
+            needsSave = true;
+        }
+    }
 
     public record Common(Root root, Keg keg, RecipeBook recipeBook) {
         public static final Common DEFAULT = new Common(Root.DEFAULT, Keg.DEFAULT, RecipeBook.DEFAULT);
-        private static final Codec<Common> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                Root.CODEC.forGetter(Common::root),
-                Keg.CODEC.fieldOf("keg").forGetter(Common::keg),
-                RecipeBook.CODEC.fieldOf("recipe_book").forGetter(Common::recipeBook)
-        ).apply(inst, Common::new));
-        public static final StreamCodec<ByteBuf, Common> STREAM_CODEC = StreamCodec.composite(
-                Root.STREAM_CODEC, Common::root,
-                Keg.STREAM_CODEC, Common::keg,
-                RecipeBook.STREAM_CODEC, Common::recipeBook,
-                Common::new
-        );
 
         public record Root(int levelChatScramble, int levelSignScramble, int levelNameScramble) {
             public static final Root DEFAULT = new Root(3, 3, 3);
-
-            public static final MapCodec<Root> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                    DefaultFieldUtil.codecWithComments(
-                            Codec.intRange(1, 10),
-                            "levelChatScramble",
-                            DEFAULT.levelChatScramble(),
-                            "At what amplifier of Tipsy should the chat scramble?",
-                            "Default: " + DEFAULT.levelChatScramble()
-                    ).forGetter(Root::levelChatScramble),
-                    DefaultFieldUtil.codecWithComments(
-                            Codec.intRange(1, 10),
-                            "levelSignScramble",
-                            DEFAULT.levelSignScramble(),
-                            "At what amplifier of Tipsy should signs scramble?",
-                            "Default: " + DEFAULT.levelSignScramble()
-                    ).forGetter(Root::levelSignScramble),
-                    DefaultFieldUtil.codecWithComments(
-                            Codec.intRange(1, 10),
-                            "levelNameScramble",
-                            DEFAULT.levelNameScramble(),
-                            "At what amplifier of Tipsy should nametags scramble?",
-                            "Default: " + DEFAULT.levelNameScramble()
-                    ).forGetter(Root::levelNameScramble)
-            ).apply(inst, Root::new));
-
-            public static final StreamCodec<ByteBuf, Root> STREAM_CODEC = StreamCodec.composite(
-                    ByteBufCodecs.INT, Root::levelChatScramble,
-                    ByteBufCodecs.INT, Root::levelSignScramble,
-                    ByteBufCodecs.INT, Root::levelNameScramble,
-                    Root::new
-            );
         }
 
         public record Keg(FluidUnit capacityUnit, long capacity,
                           int cold, int chilly, int warm, int hot,
                           boolean biomeTemp, boolean dimTemp) {
             public static final Keg DEFAULT = new Keg(
-                    FluidUnit.DROPLET,
-                    81000L,
+                    FluidUnit.MILLIBUCKET,
+                    1000L,
                     2, 1, 1, 2,
                     true, true
             );
@@ -98,200 +354,20 @@ public class BnCConfiguration {
             public long localizedCapacity() {
                 return capacityUnit.convertToLoader(capacity);
             }
-
-            public static final Codec<Keg> CODEC = OrderCorrectedRecordCodec.wrap(RecordCodecBuilder.create(inst -> inst.group(
-                    DefaultFieldUtil.codecWithComments(
-                            FluidUnit.CODEC,
-                            "kegCapacityUnit",
-                            DEFAULT.capacityUnit(),
-                            "Which unit the capacity field should use.",
-                            "Should be 'liters', 'millibuckets' or 'droplets'",
-                            "1 L = 1 mB = 81 d",
-                            "Default: " + DEFAULT.capacityUnit().getSerializedName()
-                    ).forGetter(Keg::capacityUnit),
-                    DefaultFieldUtil.codecWithComments(
-                            Codec.LONG.validate(l -> {
-                                if (l < 0)
-                                    return DataResult.error(() -> "Keg capacity cannot be below 0.");
-                                return DataResult.success(l);
-                            }),
-                            "kegCapacity",
-                            DEFAULT.capacity(),
-                            "How much fluid (unit specified by capacityUnit) can the Keg hold?",
-                            "Range: 1 ~ "  + FluidUnit.convert(10000L, FluidUnit.MILLIBUCKET, DEFAULT.capacityUnit()),
-                            "Default: " + DEFAULT.capacity() + "(" + DEFAULT.capacityUnit().getSerializedName() + ")"
-                    ).forGetter(Keg::capacity),
-                    DefaultFieldUtil.codecWithComments(
-                            ExtraCodecs.POSITIVE_INT,
-                            "kegCold",
-                            DEFAULT.cold(),
-                            "How many cold blocks are required for a cold temperature in the Keg?",
-                            "Default: " + DEFAULT.cold()
-                    ).forGetter(Keg::cold),
-                    DefaultFieldUtil.codecWithComments(
-                            ExtraCodecs.POSITIVE_INT,
-                            "kegChilly",
-                            DEFAULT.chilly(),
-                            "How many cold blocks are required for a chilly temperature in the Keg?",
-                            "Default: " + DEFAULT.chilly()
-                    ).forGetter(Keg::chilly),
-                    DefaultFieldUtil.codecWithComments(
-                            ExtraCodecs.POSITIVE_INT,
-                            "kegWarm",
-                            DEFAULT.warm(),
-                            "How many hot blocks are required for a warm temperature in the Keg?",
-                            "Default: " + DEFAULT.warm()
-                    ).forGetter(Keg::warm),
-                    DefaultFieldUtil.codecWithComments(
-                            ExtraCodecs.POSITIVE_INT,
-                            "kegHot",
-                            DEFAULT.hot(),
-                            "How many hot blocks are required for a hot temperature in the Keg?",
-                            "Default: " + DEFAULT.hot()
-                    ).forGetter(Keg::hot),
-                    DefaultFieldUtil.codecWithComments(
-                            Codec.BOOL,
-                            "kegBiomeTemp",
-                            DEFAULT.biomeTemp(),
-                            "Should the biome temperature influence the temperature in the Keg?",
-                            "Default: " + DEFAULT.biomeTemp()
-                    ).forGetter(Keg::biomeTemp),
-                    DefaultFieldUtil.codecWithComments(
-                            Codec.BOOL,
-                            "kegDimTemp",
-                            DEFAULT.dimTemp(),
-                            "Should the dimension temperature influence the temperature in the Keg?",
-                            "Default: " + DEFAULT.dimTemp()
-                    ).forGetter(Keg::dimTemp)
-            ).apply(inst, Keg::new)));
-            public static final StreamCodec<ByteBuf, Keg> STREAM_CODEC = StreamCodec.of(Keg::encode, Keg::new);
-
-            public Keg(ByteBuf buf) {
-                this(
-                        FluidUnit.STREAM_CODEC.decode(buf), buf.readLong(),
-                        buf.readInt(), buf.readInt(), buf.readInt(), buf.readInt(),
-                        buf.readBoolean(), buf.readBoolean()
-                );
-            }
-
-            public static void encode(ByteBuf buf, Keg keg) {
-                FluidUnit.STREAM_CODEC.encode(buf, keg.capacityUnit());
-                buf.writeLong(keg.capacity);
-                buf.writeInt(keg.cold);
-                buf.writeInt(keg.chilly);
-                buf.writeInt(keg.warm);
-                buf.writeInt(keg.hot);
-                buf.writeBoolean(keg.biomeTemp);
-                buf.writeBoolean(keg.dimTemp);
-            }
         }
 
         public record RecipeBook(boolean enabled) {
             public static final RecipeBook DEFAULT = new RecipeBook(true);
-            public static final Codec<RecipeBook> CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                    DefaultFieldUtil.codecWithComments(
-                            Codec.BOOL,
-                            "enableRecipeBookKeg",
-                            DEFAULT.enabled(),
-                            "Should the Keg have a Recipe Book available on its interface?",
-                            "Default: " + DEFAULT.enabled()
-                    ).forGetter(RecipeBook::enabled)
-            ).apply(inst, RecipeBook::new));
-            public static final StreamCodec<ByteBuf, RecipeBook> STREAM_CODEC = ByteBufCodecs.BOOL.map(RecipeBook::new, RecipeBook::enabled);
         }
     }
 
-
-    public record Client(FluidUnit displayUnit, DisplaySettings oppositeFluidDisplay,
-                         boolean numbedHeartFlickering, boolean intoxicationFoodOverlay,
+    public record Client(boolean numbedHeartFlickering, boolean intoxicationFoodOverlay,
                          boolean scrambleChat, boolean scrambleName, boolean scrambleSign,
                          boolean renderFluidInKeg) {
         public static final Client DEFAULT = new Client(
-                FluidUnit.LITER,
-                DisplaySettings.ADVANCED_TOOLTIPS,
                 true, true,
                 true, true, true,
                 true
         );
-        private static final Codec<Client> CODEC = OrderCorrectedRecordCodec.wrap(RecordCodecBuilder.create(inst -> inst.group(
-                 DefaultFieldUtil.codecWithComments(
-                         FluidUnit.CODEC,
-                         "fluidDisplayUnit",
-                         DEFAULT.displayUnit(),
-                         "Which unit the fluid display in the keg should use.",
-                         "Should be 'liters', 'millibuckets' or 'droplets'",
-                         "1 L = 1 mB = 81 d",
-                         "Default: " + DEFAULT.displayUnit().getSerializedName()
-                 ).forGetter(Client::displayUnit),
-                DefaultFieldUtil.codecWithComments(
-                        DisplaySettings.CODEC,
-                        "oppositeFluidDisplay",
-                        DEFAULT.oppositeFluidDisplay(),
-                        "When the opposite fluid display unit should be shown.",
-                        "Should be one of 'never', 'advanced_tooltips' or 'always'",
-                        "Default: " + DEFAULT.oppositeFluidDisplay().getSerializedName()
-                ).forGetter(Client::oppositeFluidDisplay),
-                DefaultFieldUtil.codecWithComments(
-                        Codec.BOOL,
-                        "numbedHeartFlickering",
-                        DEFAULT.numbedHeartFlickering(),
-                        "Should the numbed hearts obtained from being damaged when Tipsy flicker when you are about to take damage?",
-                        "Default: " + DEFAULT.numbedHeartFlickering()
-                ).forGetter(Client::numbedHeartFlickering),
-                DefaultFieldUtil.codecWithComments(
-                        Codec.BOOL,
-                        "intoxicationFoodOverlay",
-                        DEFAULT.intoxicationFoodOverlay(),
-                        "Should the food bar have a yellow overlay when the player has the Intoxication effect?",
-                        "Default: " + DEFAULT.intoxicationFoodOverlay()
-                ).forGetter(Client::intoxicationFoodOverlay),
-                DefaultFieldUtil.codecWithComments(
-                        Codec.BOOL,
-                        "scrambleChat",
-                        DEFAULT.scrambleChat(),
-                        "Should the chat scramble when the player has the Tipsy effect?",
-                        "Default: " + DEFAULT.scrambleChat()
-                ).forGetter(Client::scrambleChat),
-                DefaultFieldUtil.codecWithComments(
-                        Codec.BOOL,
-                        "scrambleName",
-                        DEFAULT.scrambleName(),
-                        "Should other player's nametags scramble when the player has the Tipsy effect?",
-                        "Default: " + DEFAULT.scrambleName()
-                ).forGetter(Client::scrambleName),
-                DefaultFieldUtil.codecWithComments(
-                        Codec.BOOL,
-                        "scrambleSign",
-                        DEFAULT.scrambleSign(),
-                        "Should signs scramble when the player has the Tipsy effect?",
-                        "Default: " + DEFAULT.scrambleSign()
-                ).forGetter(Client::scrambleSign),
-                DefaultFieldUtil.codecWithComments(
-                        Codec.BOOL,
-                        "renderFluidInKeg",
-                        DEFAULT.renderFluidInKeg(),
-                        "Should kegs render the fluid texture in the background of the fluid slot?",
-                        "Default: " + DEFAULT.renderFluidInKeg()
-                ).forGetter(Client::scrambleSign)
-        ).apply(inst, Client::new)));
-
-        public enum DisplaySettings implements StringRepresentable {
-            NEVER("never"),
-            ADVANCED_TOOLTIPS("advanced_tooltips"),
-            ALWAYS("always");
-
-            public static final Codec<DisplaySettings> CODEC = StringRepresentable.fromEnum(DisplaySettings::values);
-
-            final String name;
-
-            DisplaySettings(String name) {
-                this.name = name;
-            }
-
-            @Override
-            public @NotNull String getSerializedName() {
-                return name;
-            }
-        }
     }
 }

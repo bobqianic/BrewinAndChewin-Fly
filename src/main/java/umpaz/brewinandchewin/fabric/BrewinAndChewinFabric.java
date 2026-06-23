@@ -28,6 +28,7 @@ import umpaz.brewinandchewin.common.block.LargeKegFootprintBlock;
 import umpaz.brewinandchewin.common.block.entity.KegBlockEntity;
 import umpaz.brewinandchewin.BrewinAndChewin;
 import umpaz.brewinandchewin.client.recipebook.BnCRecipeBookCategories;
+import umpaz.brewinandchewin.common.BnCConfiguration;
 import umpaz.brewinandchewin.common.attachment.RagingAttachment;
 import umpaz.brewinandchewin.common.attachment.TipsyHeartsAttachment;
 import umpaz.brewinandchewin.common.network.clientbound.*;
@@ -65,6 +66,7 @@ public class BrewinAndChewinFabric implements ModInitializer {
         BrewinAndChewin.init(new BnCPlatformHelperFabric());
         registerContents();
         registerNetwork();
+        registerConfigSync();
         registerCompostables();
         registerFlammables();
         registerFluidAttributeHandlers();
@@ -187,6 +189,7 @@ public class BrewinAndChewinFabric implements ModInitializer {
         PayloadTypeRegistry.playS2C().register(ClearKegFluidContainerComponentsClientboundPacket.TYPE, ClearKegFluidContainerComponentsClientboundPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(MakeNextPlayerChatTipsyClientboundPacket.TYPE, MakeNextPlayerChatTipsyClientboundPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(SendRecipeBookValuesClientboundPacket.TYPE, SendRecipeBookValuesClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(SyncConfigClientboundPacket.TYPE, SyncConfigClientboundPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(SyncNumbedHeartsClientboundPacket.TYPE, SyncNumbedHeartsClientboundPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(SyncRagingStacksClientboundPacket.TYPE, SyncRagingStacksClientboundPacket.STREAM_CODEC);
 
@@ -197,6 +200,14 @@ public class BrewinAndChewinFabric implements ModInitializer {
         ServerPlayNetworking.registerGlobalReceiver(JEITransferKegRecipeServerboundPacket.TYPE, (payload, context) -> payload.handle(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(EMIFillFermentingRecipeServerboundPacket.TYPE, (payload, context) -> payload.handle(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(EMIFillPouringRecipeServerboundPacket.TYPE, (payload, context) -> payload.handle(context.player()));
+    }
+
+    private static void registerConfigSync() {
+        ServerPlayConnectionEvents.JOIN.register((handler, sender, server) -> {
+            if (ServerPlayNetworking.canSend(handler, SyncConfigClientboundPacket.TYPE)) {
+                sender.sendPacket(new SyncConfigClientboundPacket(BnCConfiguration.getLocalCommonConfig()));
+            }
+        });
     }
 
     private static void registerCompostables() {

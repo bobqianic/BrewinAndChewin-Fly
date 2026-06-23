@@ -129,8 +129,10 @@ public class KegFermentingRecipe implements Recipe<KegRecipeWrapper> {
     public ItemStack getResultItem(HolderLookup.Provider registryAccess) {
         if (result.right().isPresent())
             return result.right().get().copy();
-        if (result.left().isPresent())
-            return BnCRecipeUtils.getPouredItemFromFluid(new AbstractedFluidStack(result.left().get().fluid(), BnCConfiguration.COMMON_CONFIG.get().keg().localizedCapacity(), result.left().get().components(), BnCConfiguration.COMMON_CONFIG.get().keg().capacityUnit(), null));
+        if (result.left().isPresent()) {
+            BnCConfiguration.Common.Keg kegConfig = BnCConfiguration.COMMON_CONFIG.get().keg();
+            return BnCRecipeUtils.getPouredItemFromFluid(new AbstractedFluidStack(result.left().get().fluid(), kegConfig.capacity(), result.left().get().components(), kegConfig.capacityUnit(), null));
+        }
         return ItemStack.EMPTY;
     }
 

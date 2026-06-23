@@ -26,7 +26,6 @@ This fork keeps the original `brewinandchewin` mod id for world, resource-pack, 
 - [Fabric Loader](https://fabricmc.net/)
 - [Fabric API](https://modrinth.com/mod/fabric-api)
 - [Farmer's Delight Refabricated](https://modrinth.com/mod/farmers-delight-refabricated)
-- Greenhouse Config
 
 ## Optional Compatibility
 
@@ -37,7 +36,7 @@ This fork keeps the original `brewinandchewin` mod id for world, resource-pack, 
 
 ## Gradle
 
-Use the full Modrinth version string, for example `4.4.3-fly+1.21.10-fabric`.
+Use the full Modrinth version string, for example `4.4.5-fly+1.21.10-fabric`.
 
 ```groovy
 repositories {

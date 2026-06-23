@@ -1,3 +1,7 @@
+# 4.4.5-fly
+
+- Removed the Greenhouse dependency, saving about 400 KiB.
+
 # 4.4.3-fly
 
 - Fixed large keg fluid connectivity so Create pipes can connect correctly.

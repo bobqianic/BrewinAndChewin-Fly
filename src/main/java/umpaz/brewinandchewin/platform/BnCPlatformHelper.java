@@ -39,6 +39,7 @@ import umpaz.brewinandchewin.common.utility.AbstractedFluidIngredient;
 import umpaz.brewinandchewin.common.utility.AbstractedFluidStack;
 import umpaz.brewinandchewin.common.utility.KegRecipeWrapper;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -53,6 +54,8 @@ public interface BnCPlatformHelper {
     }
 
     boolean isDevelopmentEnvironment();
+
+    Path getConfigDirectory();
 
     void sendClientbound(ServerPlayer player, CustomPacketPayload payload);
     void sendClientboundTracking(Entity tracked, CustomPacketPayload payload);

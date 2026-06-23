@@ -28,10 +28,6 @@ repositories {
         url = 'https://maven.terraformersmc.com/'
     }
     maven {
-        name = 'Greenhouse'
-        url = 'https://maven.greenhouse.lgbt/releases/'
-    }
-    maven {
         name = 'Shedaniel'
         url = 'https://maven.shedaniel.me/'
     }
@@ -118,11 +114,6 @@ dependencies {
     compileOnly "net.fabricmc:sponge-mixin:${fabric_mixin_version}"
     implementation 'org.jetbrains:annotations:24.1.0'
 
-    modApi "house.greenhouse:greenhouseconfig:${greenhouse_config_version}-fabric"
-    include "house.greenhouse:greenhouseconfig:${greenhouse_config_version}-fabric"
-    api "house.greenhouse:greenhouseconfig_toml:${greenhouse_config_toml_version}"
-    include "house.greenhouse:greenhouseconfig_toml:${greenhouse_config_toml_version}"
-
     modImplementation("maven.modrinth:farmers-delight-refabricated:${farmers_delight_refabricated_version}") {
         exclude group: 'net.fabricmc'
     }
@@ -179,11 +170,8 @@ def resourceProperties = [
         mod_license                         : mod_license,
         mod_description                     : mod_description,
         java_version                        : java_version,
-        curseforge_page                     : curseforge_page,
         modrinth_page                       : modrinth_page,
-        sources                             : github_repo,
-        create_fly_fabric_range            : create_fly_fabric_range,
-        fabric_greenhouse_config_range      : greenhouse_config_fabric_range,
+        create_fly_fabric_range             : create_fly_fabric_range,
         farmers_delight_refabricated_range  : farmers_delight_refabricated_range,
         HotCocoa                            : '$HotCocoa',
         MilkBottle                          : '$MilkBottle',
@@ -243,17 +231,6 @@ publishMods {
     version = "${mod_version}+${minecraft_version}-fabric"
     type = STABLE
 
-    if (curseforge_project_id) {
-        curseforge {
-            projectId = curseforge_project_id
-            accessToken = providers.environmentVariable('CURSEFORGE_TOKEN')
-            minecraftVersions.add minecraft_version
-            javaVersions.add JavaVersion.VERSION_21
-            clientRequired = true
-            serverRequired = true
-        }
-    }
-
     if (modrinth_project_id) {
         modrinth {
             projectId = modrinth_project_id
@@ -261,7 +238,6 @@ publishMods {
             minecraftVersions.add minecraft_version
             requires 'fabric-api'
             requires 'farmers-delight-refabricated'
-            requires 'greenhouse-config'
             optional 'create-fly'
             optional 'jei'
             optional 'appleskin'

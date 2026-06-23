@@ -69,6 +69,7 @@ import vectorwing.farmersdelight.common.Configuration;
 import vectorwing.farmersdelight.refabricated.inventory.ItemHandler;
 import vectorwing.farmersdelight.refabricated.inventory.ItemHandlerSlot;
 
+import java.nio.file.Path;
 import java.util.List;
 import java.util.function.BiConsumer;
 
@@ -87,6 +88,11 @@ public class BnCPlatformHelperFabric implements BnCPlatformHelper {
     @Override
     public boolean isDevelopmentEnvironment() {
         return FabricLoader.getInstance().isDevelopmentEnvironment();
+    }
+
+    @Override
+    public Path getConfigDirectory() {
+        return FabricLoader.getInstance().getConfigDir();
     }
 
     @Override
