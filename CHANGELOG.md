@@ -1,3 +1,7 @@
+# 4.4.6-fly
+
+- Fixed the food HUD becoming nearly invisible when BnC intoxication overlaps with Farmer's Delight food effects.
+
 # 4.4.5-fly
 
 - Removed the Greenhouse dependency, saving about 400 KiB.

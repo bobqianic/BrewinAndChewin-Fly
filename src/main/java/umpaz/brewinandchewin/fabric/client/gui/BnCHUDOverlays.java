@@ -22,10 +22,18 @@ import java.util.Random;
 public class BnCHUDOverlays {
     public static int foodIconsOffset;
     private static final ResourceLocation NOURISHMENT_ICONS_TEXTURE = ResourceLocation.fromNamespaceAndPath("farmersdelight", "textures/gui/fd_icons.png");
+    private static final int NOURISHMENT_ICONS_TEXTURE_WIDTH = 256;
+    private static final int NOURISHMENT_ICONS_TEXTURE_HEIGHT = 256;
 
     public static final ResourceLocation FOOD_EMPTY_INTOXICATION_TEXTURE = BrewinAndChewin.asResource("hud/food_empty_intoxication");
     public static final ResourceLocation FOOD_HALF_INTOXICATION_TEXTURE = BrewinAndChewin.asResource("hud/food_half_intoxication");
     public static final ResourceLocation FOOD_FULL_INTOXICATION_TEXTURE = BrewinAndChewin.asResource("hud/food_full_intoxication");
+    public static final ResourceLocation FOOD_EMPTY_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_empty");
+    public static final ResourceLocation FOOD_HALF_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_half");
+    public static final ResourceLocation FOOD_FULL_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_full");
+    public static final ResourceLocation FOOD_EMPTY_HUNGER_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_empty_hunger");
+    public static final ResourceLocation FOOD_HALF_HUNGER_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_half_hunger");
+    public static final ResourceLocation FOOD_FULL_HUNGER_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_full_hunger");
 
     private static final ResourceLocation NAUSEA_LOCATION = ResourceLocation.withDefaultNamespace("textures/misc/nausea.png");
 
@@ -118,8 +126,8 @@ public class BnCHUDOverlays {
             int y = top + (int) (Mth.sin((ticks + i * 2) * 0.25F) * 2f);
 
             float effectiveHungerOfBar = (float) player.getFoodData().getFoodLevel() / 2.0F - (float) i;
-
-            ResourceLocation texture = player.hasEffect(ModEffects.NOURISHMENT) ? NOURISHMENT_ICONS_TEXTURE : getIntoxicationSprite(effectiveHungerOfBar >= 0.5F && effectiveHungerOfBar < 1.0F);
+            boolean hasFullFoodIcon = effectiveHungerOfBar >= 1.0F;
+            boolean hasHalfFoodIcon = effectiveHungerOfBar >= 0.5F && effectiveHungerOfBar < 1.0F;
 
             if (player.hasEffect(ModEffects.NOURISHMENT)) {
                 boolean isPlayerHealingWithSaturationAndNourishment =
@@ -128,30 +136,43 @@ public class BnCHUDOverlays {
                                 && player.getFoodData().getFoodLevel() >= 18;
                 int naturalHealingOffset = isPlayerHealingWithSaturationAndNourishment ? 18 : 0;
 
-                graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 0, 0, 9, 9, 27, 18);
+                graphics.blit(RenderPipelines.GUI_TEXTURED, NOURISHMENT_ICONS_TEXTURE, x, y, 0, 0, 9, 9, NOURISHMENT_ICONS_TEXTURE_WIDTH, NOURISHMENT_ICONS_TEXTURE_HEIGHT);
 
-                if (effectiveHungerOfBar >= 1.0F) {
-                    graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 18 + naturalHealingOffset, 0, 9, 9, 27, 18);
-                } else if (effectiveHungerOfBar >= 0.5F) {
-                    graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, 9 + naturalHealingOffset, 0, 9, 9, 27, 18);
+                if (hasFullFoodIcon) {
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, NOURISHMENT_ICONS_TEXTURE, x, y, 18 + naturalHealingOffset, 0, 9, 9, NOURISHMENT_ICONS_TEXTURE_WIDTH, NOURISHMENT_ICONS_TEXTURE_HEIGHT);
+                } else if (hasHalfFoodIcon) {
+                    graphics.blit(RenderPipelines.GUI_TEXTURED, NOURISHMENT_ICONS_TEXTURE, x, y, 9 + naturalHealingOffset, 0, 9, 9, NOURISHMENT_ICONS_TEXTURE_WIDTH, NOURISHMENT_ICONS_TEXTURE_HEIGHT);
                 }
                 continue;
             }
 
+            graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getFoodEmptySprite(player), x, y, 9, 9);
+            if (hasFullFoodIcon) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getFoodSprite(player, false), x, y, 9, 9);
+            } else if (hasHalfFoodIcon) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, getFoodSprite(player, true), x, y, 9, 9);
+            }
+
             graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_EMPTY_INTOXICATION_TEXTURE, x, y, 9, 9);
 
-            if (effectiveHungerOfBar >= 1.0F) {
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, x, y, 9, 9);
-            } else if (effectiveHungerOfBar >= 0.5F) {
-                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, texture, x, y, 9, 9);
+            if (hasFullFoodIcon) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_FULL_INTOXICATION_TEXTURE, x, y, 9, 9);
+            } else if (hasHalfFoodIcon) {
+                graphics.blitSprite(RenderPipelines.GUI_TEXTURED, FOOD_HALF_INTOXICATION_TEXTURE, x, y, 9, 9);
             }
         }
     }
 
-    private static ResourceLocation getIntoxicationSprite(boolean half) {
-        if (half)
-            return FOOD_HALF_INTOXICATION_TEXTURE;
-        return FOOD_FULL_INTOXICATION_TEXTURE;
+    private static ResourceLocation getFoodEmptySprite(Player player) {
+        if (player.hasEffect(MobEffects.HUNGER))
+            return FOOD_EMPTY_HUNGER_TEXTURE;
+        return FOOD_EMPTY_TEXTURE;
+    }
+
+    private static ResourceLocation getFoodSprite(Player player, boolean half) {
+        if (player.hasEffect(MobEffects.HUNGER))
+            return half ? FOOD_HALF_HUNGER_TEXTURE : FOOD_FULL_HUNGER_TEXTURE;
+        return half ? FOOD_HALF_TEXTURE : FOOD_FULL_TEXTURE;
     }
 
     private static boolean isNaturalRegenerationEnabled(Minecraft minecraft) {

@@ -7,6 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import umpaz.brewinandchewin.common.BnCConfiguration;
 import umpaz.brewinandchewin.common.registry.BnCEffects;
 import umpaz.brewinandchewin.fabric.client.gui.BnCHUDOverlays;
 
@@ -15,7 +16,7 @@ public class GuiMixin {
     @Inject(method = "renderFood", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/player/Player;getFoodData()Lnet/minecraft/world/food/FoodData;"), cancellable = true)
     private void brewinandchewin$dontRenderFoodWhenIntoxicated(GuiGraphics guiGraphics, Player player, int i, int j, CallbackInfo ci) {
         BnCHUDOverlays.foodIconsOffset = i;
-        if (player.hasEffect(BnCEffects.INTOXICATION))
+        if (BnCConfiguration.CLIENT_CONFIG.get().intoxicationFoodOverlay() && player.hasEffect(BnCEffects.INTOXICATION))
             ci.cancel();
     }
 }
