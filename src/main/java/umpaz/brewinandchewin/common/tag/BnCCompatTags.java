@@ -1,7 +1,7 @@
 package umpaz.brewinandchewin.common.tag;
 
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.tags.TagKey;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.material.Fluid;
@@ -14,10 +14,10 @@ public class BnCCompatTags {
     public static final TagKey<Fluid> HONEY_FLUID = compatFluidTag("c", "honey");
 
     private static TagKey<Item> compatItemTag(String namespace, String path) {
-        return TagKey.create(Registries.ITEM, ResourceLocation.fromNamespaceAndPath(namespace, path));
+        return TagKey.create(Registries.ITEM, Identifier.fromNamespaceAndPath(namespace, path));
     }
 
     private static TagKey<Fluid> compatFluidTag(String namespace, String path) {
-        return TagKey.create(Registries.FLUID, ResourceLocation.fromNamespaceAndPath(namespace, path));
+        return TagKey.create(Registries.FLUID, Identifier.fromNamespaceAndPath(namespace, path));
     }
 }

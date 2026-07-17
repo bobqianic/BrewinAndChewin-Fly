@@ -15,11 +15,11 @@ public class DrunkBubbleParticleOptions extends ScalableParticleOptionsBase {
    public static final MapCodec<DrunkBubbleParticleOptions> CODEC = RecordCodecBuilder.mapCodec((p_253370_ ) -> p_253370_.group(
            ExtraCodecs.VECTOR3F.fieldOf("color").forGetter(DrunkBubbleParticleOptions::getColor),
            Codec.FLOAT.fieldOf("scale").forGetter(DrunkBubbleParticleOptions::getScale)
-   ).apply(p_253370_, DrunkBubbleParticleOptions::new));
+   ).apply(p_253370_, (color, scale) -> new DrunkBubbleParticleOptions(new Vector3f(color), scale)));
    public static final StreamCodec<RegistryFriendlyByteBuf, DrunkBubbleParticleOptions> STREAM_CODEC = StreamCodec.composite(
            ByteBufCodecs.VECTOR3F, DrunkBubbleParticleOptions::getColor,
            ByteBufCodecs.FLOAT, DrunkBubbleParticleOptions::getScale,
-           DrunkBubbleParticleOptions::new
+           (color, scale) -> new DrunkBubbleParticleOptions(new Vector3f(color), scale)
    );
    private final Vector3f color;
 

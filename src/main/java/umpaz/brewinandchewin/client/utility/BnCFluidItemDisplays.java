@@ -8,13 +8,13 @@ import com.google.gson.JsonParseException;
 import com.mojang.datafixers.util.Either;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.ResourceLocationException;
+import net.minecraft.IdentifierException;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentMap;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.FileToIdConverter;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
 import net.minecraft.server.packs.resources.SimplePreparableReloadListener;
@@ -56,7 +56,7 @@ public class BnCFluidItemDisplays {
             FileToIdConverter fileToIdConverter = FileToIdConverter.json("brewinandchewin/fluid_item_displays");
             FluidBasedItemStack.CACHE.clear();
             Map<Either<TagKey<Fluid>, Fluid>, FluidBasedItemStack> map = new HashMap<>();
-            for (Map.Entry<ResourceLocation, List<Resource>> entry : fileToIdConverter.listMatchingResourceStacks(resourceManager).entrySet()) {
+            for (Map.Entry<Identifier, List<Resource>> entry : fileToIdConverter.listMatchingResourceStacks(resourceManager).entrySet()) {
                 for (Resource resource : entry.getValue()) {
                     try (Reader reader = resource.openAsReader()) {
                         JsonObject jsonObject = GsonHelper.fromJson(GSON, reader, JsonObject.class);
@@ -64,9 +64,9 @@ public class BnCFluidItemDisplays {
                             Either<TagKey<Fluid>, Fluid> either;
                             boolean isCurrentOptional = e.getValue().isJsonObject() && e.getValue().getAsJsonObject().has("optional") && e.getValue().getAsJsonObject().get("optional").getAsBoolean();
                             if (e.getKey().startsWith("#")) {
-                                either = Either.left(TagKey.create(Registries.FLUID, ResourceLocation.parse(e.getKey().substring(1))));
+                                either = Either.left(TagKey.create(Registries.FLUID, Identifier.parse(e.getKey().substring(1))));
                             } else {
-                                ResourceLocation fluidLocation = ResourceLocation.parse(e.getKey());
+                                Identifier fluidLocation = Identifier.parse(e.getKey());
                                 if (!BuiltInRegistries.FLUID.containsKey(fluidLocation)) {
                                     if (isCurrentOptional)
                                         continue;
@@ -78,12 +78,12 @@ public class BnCFluidItemDisplays {
                             try {
                                 map.put(either, FluidBasedItemStack.createFromJson(e.getValue(), either));
                             } catch (IllegalArgumentException | IllegalStateException |
-                                     JsonParseException | ResourceLocationException ex) {
+                                     JsonParseException | IdentifierException ex) {
                                 if (!isCurrentOptional)
                                     BrewinAndChewin.LOG.error("Couldn't parse fluid item display JSON at location '{}' from pack '{}'. ", entry.getKey(), resource.sourcePackId(), ex);
                             }
                         }
-                    } catch (IllegalArgumentException | IllegalStateException | IOException | JsonParseException | ResourceLocationException ex) {
+                    } catch (IllegalArgumentException | IllegalStateException | IOException | JsonParseException | IdentifierException ex) {
                         BrewinAndChewin.LOG.error("Couldn't parse fluid item display JSON at location '{}' from pack '{}'. ", entry.getKey(), resource.sourcePackId(), ex);
                     }
                 }
@@ -97,7 +97,7 @@ public class BnCFluidItemDisplays {
         }
 
         @Override
-        public ResourceLocation getId() {
+        public Identifier getId() {
             return BrewinAndChewin.asResource("coaster_models");
         }
     }

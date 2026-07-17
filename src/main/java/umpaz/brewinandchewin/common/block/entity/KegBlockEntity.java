@@ -18,7 +18,7 @@ import net.minecraft.nbt.NbtOps;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.ComponentSerialization;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
@@ -26,6 +26,7 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.util.Mth;
 import net.minecraft.world.MenuProvider;
 import net.minecraft.world.Nameable;
+import net.minecraft.world.attribute.EnvironmentAttributes;
 import net.minecraft.world.entity.ExperienceOrb;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
@@ -156,7 +157,7 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
         usedRecipeTracker.clear();
         CompoundTag compoundRecipes = input.read("RecipesUsed", CompoundTag.CODEC).orElse(new CompoundTag());
         for (String key : compoundRecipes.keySet()) {
-            ResourceLocation location = ResourceLocation.tryParse(key);
+            Identifier location = Identifier.tryParse(key);
             if (location != null) {
                 usedRecipeTracker.put(ResourceKey.create(Registries.RECIPE, location), compoundRecipes.getIntOr(key, 0));
             }
@@ -222,7 +223,7 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
         output.storeNullable("CustomName", ComponentSerialization.CODEC, customName);
         output.putInt("BurnTime", burnTime);
         CompoundTag compoundRecipes = new CompoundTag();
-        usedRecipeTracker.forEach((recipeId, craftedAmount) -> compoundRecipes.putInt(recipeId.location().toString(), craftedAmount));
+        usedRecipeTracker.forEach((recipeId, craftedAmount) -> compoundRecipes.putInt(recipeId.identifier().toString(), craftedAmount));
         output.store("RecipesUsed", CompoundTag.CODEC, compoundRecipes);
     }
 
@@ -277,7 +278,7 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
         }
         if (!usedRecipeTracker.isEmpty()) {
             CompoundTag compoundRecipes = new CompoundTag();
-            usedRecipeTracker.forEach((recipeId, craftedAmount) -> compoundRecipes.putInt(recipeId.location().toString(), craftedAmount));
+            usedRecipeTracker.forEach((recipeId, craftedAmount) -> compoundRecipes.putInt(recipeId.identifier().toString(), craftedAmount));
             compound.put("RecipesUsed", compoundRecipes);
         }
         if (!compound.isEmpty()) {
@@ -998,7 +999,7 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
             }
         }
 
-        ResourceLocation fluidId = BuiltInRegistries.FLUID.getKey(fillFluid.fluid());
+        Identifier fluidId = BuiltInRegistries.FLUID.getKey(fillFluid.fluid());
         if (BrewinAndChewin.MODID.equals(fluidId.getNamespace())) {
             Optional<Item> bucketItemById = BuiltInRegistries.ITEM.getOptional(BrewinAndChewin.asResource(fluidId.getPath() + "_bucket"));
             if (bucketItemById.isPresent()) {
@@ -1097,7 +1098,7 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
         if (isDirectlyStorableFluid(fluid.fluid()))
             return true;
 
-        ResourceLocation fluidId = BuiltInRegistries.FLUID.getKey(fluid.fluid());
+        Identifier fluidId = BuiltInRegistries.FLUID.getKey(fluid.fluid());
         return BrewinAndChewin.MODID.equals(fluidId.getNamespace());
     }
 
@@ -1216,7 +1217,8 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
             }
         }
 
-        if (BnCConfiguration.COMMON_CONFIG.get().keg().dimTemp() && level.dimensionType().ultraWarm())
+        if (BnCConfiguration.COMMON_CONFIG.get().keg().dimTemp()
+                && level.environmentAttributes().getDimensionValue(EnvironmentAttributes.WATER_EVAPORATES))
             temp += 2 * TEMPERATURE_SCALE;
 
         if (hasBurningSource()) {

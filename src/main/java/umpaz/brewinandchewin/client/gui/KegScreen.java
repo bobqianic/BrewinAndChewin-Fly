@@ -13,7 +13,7 @@ import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
 import net.minecraft.network.chat.contents.PlainTextContents;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.inventory.ClickType;
@@ -43,7 +43,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public class KegScreen extends AbstractContainerScreen<KegMenu> implements RecipeUpdateListener {
-    public static final ResourceLocation BACKGROUND_TEXTURE = BrewinAndChewin.asResource("textures/gui/keg.png");
+    public static final Identifier BACKGROUND_TEXTURE = BrewinAndChewin.asResource("textures/gui/keg.png");
     private static final BnCRectangle PROGRESS_ARROW = new BnCRectangle(80, 25, 0, 18);
     public static final BnCRectangle COLD_BAR = new BnCRectangle(35, 55, 8, 4);
     public static final BnCRectangle CHILLY_BAR = new BnCRectangle(43, 55, 9, 4);
@@ -143,7 +143,7 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
                     .append((FluidUnit.MILLIBUCKET.shortFormat(" (%s/%s") + ")").formatted(FluidUnit.convert(menu.kegTank.getAbstractedFluid().amount(), FluidUnit.getLoaderUnit(), FluidUnit.MILLIBUCKET), FluidUnit.convert(menu.kegTank.getFluidCapacity(), FluidUnit.getLoaderUnit(), FluidUnit.MILLIBUCKET)));
             List<Component> components = new ArrayList<>(List.of(component, containerComponent));
             if (minecraft.options.advancedItemTooltips) {
-                ResourceLocation fluidId = menu.kegTank.getAbstractedFluid().fluid().builtInRegistryHolder().key().location();
+                Identifier fluidId = menu.kegTank.getAbstractedFluid().fluid().builtInRegistryHolder().key().identifier();
                 components.add(Component.literal(fluidId.toString()).withStyle(ChatFormatting.DARK_GRAY));
                 if (!menu.kegTank.getAbstractedFluid().components().isEmpty()) {
                     components.add(Component.translatable("item.components", menu.kegTank.getAbstractedFluid().components().size()).withStyle(ChatFormatting.DARK_GRAY));

@@ -27,7 +27,7 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.RegistryOps;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -166,7 +166,7 @@ public class BnCPlatformHelperFabric implements BnCPlatformHelper {
     }
 
     @Override
-    public Slot createKegSlot(AbstractedItemHandler inventory, int slot, int x, int y, boolean canInsert, @Nullable Pair<ResourceLocation, ResourceLocation> noItemIcon) {
+    public Slot createKegSlot(AbstractedItemHandler inventory, int slot, int x, int y, boolean canInsert, @Nullable Pair<Identifier, Identifier> noItemIcon) {
         return new ItemHandlerSlot((ItemHandler) inventory, slot, x, y) {
             @Override
             public boolean mayPlace(ItemStack stack) {
@@ -174,7 +174,7 @@ public class BnCPlatformHelperFabric implements BnCPlatformHelper {
             }
 
             @Override
-            public @Nullable ResourceLocation getNoItemIcon() {
+            public @Nullable Identifier getNoItemIcon() {
                 return noItemIcon == null ? null : noItemIcon.getSecond();
             }
         };

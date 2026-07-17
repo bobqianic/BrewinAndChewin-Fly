@@ -26,12 +26,12 @@ public class BnCJEIRecipes {
             if (fermentingRecipe.value().getResult().left().isPresent()) {
                 for (RecipeHolder<KegPouringRecipe> pouringRecipe : pours) {
                     if (pouringRecipe.value().matchesFluid(ItemStack.EMPTY, fermentingRecipe.value().getResult().left().get())) {
-                        kegRecipes.add(new KegFermentingPouringRecipe(fermentingRecipe.id().location(), fermentingRecipe.value(), pouringRecipe.value(), Minecraft.getInstance().level.registryAccess()));
+                        kegRecipes.add(new KegFermentingPouringRecipe(fermentingRecipe.id().identifier(), fermentingRecipe.value(), pouringRecipe.value(), Minecraft.getInstance().level.registryAccess()));
                     }
                 }
             }
             else {
-                kegRecipes.add(new KegFermentingPouringRecipe(fermentingRecipe.id().location(), fermentingRecipe.value(), null, Minecraft.getInstance().level.registryAccess()));
+                kegRecipes.add(new KegFermentingPouringRecipe(fermentingRecipe.id().identifier(), fermentingRecipe.value(), null, Minecraft.getInstance().level.registryAccess()));
             }
         }
 

@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
@@ -22,7 +22,7 @@ import vectorwing.farmersdelight.refabricated.LootModifier;
 @Deprecated
 public class BnCSlicingModifier extends LootModifier
 {
-    public static final ResourceLocation ID = BrewinAndChewin.asResource("slicing");
+    public static final Identifier ID = BrewinAndChewin.asResource("slicing");
     private final Item slice;
 
     protected BnCSlicingModifier(LootItemCondition[] conditionsIn, Item sliceIn) {

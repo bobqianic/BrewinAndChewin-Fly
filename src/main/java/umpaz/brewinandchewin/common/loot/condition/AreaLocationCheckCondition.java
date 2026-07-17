@@ -3,9 +3,9 @@ package umpaz.brewinandchewin.common.loot.condition;
 import com.google.common.collect.ImmutableSet;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.Util;
+import net.minecraft.util.Util;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ProblemReporter;
 import net.minecraft.util.ExtraCodecs;
 import net.minecraft.world.level.storage.loot.LootContext;
@@ -33,7 +33,7 @@ public class AreaLocationCheckCondition implements LootItemCondition {
             ExtraCodecs.POSITIVE_INT.fieldOf("range").forGetter(cond -> cond.range)
     ).apply(inst, AreaLocationCheckCondition::new));
 
-    public static final ResourceLocation ID = BrewinAndChewin.asResource("area_location_check");
+    public static final Identifier ID = BrewinAndChewin.asResource("area_location_check");
     public static final LootItemConditionType TYPE = new LootItemConditionType(CODEC);
 
     protected final List<LootItemCondition> terms;

@@ -10,7 +10,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.Entity;
@@ -78,12 +78,12 @@ public interface BnCPlatformHelper {
         return createKegSlot(inventory, slot, x, y, true, null);
     }
     default Slot createKegContainerSlot(AbstractedItemHandler inventory, int slot, int x, int y) {
-        return createKegSlot(inventory, slot, x, y, true, Pair.of(ResourceLocation.withDefaultNamespace("textures/atlas/blocks.png"), KegMenu.EMPTY_CONTAINER_SLOT_TANKARD));
+        return createKegSlot(inventory, slot, x, y, true, Pair.of(Identifier.withDefaultNamespace("textures/atlas/blocks.png"), KegMenu.EMPTY_CONTAINER_SLOT_TANKARD));
     }
     default Slot createKegResultSlot(AbstractedItemHandler inventory, int slot, int x, int y) {
         return createKegSlot(inventory, slot, x, y, false, null);
     }
-    Slot createKegSlot(AbstractedItemHandler inventory, int slot, int x, int y, boolean canInsert, @Nullable Pair<ResourceLocation, ResourceLocation> noItemIcon);
+    Slot createKegSlot(AbstractedItemHandler inventory, int slot, int x, int y, boolean canInsert, @Nullable Pair<Identifier, Identifier> noItemIcon);
 
     Ingredient createStrictFillPickerIngredient(List<KegStackedContents.PouringEntry> fluidOutputStacks);
 

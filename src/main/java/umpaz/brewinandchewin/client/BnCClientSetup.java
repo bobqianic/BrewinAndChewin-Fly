@@ -12,7 +12,7 @@ import net.minecraft.client.resources.model.*;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.resources.PreparableReloadListener;
 import net.minecraft.server.packs.resources.Resource;
 import net.minecraft.server.packs.resources.ResourceManager;
@@ -69,7 +69,7 @@ public class BnCClientSetup {
                 int count = (int) blockEntity.getItems().stream().filter(i -> !i.isEmpty()).count();
                 for (int i = 0; i < count; i++) {
                     ItemStack stack = blockEntity.getItems().get(i);
-                    ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+                    Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
                     List<CoasterBlockEntityRenderer.ModelEntry> modelEntries = CoasterBlockEntityRenderer.getModelEntries(itemId);
 
                     if (modelEntries != null) {
@@ -93,46 +93,46 @@ public class BnCClientSetup {
         }, BnCBlocks.COASTER);
     }
 
-    public static final Set<ResourceLocation> MODELS = new HashSet<>();
+    public static final Set<Identifier> MODELS = new HashSet<>();
 
-    public static CompletableFuture<List<ResourceLocation>> getModels(ResourceManager manager, Executor executor) {
+    public static CompletableFuture<List<Identifier>> getModels(ResourceManager manager, Executor executor) {
         return CompletableFuture.supplyAsync(() -> {
-            ArrayList<ResourceLocation> models = new ArrayList<>();
+            ArrayList<Identifier> models = new ArrayList<>();
             MODELS.clear();
             CoasterBlockEntityRenderer.resetCache();
 
-            for (Map.Entry<ResourceLocation, Resource> resourceEntry : manager.listResources("brewinandchewin/coaster", fileName -> fileName.getPath().endsWith(".json")).entrySet()) {
+            for (Map.Entry<Identifier, Resource> resourceEntry : manager.listResources("brewinandchewin/coaster", fileName -> fileName.getPath().endsWith(".json")).entrySet()) {
                 models.addAll(CompletableFuture.supplyAsync(() -> {
                     try (Reader reader = resourceEntry.getValue().openAsReader()) {
                         JsonElement json = JsonParser.parseReader(reader);
                         if (json instanceof JsonObject jsonObject) {
-                            ResourceLocation itemId = ResourceLocation.CODEC.decode(JsonOps.INSTANCE, jsonObject.get("item")).getOrThrow().getFirst();
+                            Identifier itemId = Identifier.CODEC.decode(JsonOps.INSTANCE, jsonObject.get("item")).getOrThrow().getFirst();
                             List<CoasterBlockEntityRenderer.ModelEntry> modelEntries = CoasterBlockEntityRenderer.ModelEntry.LIST_CODEC.decode(JsonOps.INSTANCE, jsonObject.get("models")).getOrThrow().getFirst();
                             if (!BuiltInRegistries.ITEM.containsKey(itemId)) {
-                                return List.<ResourceLocation>of();
+                                return List.<Identifier>of();
                             }
                             modelEntries = modelEntries.stream().filter(modelEntry -> hasModel(manager, modelEntry.model())).toList();
                             if (modelEntries.isEmpty()) {
-                                return List.<ResourceLocation>of();
+                                return List.<Identifier>of();
                             }
                             CoasterBlockEntityRenderer.addToModelMap(itemId, modelEntries);
                             return modelEntries.stream().map(CoasterBlockEntityRenderer.ModelEntry::model).toList();
                         }
                     } catch (Exception ex) {
                         BrewinAndChewin.LOG.error("Unexpected error in Brewin' And Chewin' coaster model JSON \"{}\". {}", resourceEntry.getKey(), ex);
-                        return List.<ResourceLocation>of();
+                        return List.<Identifier>of();
                     }
                     BrewinAndChewin.LOG.error("Unexpected error in Brewin' And Chewin' coaster model JSON: {}.", resourceEntry.getKey());
-                    return List.<ResourceLocation>of();
+                    return List.<Identifier>of();
                 }, executor).join());
             }
-            List<ResourceLocation> modelPaths = models.stream().filter(Objects::nonNull).toList();
+            List<Identifier> modelPaths = models.stream().filter(Objects::nonNull).toList();
             MODELS.addAll(modelPaths);
             return modelPaths;
         });
     }
 
-    private static boolean hasModel(ResourceManager manager, ResourceLocation model) {
+    private static boolean hasModel(ResourceManager manager, Identifier model) {
         return manager.getResource(model.withPath(path -> "models/" + path + ".json")).isPresent();
     }
 }

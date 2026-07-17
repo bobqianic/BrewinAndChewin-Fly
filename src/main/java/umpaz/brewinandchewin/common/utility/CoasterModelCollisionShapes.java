@@ -5,7 +5,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.phys.shapes.Shapes;
@@ -23,7 +23,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public final class CoasterModelCollisionShapes {
     private static final double MODEL_Y_OFFSET = 1.0D;
-    private static final Map<ResourceLocation, VoxelShape> SHAPES_BY_ITEM = new ConcurrentHashMap<>();
+    private static final Map<Identifier, VoxelShape> SHAPES_BY_ITEM = new ConcurrentHashMap<>();
 
     private CoasterModelCollisionShapes() {
     }
@@ -32,13 +32,13 @@ public final class CoasterModelCollisionShapes {
         if (stack.isEmpty()) {
             return Shapes.empty();
         }
-        ResourceLocation itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        Identifier itemId = BuiltInRegistries.ITEM.getKey(stack.getItem());
         return SHAPES_BY_ITEM.computeIfAbsent(itemId, CoasterModelCollisionShapes::loadShape);
     }
 
-    private static VoxelShape loadShape(ResourceLocation itemId) {
+    private static VoxelShape loadShape(Identifier itemId) {
         JsonObject displayJson = readCoasterJson(itemId);
-        if (displayJson == null || !displayJson.has("item") || !itemId.equals(ResourceLocation.parse(displayJson.get("item").getAsString()))) {
+        if (displayJson == null || !displayJson.has("item") || !itemId.equals(Identifier.parse(displayJson.get("item").getAsString()))) {
             return Shapes.empty();
         }
 
@@ -52,7 +52,7 @@ public final class CoasterModelCollisionShapes {
         return Block.box(bounds.minX, bounds.minY + MODEL_Y_OFFSET, bounds.minZ, bounds.maxX, bounds.maxY + MODEL_Y_OFFSET, bounds.maxZ);
     }
 
-    private static JsonObject readCoasterJson(ResourceLocation itemId) {
+    private static JsonObject readCoasterJson(Identifier itemId) {
         JsonObject displayJson = readJson("assets/" + itemId.getNamespace() + "/brewinandchewin/coaster/" + itemId.getPath() + ".json");
         if (displayJson != null) {
             return displayJson;
@@ -66,13 +66,13 @@ public final class CoasterModelCollisionShapes {
             return models;
         }
         if (modelsJson.isJsonPrimitive()) {
-            models.add(new ModelPlacement(ResourceLocation.parse(modelsJson.getAsString()), 0.0D, 0.0D, 0.0D));
+            models.add(new ModelPlacement(Identifier.parse(modelsJson.getAsString()), 0.0D, 0.0D, 0.0D));
             return models;
         }
         if (modelsJson.isJsonArray()) {
             for (JsonElement modelJson : modelsJson.getAsJsonArray()) {
                 if (modelJson.isJsonPrimitive()) {
-                    models.add(new ModelPlacement(ResourceLocation.parse(modelJson.getAsString()), 0.0D, 0.0D, 0.0D));
+                    models.add(new ModelPlacement(Identifier.parse(modelJson.getAsString()), 0.0D, 0.0D, 0.0D));
                 } else if (modelJson.isJsonObject() && modelJson.getAsJsonObject().has("model")) {
                     models.add(getModelPlacement(modelJson.getAsJsonObject()));
                 }
@@ -87,14 +87,14 @@ public final class CoasterModelCollisionShapes {
 
     private static ModelPlacement getModelPlacement(JsonObject modelJson) {
         double[] offset = modelJson.has("offset") ? getVector(modelJson.getAsJsonArray("offset")) : new double[]{0.0D, 0.0D, 0.0D};
-        return new ModelPlacement(ResourceLocation.parse(modelJson.get("model").getAsString()), offset[0], offset[1], offset[2]);
+        return new ModelPlacement(Identifier.parse(modelJson.get("model").getAsString()), offset[0], offset[1], offset[2]);
     }
 
-    private static Bounds getModelBounds(ResourceLocation model) {
+    private static Bounds getModelBounds(Identifier model) {
         return getModelBounds(model, new HashSet<>());
     }
 
-    private static Bounds getModelBounds(ResourceLocation model, Set<ResourceLocation> visitedModels) {
+    private static Bounds getModelBounds(Identifier model, Set<Identifier> visitedModels) {
         if (!visitedModels.add(model)) {
             return null;
         }
@@ -104,7 +104,7 @@ public final class CoasterModelCollisionShapes {
             return null;
         }
 
-        Bounds bounds = modelJson.has("parent") ? getModelBounds(ResourceLocation.parse(modelJson.get("parent").getAsString()), visitedModels) : null;
+        Bounds bounds = modelJson.has("parent") ? getModelBounds(Identifier.parse(modelJson.get("parent").getAsString()), visitedModels) : null;
         if (modelJson.has("elements")) {
             for (JsonElement elementJson : modelJson.getAsJsonArray("elements")) {
                 if (!elementJson.isJsonObject()) {
@@ -229,6 +229,6 @@ public final class CoasterModelCollisionShapes {
         }
     }
 
-    private record ModelPlacement(ResourceLocation model, double offsetX, double offsetY, double offsetZ) {
+    private record ModelPlacement(Identifier model, double offsetX, double offsetY, double offsetZ) {
     }
 }

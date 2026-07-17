@@ -5,13 +5,13 @@ import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Mth;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import net.minecraft.world.entity.player.Player;
-import net.minecraft.world.level.GameRules;
+import net.minecraft.world.level.gamerules.GameRules;
 import umpaz.brewinandchewin.BrewinAndChewin;
 import umpaz.brewinandchewin.common.BnCConfiguration;
 import umpaz.brewinandchewin.common.registry.BnCEffects;
@@ -21,21 +21,21 @@ import java.util.Random;
 
 public class BnCHUDOverlays {
     public static int foodIconsOffset;
-    private static final ResourceLocation NOURISHMENT_ICONS_TEXTURE = ResourceLocation.fromNamespaceAndPath("farmersdelight", "textures/gui/fd_icons.png");
+    private static final Identifier NOURISHMENT_ICONS_TEXTURE = Identifier.fromNamespaceAndPath("farmersdelight", "textures/gui/fd_icons.png");
     private static final int NOURISHMENT_ICONS_TEXTURE_WIDTH = 256;
     private static final int NOURISHMENT_ICONS_TEXTURE_HEIGHT = 256;
 
-    public static final ResourceLocation FOOD_EMPTY_INTOXICATION_TEXTURE = BrewinAndChewin.asResource("hud/food_empty_intoxication");
-    public static final ResourceLocation FOOD_HALF_INTOXICATION_TEXTURE = BrewinAndChewin.asResource("hud/food_half_intoxication");
-    public static final ResourceLocation FOOD_FULL_INTOXICATION_TEXTURE = BrewinAndChewin.asResource("hud/food_full_intoxication");
-    public static final ResourceLocation FOOD_EMPTY_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_empty");
-    public static final ResourceLocation FOOD_HALF_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_half");
-    public static final ResourceLocation FOOD_FULL_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_full");
-    public static final ResourceLocation FOOD_EMPTY_HUNGER_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_empty_hunger");
-    public static final ResourceLocation FOOD_HALF_HUNGER_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_half_hunger");
-    public static final ResourceLocation FOOD_FULL_HUNGER_TEXTURE = ResourceLocation.withDefaultNamespace("hud/food_full_hunger");
+    public static final Identifier FOOD_EMPTY_INTOXICATION_TEXTURE = BrewinAndChewin.asResource("hud/food_empty_intoxication");
+    public static final Identifier FOOD_HALF_INTOXICATION_TEXTURE = BrewinAndChewin.asResource("hud/food_half_intoxication");
+    public static final Identifier FOOD_FULL_INTOXICATION_TEXTURE = BrewinAndChewin.asResource("hud/food_full_intoxication");
+    public static final Identifier FOOD_EMPTY_TEXTURE = Identifier.withDefaultNamespace("hud/food_empty");
+    public static final Identifier FOOD_HALF_TEXTURE = Identifier.withDefaultNamespace("hud/food_half");
+    public static final Identifier FOOD_FULL_TEXTURE = Identifier.withDefaultNamespace("hud/food_full");
+    public static final Identifier FOOD_EMPTY_HUNGER_TEXTURE = Identifier.withDefaultNamespace("hud/food_empty_hunger");
+    public static final Identifier FOOD_HALF_HUNGER_TEXTURE = Identifier.withDefaultNamespace("hud/food_half_hunger");
+    public static final Identifier FOOD_FULL_HUNGER_TEXTURE = Identifier.withDefaultNamespace("hud/food_full_hunger");
 
-    private static final ResourceLocation NAUSEA_LOCATION = ResourceLocation.withDefaultNamespace("textures/misc/nausea.png");
+    private static final Identifier NAUSEA_LOCATION = Identifier.withDefaultNamespace("textures/misc/nausea.png");
 
     private static float tipsyTransparencyModifier = 0.0F;
 
@@ -163,13 +163,13 @@ public class BnCHUDOverlays {
         }
     }
 
-    private static ResourceLocation getFoodEmptySprite(Player player) {
+    private static Identifier getFoodEmptySprite(Player player) {
         if (player.hasEffect(MobEffects.HUNGER))
             return FOOD_EMPTY_HUNGER_TEXTURE;
         return FOOD_EMPTY_TEXTURE;
     }
 
-    private static ResourceLocation getFoodSprite(Player player, boolean half) {
+    private static Identifier getFoodSprite(Player player, boolean half) {
         if (player.hasEffect(MobEffects.HUNGER))
             return half ? FOOD_HALF_HUNGER_TEXTURE : FOOD_FULL_HUNGER_TEXTURE;
         return half ? FOOD_HALF_TEXTURE : FOOD_FULL_TEXTURE;
@@ -177,6 +177,6 @@ public class BnCHUDOverlays {
 
     private static boolean isNaturalRegenerationEnabled(Minecraft minecraft) {
         MinecraftServer server = minecraft.getSingleplayerServer();
-        return server == null || server.getGameRules().getBoolean(GameRules.RULE_NATURAL_REGENERATION);
+        return server == null || server.getWorldData().getGameRules().get(GameRules.NATURAL_HEALTH_REGENERATION);
     }
 }

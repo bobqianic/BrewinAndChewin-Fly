@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -24,7 +24,7 @@ public class BnCCopyMealFunction extends LootItemConditionalFunction {
     public static final MapCodec<BnCCopyMealFunction> CODEC = RecordCodecBuilder.mapCodec(inst ->
             commonFields(inst).apply(inst, BnCCopyMealFunction::new));
 
-    public static final ResourceLocation ID = BrewinAndChewin.asResource("copy_meal");
+    public static final Identifier ID = BrewinAndChewin.asResource("copy_meal");
     public static final LootItemFunctionType<BnCCopyMealFunction> TYPE = new LootItemFunctionType<>(CODEC);
 
     private BnCCopyMealFunction(List<LootItemCondition> conditions) {

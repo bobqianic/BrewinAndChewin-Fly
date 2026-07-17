@@ -6,7 +6,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
@@ -28,7 +28,7 @@ import java.util.Map;
  */
 public record EMIFillFermentingRecipeServerboundPacket(int syncId,
                                                        Map<EMIFillFermentingRecipeServerboundPacket.InputType, List<ItemStack>> stacks) implements CustomPacketPayload {
-    public static final ResourceLocation ID = BrewinAndChewin.asResource("emi_fill_fermenting_recipe");
+    public static final Identifier ID = BrewinAndChewin.asResource("emi_fill_fermenting_recipe");
     public static final Type<EMIFillFermentingRecipeServerboundPacket> TYPE = new Type<>(ID);
     public static final StreamCodec<RegistryFriendlyByteBuf, EMIFillFermentingRecipeServerboundPacket> STREAM_CODEC = StreamCodec.of(EMIFillFermentingRecipeServerboundPacket::encode, EMIFillFermentingRecipeServerboundPacket::new);
 

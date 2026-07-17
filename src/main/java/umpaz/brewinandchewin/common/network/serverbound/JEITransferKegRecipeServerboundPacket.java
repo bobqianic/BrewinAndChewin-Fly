@@ -8,7 +8,7 @@ import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.Slot;
@@ -22,20 +22,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public record JEITransferKegRecipeServerboundPacket(ResourceLocation recipeId,
+public record JEITransferKegRecipeServerboundPacket(Identifier recipeId,
                                                     List<Pair<Integer, Integer>> resultSlots,
                                                     List<Pair<Integer, Long>> fluidSlots,
                                                     List<Pair<Integer, Long>> emptyingSlots,
                                                     List<Integer> craftingSlots,
                                                     List<Integer> inventorySlots,
                                                     boolean maxTransfer) implements CustomPacketPayload {
-    public static final ResourceLocation ID = BrewinAndChewin.asResource("jei_transfer_keg_recipe");
+    public static final Identifier ID = BrewinAndChewin.asResource("jei_transfer_keg_recipe");
     public static final CustomPacketPayload.Type<JEITransferKegRecipeServerboundPacket> TYPE = new CustomPacketPayload.Type<>(ID);
     public static final StreamCodec<RegistryFriendlyByteBuf, JEITransferKegRecipeServerboundPacket> STREAM_CODEC = StreamCodec.of(JEITransferKegRecipeServerboundPacket::encode, JEITransferKegRecipeServerboundPacket::new);
 
     public JEITransferKegRecipeServerboundPacket(RegistryFriendlyByteBuf buf) {
         this(
-                buf.readResourceLocation(),
+                buf.readIdentifier(),
                 BnCStreamCodecs.INT_PAIR_LIST.decode(buf),
                 BnCStreamCodecs.INT_LONG_PAIR_LIST.decode(buf),
                 BnCStreamCodecs.INT_LONG_PAIR_LIST.decode(buf),
@@ -46,7 +46,7 @@ public record JEITransferKegRecipeServerboundPacket(ResourceLocation recipeId,
     }
 
     public static void encode(FriendlyByteBuf buf, JEITransferKegRecipeServerboundPacket packet) {
-        buf.writeResourceLocation(packet.recipeId);
+        buf.writeIdentifier(packet.recipeId);
         BnCStreamCodecs.INT_PAIR_LIST.encode(buf, packet.resultSlots);
         BnCStreamCodecs.INT_LONG_PAIR_LIST.encode(buf, packet.fluidSlots);
         BnCStreamCodecs.INT_LONG_PAIR_LIST.encode(buf, packet.emptyingSlots);

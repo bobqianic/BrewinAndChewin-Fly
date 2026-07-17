@@ -5,14 +5,15 @@ import com.mojang.datafixers.util.Either;
 import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
+import net.minecraft.client.renderer.ItemBlockRenderTypes;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
@@ -42,7 +43,7 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
     private static final float MODEL_Y_OFFSET = 1.0F / 16.0F;
     private static final float ITEM_Y_OFFSET = 1.25F / 16.0F;
     private static final float ITEM_SCALE = 0.5F;
-    private static final Map<ResourceLocation, List<ModelEntry>> ITEM_TO_MODELS = new HashMap<>();
+    private static final Map<Identifier, List<ModelEntry>> ITEM_TO_MODELS = new HashMap<>();
 
     private final ItemModelResolver itemModelResolver;
 
@@ -54,11 +55,11 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
         ITEM_TO_MODELS.clear();
     }
 
-    public static List<ModelEntry> getModelEntries(ResourceLocation itemId) {
+    public static List<ModelEntry> getModelEntries(Identifier itemId) {
         return ITEM_TO_MODELS.get(itemId);
     }
 
-    public static void addToModelMap(ResourceLocation itemId, List<ModelEntry> models) {
+    public static void addToModelMap(Identifier itemId, List<ModelEntry> models) {
         ITEM_TO_MODELS.put(itemId, models);
     }
 
@@ -76,7 +77,7 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
 
         if (!renderState.blockState.getValue(CoasterBlock.INVISIBLE)) {
             BlockStateModel coasterModel = BrewinAndChewinClient.getHelper().getModel(BrewinAndChewin.asResource("block/coaster"));
-            nodeCollector.submitBlockModel(poseStack, RenderType.cutout(), coasterModel, 1.0F, 1.0F, 1.0F, renderState.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            nodeCollector.submitBlockModel(poseStack, ItemBlockRenderTypes.getRenderType(renderState.blockState), coasterModel, 1.0F, 1.0F, 1.0F, renderState.lightCoords, OverlayTexture.NO_OVERLAY, 0);
         }
 
         for (DisplayedItem displayedItem : renderState.items) {
@@ -87,7 +88,7 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
                 poseStack.scale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
                 poseStack.translate(-0.5F, 0.0F, -0.5F);
                 for (ModelEntry modelEntry : modelEntries) {
-                    RenderType renderType = RenderType.cutout();
+                    RenderType renderType = ItemBlockRenderTypes.getRenderType(renderState.blockState);
                     int color = 0XFFFFFFFF;
                     for (TextureModifier modifier : modelEntry.modifiers()) {
                         renderType = modifier.renderType(renderState.level, renderState.blockState, renderState.blockPos, displayedItem.stack(), renderType);
@@ -140,14 +141,14 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
     public record DisplayedItem(ItemStack stack, ItemStackRenderState itemRenderState) {
     }
 
-    public record ModelEntry(ResourceLocation model, List<? extends TextureModifier> modifiers, List<Float> offset) {
+    public record ModelEntry(Identifier model, List<? extends TextureModifier> modifiers, List<Float> offset) {
         private static final List<Float> DEFAULT_OFFSET = List.of(0.0F, 0.0F, 0.0F);
         private static final Codec<ModelEntry> DIRECT_CODEC = RecordCodecBuilder.create(inst -> inst.group(
-                ResourceLocation.CODEC.fieldOf("model").forGetter(ModelEntry::model),
+                Identifier.CODEC.fieldOf("model").forGetter(ModelEntry::model),
                 BnCTextureModifiers.CODEC.listOf().optionalFieldOf("texture_modifiers", List.of()).forGetter(modelEntry -> (List) modelEntry.modifiers()),
                 Codec.FLOAT.listOf().optionalFieldOf("offset", DEFAULT_OFFSET).forGetter(ModelEntry::offset)
         ).apply(inst, ModelEntry::new));
-        public static final Codec<List<ModelEntry>> LIST_CODEC = Codec.either(ResourceLocation.CODEC, DIRECT_CODEC.listOf())
+        public static final Codec<List<ModelEntry>> LIST_CODEC = Codec.either(Identifier.CODEC, DIRECT_CODEC.listOf())
                 .xmap(either -> either.map(resourceLocation -> List.of(new ModelEntry(resourceLocation, List.of(), DEFAULT_OFFSET)), Function.identity()), modelEntry -> {
                     if (modelEntry.size() == 1 && modelEntry.getFirst().modifiers().isEmpty() && modelEntry.getFirst().hasDefaultOffset())
                         return Either.left(modelEntry.getFirst().model());

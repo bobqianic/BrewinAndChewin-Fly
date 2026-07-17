@@ -9,14 +9,14 @@ import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientPacketListener;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.client.renderer.texture.TextureAtlas;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.resources.model.Material;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.crafting.Recipe;
@@ -49,7 +49,7 @@ public class BnCClientPlatformHelperFabric implements BnCClientPlatformHelper {
     );
 
     @Override
-    public BlockStateModel getModel(ResourceLocation modelId) {
+    public BlockStateModel getModel(Identifier modelId) {
         BlockStateModel model = BrewinAndChewinFabricClient.COASTER_MODEL_KEYS.containsKey(modelId)
                 ? ((FabricBakedModelManager) Minecraft.getInstance().getModelManager()).getModel(BrewinAndChewinFabricClient.COASTER_MODEL_KEYS.get(modelId))
                 : null;
@@ -57,7 +57,7 @@ public class BnCClientPlatformHelperFabric implements BnCClientPlatformHelper {
     }
 
     @Override
-    public void tesselateCoasterModel(BlockAndTintGetter level, ResourceLocation modelId, BlockState state, BlockPos pos, PoseStack poseStack, MultiBufferSource buffer, RandomSource random, long seed, int packedOverlay, int tintIndex, RenderType renderType) {
+    public void tesselateCoasterModel(BlockAndTintGetter level, Identifier modelId, BlockState state, BlockPos pos, PoseStack poseStack, MultiBufferSource buffer, RandomSource random, long seed, int packedOverlay, int tintIndex, RenderType renderType) {
     }
 
     @Override
@@ -120,7 +120,7 @@ public class BnCClientPlatformHelperFabric implements BnCClientPlatformHelper {
         return null;
     }
 
-    private record AtlasFluidRenderHandler(ResourceLocation stillTexture, ResourceLocation flowingTexture, int tint) implements FluidRenderHandler {
+    private record AtlasFluidRenderHandler(Identifier stillTexture, Identifier flowingTexture, int tint) implements FluidRenderHandler {
         @Override
         public TextureAtlasSprite[] getFluidSprites(BlockAndTintGetter view, BlockPos pos, FluidState state) {
             return new TextureAtlasSprite[]{
@@ -134,7 +134,7 @@ public class BnCClientPlatformHelperFabric implements BnCClientPlatformHelper {
             return tint;
         }
 
-        private static TextureAtlasSprite getBlockSprite(ResourceLocation texture) {
+        private static TextureAtlasSprite getBlockSprite(Identifier texture) {
             return Minecraft.getInstance().getAtlasManager().get(new Material(TextureAtlas.LOCATION_BLOCKS, texture));
         }
     }

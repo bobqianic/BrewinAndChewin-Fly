@@ -6,7 +6,7 @@ import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.StateHolder;
@@ -33,7 +33,7 @@ public class NullTrueBlockStateCondition implements LootItemCondition {
             PropertyMatcher.LIST_CODEC.fieldOf("state").forGetter(cond -> cond.matchers)
     ).apply(inst, NullTrueBlockStateCondition::new));
 
-    public static final ResourceLocation ID = BrewinAndChewin.asResource("null_true_block_state");
+    public static final Identifier ID = BrewinAndChewin.asResource("null_true_block_state");
     public static final LootItemConditionType TYPE = new LootItemConditionType(CODEC);
 
     private final List<PropertyMatcher> matchers;

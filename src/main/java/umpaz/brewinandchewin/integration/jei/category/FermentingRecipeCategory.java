@@ -23,7 +23,7 @@ import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentPatch;
 import net.minecraft.core.component.PatchedDataComponentMap;
 import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.Ingredient;
 import umpaz.brewinandchewin.BrewinAndChewin;
@@ -42,7 +42,7 @@ import java.util.Comparator;
 import java.util.Optional;
 
 public class FermentingRecipeCategory implements IRecipeCategory<KegFermentingPouringRecipe> {
-    public static final ResourceLocation UID = BrewinAndChewin.asResource("fermenting");
+    public static final Identifier UID = BrewinAndChewin.asResource("fermenting");
     protected final IModIdHelper modIdHelper;
     protected final IPlatformFluidHelper<?> fluidHelper;
 
@@ -64,7 +64,7 @@ public class FermentingRecipeCategory implements IRecipeCategory<KegFermentingPo
         this.modIdHelper = modIdHelper;
         this.fluidHelper = fluidHelper;
         title = BnCTextUtils.getTranslation("jei.fermenting");
-        ResourceLocation backgroundImage = BrewinAndChewin.asResource("textures/gui/jei/keg.png");
+        Identifier backgroundImage = BrewinAndChewin.asResource("textures/gui/jei/keg.png");
         background = guiHelper.createDrawable(backgroundImage, 12, 13, 136, 56);
         icon = guiHelper.createDrawableIngredient(VanillaTypes.ITEM_STACK, new ItemStack(BnCItems.KEG));
         arrow = guiHelper.drawableBuilder(backgroundImage, 171, 4, 23, 16)
@@ -93,8 +93,13 @@ public class FermentingRecipeCategory implements IRecipeCategory<KegFermentingPo
     }
 
     @Override
-    public IDrawable getBackground() {
-        return this.background;
+    public int getWidth() {
+        return 136;
+    }
+
+    @Override
+    public int getHeight() {
+        return 56;
     }
 
     @Override
@@ -180,6 +185,7 @@ public class FermentingRecipeCategory implements IRecipeCategory<KegFermentingPo
 
     @Override
     public void draw(KegFermentingPouringRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+        background.draw(guiGraphics, 0, 0);
         arrow.draw(guiGraphics, 67, 10);
         leftBubble.draw(guiGraphics, 90, 3);
         rightBubble.draw(guiGraphics, 127, 3);

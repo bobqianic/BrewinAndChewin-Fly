@@ -3,7 +3,7 @@ package umpaz.brewinandchewin.common.block.entity.container;
 import net.minecraft.core.BlockPos;
 import net.minecraft.recipebook.ServerPlaceRecipe;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.level.Level;
@@ -26,7 +26,7 @@ import java.util.Objects;
 
 public class KegMenu extends RecipeBookMenu
 {
-    public static final ResourceLocation EMPTY_CONTAINER_SLOT_TANKARD = BrewinAndChewin.asResource("container/slot/empty_container_slot_tankard");
+    public static final Identifier EMPTY_CONTAINER_SLOT_TANKARD = BrewinAndChewin.asResource("container/slot/empty_container_slot_tankard");
 
     public final KegBlockEntity blockEntity;
     public final AbstractedItemHandler inventory;

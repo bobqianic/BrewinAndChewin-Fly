@@ -1,7 +1,7 @@
 package umpaz.brewinandchewin.integration.jei;
 
 import net.minecraft.core.HolderLookup;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import org.jetbrains.annotations.Nullable;
 import umpaz.brewinandchewin.common.crafting.KegFermentingRecipe;
@@ -13,7 +13,7 @@ import umpaz.brewinandchewin.common.utility.FluidUnit;
  */
 public class KegFermentingPouringRecipe extends KegFermentingRecipe {
 
-    private final ResourceLocation id;
+    private final Identifier id;
     private final ItemStack catalyst;
     private ItemStack output;
     private long pouringAmount;
@@ -21,7 +21,7 @@ public class KegFermentingPouringRecipe extends KegFermentingRecipe {
 
     private final int catalystAmount;
 
-    KegFermentingPouringRecipe(ResourceLocation id, KegFermentingRecipe fermentingRecipe, @Nullable KegPouringRecipe pouringRecipe, HolderLookup.Provider provider) {
+    KegFermentingPouringRecipe(Identifier id, KegFermentingRecipe fermentingRecipe, @Nullable KegPouringRecipe pouringRecipe, HolderLookup.Provider provider) {
         super(fermentingRecipe.getIngredients(), fermentingRecipe.getRecipeBookCategory(), fermentingRecipe.getFluidIngredient(), fermentingRecipe.getRawUnit(), fermentingRecipe.getResult(), fermentingRecipe.getExperience(), fermentingRecipe.getFermentTime(), fermentingRecipe.getTemperature());
         if (fermentingRecipe.getResult().right().isPresent()) {
             this.output = fermentingRecipe.getResult().right().get().copy();
@@ -41,7 +41,7 @@ public class KegFermentingPouringRecipe extends KegFermentingRecipe {
         this.id = id;
     }
 
-    public ResourceLocation getId() {
+    public Identifier getId() {
         return id;
     }
 

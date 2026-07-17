@@ -3,7 +3,7 @@ package umpaz.brewinandchewin.fabric.registry;
 
 import net.minecraft.core.Registry;
 import net.minecraft.core.registries.BuiltInRegistries;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.FlowingFluid;
 import umpaz.brewinandchewin.BrewinAndChewin;
 import umpaz.brewinandchewin.common.registry.BnCFluids;
@@ -12,8 +12,8 @@ import umpaz.brewinandchewin.fabric.fluid.BnCFluidFabric;
 import umpaz.brewinandchewin.fabric.utility.BnCCreateDelegate;
 
 public class BnCFluidsImpl {
-    private static final ResourceLocation MINECRAFT_MILK = ResourceLocation.withDefaultNamespace("milk");
-    private static final ResourceLocation MINECRAFT_FLOWING_MILK = ResourceLocation.withDefaultNamespace("flowing_milk");
+    private static final Identifier MINECRAFT_MILK = Identifier.withDefaultNamespace("milk");
+    private static final Identifier MINECRAFT_FLOWING_MILK = Identifier.withDefaultNamespace("flowing_milk");
 
     private static FlowingFluid bncMilk;
     private static FlowingFluid bncFlowingMilk;
@@ -97,7 +97,7 @@ public class BnCFluidsImpl {
         FLOWING_MILK = bncFlowingMilk;
     }
 
-    private static FlowingFluid findRegisteredFlowingFluid(ResourceLocation location) {
+    private static FlowingFluid findRegisteredFlowingFluid(Identifier location) {
         return BuiltInRegistries.FLUID.getOptional(location)
                 .filter(FlowingFluid.class::isInstance)
                 .map(FlowingFluid.class::cast)

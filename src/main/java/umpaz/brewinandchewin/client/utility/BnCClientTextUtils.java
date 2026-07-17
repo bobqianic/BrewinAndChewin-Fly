@@ -10,7 +10,7 @@ import net.minecraft.network.chat.PlayerChatMessage;
 import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.entity.player.Player;
@@ -22,7 +22,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class BnCClientTextUtils {
-    public static final ResourceKey<ChatType> STYLED_CHAT_HACK_CHAT_TYPE = ResourceKey.create(Registries.CHAT_TYPE, ResourceLocation.fromNamespaceAndPath("styled_chat", "generic_hack"));
+    public static final ResourceKey<ChatType> STYLED_CHAT_HACK_CHAT_TYPE = ResourceKey.create(Registries.CHAT_TYPE, Identifier.fromNamespaceAndPath("styled_chat", "generic_hack"));
     public static int tipsyMessageLevel = 0;
     public static boolean generatedRandom = false;
     public static int clearDelayAmount = 0;

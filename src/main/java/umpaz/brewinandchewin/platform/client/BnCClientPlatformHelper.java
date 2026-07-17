@@ -3,11 +3,11 @@ package umpaz.brewinandchewin.platform.client;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.renderer.MultiBufferSource;
-import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.core.BlockPos;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.InventoryMenu;
 import net.minecraft.world.item.crafting.Recipe;
@@ -20,10 +20,10 @@ import umpaz.brewinandchewin.common.utility.AbstractedFluidStack;
 import java.util.List;
 
 public interface BnCClientPlatformHelper {
-    BlockStateModel getModel(ResourceLocation modelId);
+    BlockStateModel getModel(Identifier modelId);
 
     void tesselateCoasterModel(BlockAndTintGetter level,
-                               ResourceLocation modelId,
+                               Identifier modelId,
                                BlockState state,
                                BlockPos pos,
                                PoseStack poseStack,

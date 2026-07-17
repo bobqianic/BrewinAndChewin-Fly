@@ -4,7 +4,7 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.component.TypedEntityData;
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -25,7 +25,7 @@ public class CopyDrinkFunction extends LootItemConditionalFunction
     public static final MapCodec<CopyDrinkFunction> CODEC = RecordCodecBuilder.mapCodec(inst ->
             commonFields(inst).apply(inst, CopyDrinkFunction::new));
 
-    public static final ResourceLocation ID = BrewinAndChewin.asResource("copy_drink");
+    public static final Identifier ID = BrewinAndChewin.asResource("copy_drink");
     public static final LootItemFunctionType<CopyDrinkFunction> TYPE = new LootItemFunctionType<>(CODEC);
 
     private CopyDrinkFunction(List<LootItemCondition> conditions) {

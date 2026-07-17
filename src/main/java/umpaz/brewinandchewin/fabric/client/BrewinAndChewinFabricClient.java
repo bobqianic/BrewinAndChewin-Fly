@@ -23,7 +23,7 @@ import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderers;
 import net.minecraft.client.renderer.block.model.BlockStateModel;
 import net.minecraft.network.chat.*;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.server.packs.PackType;
 import net.minecraft.server.packs.resources.ResourceManager;
 import umpaz.brewinandchewin.BrewinAndChewin;
@@ -51,7 +51,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executor;
 
 public class BrewinAndChewinFabricClient implements ClientModInitializer {
-    public static final Map<ResourceLocation, ExtraModelKey<BlockStateModel>> COASTER_MODEL_KEYS = new ConcurrentHashMap<>();
+    public static final Map<Identifier, ExtraModelKey<BlockStateModel>> COASTER_MODEL_KEYS = new ConcurrentHashMap<>();
 
     @Override
     public void onInitializeClient() {
@@ -74,7 +74,7 @@ public class BrewinAndChewinFabricClient implements ClientModInitializer {
         BnCClientSetup.registerReloadListeners(preparableReloadListener -> {
             ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(new IdentifiableResourceReloadListener() {
                 @Override
-                public ResourceLocation getFabricId() {
+                public Identifier getFabricId() {
                     return preparableReloadListener.getId();
                 }
 
@@ -87,13 +87,13 @@ public class BrewinAndChewinFabricClient implements ClientModInitializer {
         BnCClientSetup.registerColorHandlers(ColorProviderRegistry.BLOCK::register);
         PreparableModelLoadingPlugin.register((sharedState, executor) -> BnCClientSetup.getModels(sharedState.resourceManager(), executor), (data, context) -> {
             COASTER_MODEL_KEYS.clear();
-            for (ResourceLocation model : data) {
-                ResourceLocation coasterModel = model.withPath(path -> "brewinandchewin/coaster/" + path);
+            for (Identifier model : data) {
+                Identifier coasterModel = model.withPath(path -> "brewinandchewin/coaster/" + path);
                 ExtraModelKey<BlockStateModel> key = ExtraModelKey.create(coasterModel::toString);
                 COASTER_MODEL_KEYS.putIfAbsent(model, key);
                 context.addModel(key, SimpleUnbakedExtraModel.blockStateModel(model));
             }
-            ResourceLocation coasterModelId = BrewinAndChewin.asResource("block/coaster");
+            Identifier coasterModelId = BrewinAndChewin.asResource("block/coaster");
             ExtraModelKey<BlockStateModel> coasterKey = ExtraModelKey.create(coasterModelId::toString);
             COASTER_MODEL_KEYS.putIfAbsent(coasterModelId, coasterKey);
             context.addModel(coasterKey, SimpleUnbakedExtraModel.blockStateModel(coasterModelId));

@@ -8,7 +8,7 @@ import mezz.jei.api.helpers.IPlatformFluidHelper;
 import mezz.jei.api.registration.*;
 import mezz.jei.api.runtime.IClickableIngredient;
 import net.minecraft.client.renderer.Rect2i;
-import net.minecraft.resources.ResourceLocation;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
 import umpaz.brewinandchewin.BrewinAndChewin;
 import umpaz.brewinandchewin.client.gui.KegScreen;
@@ -23,7 +23,7 @@ import java.util.Optional;
 @JeiPlugin
 @SuppressWarnings("unused")
 public class JEIPlugin implements IModPlugin {
-    private static final ResourceLocation ID = BrewinAndChewin.asResource("jei_plugin");
+    private static final Identifier ID = BrewinAndChewin.asResource("jei_plugin");
 
     @Override
     public void registerCategories(IRecipeCategoryRegistration registry) {
@@ -79,7 +79,7 @@ public class JEIPlugin implements IModPlugin {
     }
 
     @Override
-    public ResourceLocation getPluginUid() {
+    public Identifier getPluginUid() {
         return ID;
     }
 }
