@@ -1,6 +1,6 @@
 # Brewin' And Chewin' Fly
 
-**Brewin' And Chewin' Fly** is a Fabric fork of [Brewin' And Chewin'](https://github.com/ChefsDelights/BrewinAndChewin?) for Minecraft 1.21.11.
+**Brewin' And Chewin' Fly** is a Fabric fork of [Brewin' And Chewin'](https://github.com/ChefsDelights/BrewinAndChewin?) for Minecraft 26.1.2.
 
 This fork keeps the original `brewinandchewin` mod id for world, resource-pack, datapack, and recipe compatibility.
 
@@ -36,7 +36,7 @@ This fork keeps the original `brewinandchewin` mod id for world, resource-pack, 
 
 ## Gradle
 
-Use the full Modrinth version string, for example `4.4.6-fly+1.21.11-fabric`.
+Use the full Modrinth version string, for example `4.4.6-fly+26.1.2-fabric`.
 
 ```groovy
 repositories {
