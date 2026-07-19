@@ -9,7 +9,7 @@ This fork keeps the original `brewinandchewin` mod id for world, resource-pack, 
 - Fermenting and brewing addon content for Farmer's Delight.
 - Optional Create-Fly filling recipes for Brewin' And Chewin' drinks.
 - Existing Brewin' And Chewin' ids remain stable for pack compatibility.
-- Fabric 1.21.11 dependency metadata and build output are named for the fork.
+- Fabric 26.1.2 dependency metadata and build output are named for the fork.
 
 ## What's New
 
