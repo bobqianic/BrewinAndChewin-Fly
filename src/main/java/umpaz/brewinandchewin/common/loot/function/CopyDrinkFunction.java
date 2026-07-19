@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import umpaz.brewinandchewin.BrewinAndChewin;
@@ -26,7 +25,6 @@ public class CopyDrinkFunction extends LootItemConditionalFunction
             commonFields(inst).apply(inst, CopyDrinkFunction::new));
 
     public static final Identifier ID = BrewinAndChewin.asResource("copy_drink");
-    public static final LootItemFunctionType<CopyDrinkFunction> TYPE = new LootItemFunctionType<>(CODEC);
 
     private CopyDrinkFunction(List<LootItemCondition> conditions) {
         super(conditions);
@@ -50,8 +48,8 @@ public class CopyDrinkFunction extends LootItemConditionalFunction
     }
 
     @Override
-    public LootItemFunctionType<CopyDrinkFunction> getType() {
-        return TYPE;
+    public MapCodec<CopyDrinkFunction> codec() {
+        return CODEC;
     }
 
     public static class Builder extends LootItemConditionalFunction.Builder<CopyDrinkFunction.Builder> {

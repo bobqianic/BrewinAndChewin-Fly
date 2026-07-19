@@ -105,7 +105,7 @@ public class FieryFonduePotBlock extends Block {
             level.playSound(null, pos, SoundEvents.ARMOR_EQUIP_GENERIC.value(), SoundSource.BLOCKS, 1.0F, 1.0F);
             return InteractionResult.SUCCESS;
         }
-        player.displayClientMessage(Component.translatable("farmersdelight.block.feast.use_container", bowl.getHoverName()), true);
+        player.sendOverlayMessage(Component.translatable("farmersdelight.block.feast.use_container", bowl.getHoverName()));
         return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
@@ -131,7 +131,7 @@ public class FieryFonduePotBlock extends Block {
     @Override
     public void animateTick(BlockState stateIn, Level level, BlockPos pos, RandomSource rand) {
         super.animateTick(stateIn, level, pos, rand);
-        RandomSource random = level.random;
+        RandomSource random = level.getRandom();
         if (random.nextFloat() < 0.8F) {
             double x = (double) pos.getX() + 0.5D + (random.nextDouble() * 0.6D - 0.3D);
             double y = (double) pos.getY() + this.getContentHeight(stateIn);

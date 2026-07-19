@@ -11,7 +11,6 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.world.level.storage.loot.functions.LootItemConditionalFunction;
 import net.minecraft.world.level.storage.loot.functions.LootItemFunction;
-import net.minecraft.world.level.storage.loot.functions.LootItemFunctionType;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import umpaz.brewinandchewin.BrewinAndChewin;
@@ -25,7 +24,6 @@ public class BnCCopyMealFunction extends LootItemConditionalFunction {
             commonFields(inst).apply(inst, BnCCopyMealFunction::new));
 
     public static final Identifier ID = BrewinAndChewin.asResource("copy_meal");
-    public static final LootItemFunctionType<BnCCopyMealFunction> TYPE = new LootItemFunctionType<>(CODEC);
 
     private BnCCopyMealFunction(List<LootItemCondition> conditions) {
         super(conditions);
@@ -52,8 +50,8 @@ public class BnCCopyMealFunction extends LootItemConditionalFunction {
     }
 
     @Override
-    public LootItemFunctionType<BnCCopyMealFunction> getType() {
-        return TYPE;
+    public MapCodec<BnCCopyMealFunction> codec() {
+        return CODEC;
     }
 
     public static class Builder extends LootItemConditionalFunction.Builder<Builder> {

@@ -2,10 +2,10 @@ package umpaz.brewinandchewin.client.renderer.texture.modifier;
 
 import com.mojang.serialization.MapCodec;
 import net.minecraft.client.renderer.BiomeColors;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.level.BlockAndTintGetter;
 import net.minecraft.world.level.block.state.BlockState;
 import umpaz.brewinandchewin.BrewinAndChewin;
 

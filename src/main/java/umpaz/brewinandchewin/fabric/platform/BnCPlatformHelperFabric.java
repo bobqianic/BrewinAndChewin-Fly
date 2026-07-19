@@ -3,11 +3,11 @@ package umpaz.brewinandchewin.fabric.platform;
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.Codec;
 import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
+import net.fabricmc.fabric.api.menu.v1.ExtendedMenuType;
 import net.fabricmc.fabric.api.networking.v1.PlayerLookup;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.fabric.api.object.builder.v1.block.entity.FabricBlockEntityTypeBuilder;
 import net.fabricmc.fabric.api.recipe.v1.ingredient.DefaultCustomIngredients;
-import net.fabricmc.fabric.api.screenhandler.v1.ExtendedScreenHandlerType;
 import net.fabricmc.fabric.api.transfer.v1.context.ContainerItemContext;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
@@ -140,7 +140,7 @@ public class BnCPlatformHelperFabric implements BnCPlatformHelper {
 
     @Override
     public MenuType<KegMenu> createMenuType(BnCMenuConstructor<KegMenu> constructor) {
-        return new ExtendedScreenHandlerType<>(KegMenu::new, BlockPos.STREAM_CODEC);
+        return new ExtendedMenuType<>(KegMenu::new, BlockPos.STREAM_CODEC);
     }
 
     @Override
@@ -224,12 +224,13 @@ public class BnCPlatformHelperFabric implements BnCPlatformHelper {
         var fluidVariant = FluidVariant.CODEC.decode(RegistryOps.create(NbtOps.INSTANCE, provider), tag.get("variant")).mapOrElse(Pair::getFirst, pairError -> FluidVariant.blank());
         var amount = tag.getLongOr("amount", 0L);
 
-        return new AbstractedFluidStack(fluidVariant.getFluid(), amount, fluidVariant.getComponentMap(), FluidUnit.DROPLET);
+        return new AbstractedFluidStack(fluidVariant.getFluid(), amount, fluidVariant.getComponents(), FluidUnit.DROPLET);
     }
 
     @Override
     public ItemStack getCraftingRemainingItem(ItemStack stack) {
-        return stack.getRecipeRemainder();
+        var remainder = stack.getItem().getCraftingRemainder();
+        return remainder == null ? ItemStack.EMPTY : remainder.create();
     }
 
     @Override

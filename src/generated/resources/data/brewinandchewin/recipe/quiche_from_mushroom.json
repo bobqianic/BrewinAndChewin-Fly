@@ -7,7 +7,7 @@
     "c": "#brewinandchewin:foods/cheese_wedge",
     "e": "minecraft:egg",
     "l": "farmersdelight:cabbage_leaf",
-    "m": "#c:foods/milk"
+    "m": "#c:drinks/milk"
   },
   "pattern": [
     "blb",

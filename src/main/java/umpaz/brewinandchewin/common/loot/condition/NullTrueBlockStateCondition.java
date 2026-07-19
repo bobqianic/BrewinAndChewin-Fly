@@ -15,7 +15,6 @@ import net.minecraft.world.level.storage.loot.LootContext;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import umpaz.brewinandchewin.BrewinAndChewin;
 
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ public class NullTrueBlockStateCondition implements LootItemCondition {
     ).apply(inst, NullTrueBlockStateCondition::new));
 
     public static final Identifier ID = BrewinAndChewin.asResource("null_true_block_state");
-    public static final LootItemConditionType TYPE = new LootItemConditionType(CODEC);
 
     private final List<PropertyMatcher> matchers;
 
@@ -42,8 +40,8 @@ public class NullTrueBlockStateCondition implements LootItemCondition {
         this.matchers = matchers;
     }
 
-    public LootItemConditionType getType() {
-        return TYPE;
+    public MapCodec<NullTrueBlockStateCondition> codec() {
+        return CODEC;
     }
 
     public boolean test(LootContext context) {

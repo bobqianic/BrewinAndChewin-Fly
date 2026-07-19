@@ -9,7 +9,7 @@ import net.minecraft.resources.Identifier;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import umpaz.brewinandchewin.BrewinAndChewin;
@@ -82,9 +82,9 @@ public record EMIFillPouringRecipeServerboundPacket(int syncId, int action,
                         }
                     }
                     if (action == 1) {
-                        menu.clicked(KegBlockEntity.OUTPUT_SLOT, 0, ClickType.PICKUP, sender);
+                        menu.clicked(KegBlockEntity.OUTPUT_SLOT, 0, ContainerInput.PICKUP, sender);
                     } else if (action == 2) {
-                        menu.clicked(KegBlockEntity.OUTPUT_SLOT, 0, ClickType.QUICK_MOVE, sender);
+                        menu.clicked(KegBlockEntity.OUTPUT_SLOT, 0, ContainerInput.QUICK_MOVE, sender);
                     }
                 }
             } finally {

@@ -6,17 +6,21 @@ import com.mojang.math.Axis;
 import com.mojang.serialization.Codec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.client.renderer.rendertype.RenderType;
-import net.minecraft.client.renderer.ItemBlockRenderTypes;
-import net.minecraft.client.renderer.block.model.BlockStateModel;
+import net.fabricmc.fabric.api.client.renderer.v1.render.ChunkSectionLayerHelper;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
+import net.minecraft.client.renderer.block.dispatch.BlockStateModelPart;
+import net.minecraft.client.renderer.block.BlockAndTintGetter;
+import net.minecraft.client.renderer.chunk.ChunkSectionLayer;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
 import net.minecraft.client.renderer.item.ItemModelResolver;
 import net.minecraft.client.renderer.item.ItemStackRenderState;
 import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
-import net.minecraft.util.ARGB;
+import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.RotationSegment;
 import umpaz.brewinandchewin.BrewinAndChewin;
 import umpaz.brewinandchewin.client.renderer.texture.BnCTextureModifiers;
@@ -26,7 +30,7 @@ import umpaz.brewinandchewin.common.block.CoasterBlock;
 import umpaz.brewinandchewin.common.block.entity.CoasterBlockEntity;
 import net.minecraft.client.renderer.blockentity.state.BlockEntityRenderState;
 import net.minecraft.client.renderer.blockentity.BlockEntityRenderer;
-import net.minecraft.client.renderer.state.CameraRenderState;
+import net.minecraft.client.renderer.state.level.CameraRenderState;
 import net.minecraft.client.renderer.SubmitNodeCollector;
 import net.minecraft.client.renderer.feature.ModelFeatureRenderer;
 import net.minecraft.world.phys.Vec3;
@@ -72,12 +76,12 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
     public void submit(CoasterRenderState renderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState) {
         poseStack.pushPose();
         poseStack.translate(0.5F, 0.5F, 0.5F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(RotationSegment.convertToDegrees(renderState.blockState.getValue(CoasterBlock.ROTATION))));
+        poseStack.mulPose(Axis.YP.rotationDegrees(RotationSegment.convertToDegrees(renderState.coasterBlockState.getValue(CoasterBlock.ROTATION))));
         poseStack.translate(-0.5F, -0.5F, -0.5F);
 
-        if (!renderState.blockState.getValue(CoasterBlock.INVISIBLE)) {
+        if (!renderState.coasterBlockState.getValue(CoasterBlock.INVISIBLE)) {
             BlockStateModel coasterModel = BrewinAndChewinClient.getHelper().getModel(BrewinAndChewin.asResource("block/coaster"));
-            nodeCollector.submitBlockModel(poseStack, ItemBlockRenderTypes.getRenderType(renderState.blockState), coasterModel, 1.0F, 1.0F, 1.0F, renderState.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+            submitBlockModel(renderState, poseStack, nodeCollector, ChunkSectionLayerHelper::getMovingBlockRenderType, coasterModel, 0XFFFFFFFF);
         }
 
         for (DisplayedItem displayedItem : renderState.items) {
@@ -88,15 +92,16 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
                 poseStack.scale(MODEL_SCALE, MODEL_SCALE, MODEL_SCALE);
                 poseStack.translate(-0.5F, 0.0F, -0.5F);
                 for (ModelEntry modelEntry : modelEntries) {
-                    RenderType renderType = ItemBlockRenderTypes.getRenderType(renderState.blockState);
+                    Function<ChunkSectionLayer, RenderType> renderType = ChunkSectionLayerHelper::getMovingBlockRenderType;
                     int color = 0XFFFFFFFF;
                     for (TextureModifier modifier : modelEntry.modifiers()) {
-                        renderType = modifier.renderType(renderState.level, renderState.blockState, renderState.blockPos, displayedItem.stack(), renderType);
-                        color = modifier.color(renderState.level, renderState.blockState, renderState.blockPos, displayedItem.stack(), color);
+                        Function<ChunkSectionLayer, RenderType> previousRenderType = renderType;
+                        renderType = layer -> modifier.renderType(renderState.level, renderState.coasterBlockState, renderState.blockPos, displayedItem.stack(), previousRenderType.apply(layer));
+                        color = modifier.color(renderState.level, renderState.coasterBlockState, renderState.blockPos, displayedItem.stack(), color);
                     }
                     poseStack.pushPose();
                     poseStack.translate(modelEntry.offsetX() / 16.0F, modelEntry.offsetY() / 16.0F, modelEntry.offsetZ() / 16.0F);
-                    nodeCollector.submitBlockModel(poseStack, renderType, BrewinAndChewinClient.getHelper().getModel(modelEntry.model()), ARGB.redFloat(color), ARGB.greenFloat(color), ARGB.blueFloat(color), renderState.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+                    submitBlockModel(renderState, poseStack, nodeCollector, renderType, BrewinAndChewinClient.getHelper().getModel(modelEntry.model()), color);
                     poseStack.popPose();
                 }
                 poseStack.popPose();
@@ -116,10 +121,17 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
         poseStack.popPose();
     }
 
+    private static void submitBlockModel(CoasterRenderState renderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, Function<ChunkSectionLayer, RenderType> renderType, BlockStateModel model, int color) {
+        List<BlockStateModelPart> parts = new ArrayList<>();
+        model.collectParts(RandomSource.create(renderState.coasterBlockState.getSeed(renderState.blockPos)), parts);
+        nodeCollector.submitBlockModel(poseStack, renderType, false, parts, null, new int[]{color}, renderState.lightCoords, OverlayTexture.NO_OVERLAY, 0);
+    }
+
     @Override
     public void extractRenderState(CoasterBlockEntity blockEntity, CoasterRenderState renderState, float partialTick, Vec3 cameraPosition, @Nullable ModelFeatureRenderer.CrumblingOverlay breakProgress) {
         BlockEntityRenderer.super.extractRenderState(blockEntity, renderState, partialTick, cameraPosition, breakProgress);
-        renderState.level = blockEntity.getLevel();
+        renderState.level = (BlockAndTintGetter) blockEntity.getLevel();
+        renderState.coasterBlockState = blockEntity.getBlockState();
         renderState.items.clear();
         int seed = (int) blockEntity.getBlockPos().asLong();
         int index = 0;
@@ -135,7 +147,8 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
 
     public static class CoasterRenderState extends BlockEntityRenderState {
         public final List<DisplayedItem> items = new ArrayList<>();
-        public @Nullable net.minecraft.world.level.Level level;
+        public @Nullable BlockAndTintGetter level;
+        public BlockState coasterBlockState;
     }
 
     public record DisplayedItem(ItemStack stack, ItemStackRenderState itemRenderState) {

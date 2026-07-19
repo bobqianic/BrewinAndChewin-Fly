@@ -1,9 +1,10 @@
 package umpaz.brewinandchewin.fabric.client.gui;
 
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
 import net.minecraft.client.DeltaTracker;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.resources.Identifier;
 import net.minecraft.server.MinecraftServer;
@@ -40,13 +41,14 @@ public class BnCHUDOverlays {
     private static float tipsyTransparencyModifier = 0.0F;
 
     public static void init() {
-        HudRenderCallback.EVENT.register(IntoxicationOverlay.INSTANCE::render);
+        HudElementRegistry.attachElementAfter(VanillaHudElements.MISC_OVERLAYS, BrewinAndChewin.asResource("tipsy_overlay"), TipsyOverlay.INSTANCE::render);
+        HudElementRegistry.attachElementAfter(VanillaHudElements.FOOD_BAR, BrewinAndChewin.asResource("intoxication_overlay"), IntoxicationOverlay.INSTANCE::render);
     }
 
     public abstract static class BaseOverlay {
-        public abstract void render(GuiGraphics gui, DeltaTracker delta);
+        public abstract void render(GuiGraphicsExtractor gui, DeltaTracker delta);
 
-        public boolean shouldRenderOverlay(Minecraft minecraft, Player player, GuiGraphics gui, DeltaTracker delta) {
+        public boolean shouldRenderOverlay(Minecraft minecraft, Player player, GuiGraphicsExtractor gui, DeltaTracker delta) {
             return !minecraft.options.hideGui && minecraft.gameMode != null && minecraft.gameMode.canHurtPlayer();
         }
     }
@@ -56,7 +58,7 @@ public class BnCHUDOverlays {
 
         protected TipsyOverlay() {}
 
-        public void render(GuiGraphics gui, DeltaTracker delta) {
+        public void render(GuiGraphicsExtractor gui, DeltaTracker delta) {
             Minecraft mc = Minecraft.getInstance();
             Player player = mc.player;
             if (shouldRenderOverlay(mc, player, gui, delta)) {
@@ -74,7 +76,7 @@ public class BnCHUDOverlays {
         }
 
         @Override
-        public boolean shouldRenderOverlay(Minecraft minecraft, Player player, GuiGraphics gui, DeltaTracker delta) {
+        public boolean shouldRenderOverlay(Minecraft minecraft, Player player, GuiGraphicsExtractor gui, DeltaTracker delta) {
             return super.shouldRenderOverlay(minecraft, player, gui, delta) && player != null && !player.hasEffect(MobEffects.NAUSEA) && player.hasEffect(BnCEffects.TIPSY);
         }
     }
@@ -84,7 +86,7 @@ public class BnCHUDOverlays {
 
         protected IntoxicationOverlay() {}
 
-        public void render(GuiGraphics gui, DeltaTracker deltaTracker) {
+        public void render(GuiGraphicsExtractor gui, DeltaTracker deltaTracker) {
             if (!BnCConfiguration.CLIENT_CONFIG.get().intoxicationFoodOverlay())
                 return;
 
@@ -100,12 +102,12 @@ public class BnCHUDOverlays {
         }
 
         @Override
-        public boolean shouldRenderOverlay(Minecraft minecraft, Player player, GuiGraphics guiGraphics, DeltaTracker guiTicks) {
+        public boolean shouldRenderOverlay(Minecraft minecraft, Player player, GuiGraphicsExtractor guiGraphics, DeltaTracker guiTicks) {
             return super.shouldRenderOverlay(minecraft, player, guiGraphics, guiTicks) && player != null && player.hasEffect(BnCEffects.INTOXICATION);
         }
     }
 
-    public static void renderTipsyOverlay(GuiGraphics guiGraphics, float scalar) {
+    public static void renderTipsyOverlay(GuiGraphicsExtractor guiGraphics, float scalar) {
         int width = guiGraphics.guiWidth();
         int height = guiGraphics.guiHeight();
         int alpha = Math.round(Mth.clamp(scalar, 0.0F, 1.0F) * 255.0F);
@@ -116,7 +118,7 @@ public class BnCHUDOverlays {
         guiGraphics.blit(RenderPipelines.GUI_NAUSEA_OVERLAY, NAUSEA_LOCATION, 0, 0, 0.0F, 0.0F, width, height, width, height, color);
     }
 
-    public static void drawIntoxicationOverlay(Player player, Minecraft minecraft, GuiGraphics graphics, int right, int top) {
+    public static void drawIntoxicationOverlay(Player player, Minecraft minecraft, GuiGraphicsExtractor graphics, int right, int top) {
         int ticks = minecraft.gui.getGuiTicks();
         Random rand = new Random();
         rand.setSeed(ticks * 312871L);
@@ -177,6 +179,6 @@ public class BnCHUDOverlays {
 
     private static boolean isNaturalRegenerationEnabled(Minecraft minecraft) {
         MinecraftServer server = minecraft.getSingleplayerServer();
-        return server == null || server.getWorldData().getGameRules().get(GameRules.NATURAL_HEALTH_REGENERATION);
+        return server == null || server.getGameRules().get(GameRules.NATURAL_HEALTH_REGENERATION);
     }
 }

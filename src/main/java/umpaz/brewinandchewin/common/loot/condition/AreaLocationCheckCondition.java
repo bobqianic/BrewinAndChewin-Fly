@@ -14,7 +14,6 @@ import net.minecraft.world.level.storage.loot.ValidationContext;
 import net.minecraft.util.context.ContextKey;
 import net.minecraft.world.level.storage.loot.parameters.LootContextParams;
 import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
-import net.minecraft.world.level.storage.loot.predicates.LootItemConditionType;
 import net.minecraft.world.phys.Vec3;
 import umpaz.brewinandchewin.BrewinAndChewin;
 import umpaz.brewinandchewin.common.access.LootParamsParamSetAccess;
@@ -34,7 +33,6 @@ public class AreaLocationCheckCondition implements LootItemCondition {
     ).apply(inst, AreaLocationCheckCondition::new));
 
     public static final Identifier ID = BrewinAndChewin.asResource("area_location_check");
-    public static final LootItemConditionType TYPE = new LootItemConditionType(CODEC);
 
     protected final List<LootItemCondition> terms;
     private final Predicate<LootContext> composedPredicate;
@@ -46,8 +44,8 @@ public class AreaLocationCheckCondition implements LootItemCondition {
         this.range = range;
     }
 
-    public LootItemConditionType getType() {
-        return TYPE;
+    public MapCodec<AreaLocationCheckCondition> codec() {
+        return CODEC;
     }
 
     @Override

@@ -32,7 +32,7 @@ public class FixedAllIngredient implements CustomIngredient {
     }
 
     @Override
-    public Stream<Holder<Item>> getMatchingItems() {
+    public Stream<Holder<Item>> items() {
         return ingredients.stream()
                 .flatMap(Ingredient::items)
                 .distinct();

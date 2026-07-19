@@ -2,7 +2,7 @@ package umpaz.brewinandchewin.client.gui;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Font;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
@@ -44,22 +44,22 @@ public class KegTooltip implements ClientTooltipComponent {
    }
 
    @Override
-   public void renderImage(Font font, int mouseX, int mouseY, int width, int height, GuiGraphics gui) {
+   public void extractImage(Font font, int mouseX, int mouseY, int width, int height, GuiGraphicsExtractor gui) {
       if (mealStack.isEmpty()) return;
 
       ItemStack itemDisplay = BnCFluidItemDisplays.getFluidItemDisplay(Minecraft.getInstance().level.registryAccess(), mealStack);
-      gui.renderItem(itemDisplay, mouseX, mouseY + textSpacing);
+      gui.item(itemDisplay, mouseX, mouseY + textSpacing);
    }
 
    @Override
-   public void renderText(GuiGraphics gui, Font font, int x, int y) {
+   public void extractText(GuiGraphicsExtractor gui, Font font, int x, int y) {
       if (!mealStack.isEmpty()) {
-         gui.drawString(font, Component.literal(getAmountText()), x, y, TOOLTIP_GRAY);
-         gui.drawString(font, BrewinAndChewin.getHelper().getFluidDisplayName(mealStack), x + ITEM_SIZE + MARGIN, y + textSpacing + MARGIN, -1);
+         gui.text(font, Component.literal(getAmountText()), x, y, TOOLTIP_GRAY);
+         gui.text(font, BrewinAndChewin.getHelper().getFluidDisplayName(mealStack), x + ITEM_SIZE + MARGIN, y + textSpacing + MARGIN, -1);
       }
       else {
          MutableComponent textEmpty = TextUtils.getTranslation("tooltip.cooking_pot.empty");
-         gui.drawString(font, textEmpty, x, y, TOOLTIP_GRAY);
+         gui.text(font, textEmpty, x, y, TOOLTIP_GRAY);
       }
    }
 

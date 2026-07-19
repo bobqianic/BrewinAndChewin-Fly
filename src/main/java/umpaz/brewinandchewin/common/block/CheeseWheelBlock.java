@@ -9,6 +9,7 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.LevelReader;
@@ -77,7 +78,7 @@ public class CheeseWheelBlock extends Block {
             }
             return InteractionResult.SUCCESS;
         }
-        player.displayClientMessage(BnCTextUtils.getTranslation("block.feast.use_knife"), true);
+        player.sendOverlayMessage(BnCTextUtils.getTranslation("block.feast.use_knife"));
         return InteractionResult.TRY_WITH_EMPTY_HAND;
     }
 
@@ -93,7 +94,7 @@ public class CheeseWheelBlock extends Block {
 
     @Override
     protected List<ItemStack> getDrops(BlockState state, LootParams.Builder params) {
-        ItemStack tool = params.getParameter(LootContextParams.TOOL);
+        ItemInstance tool = params.getParameter(LootContextParams.TOOL);
         int servings = state.getValue(SERVINGS);
         if (servings == 3 && !tool.is(ModTags.KNIVES)) {
             return List.of(new ItemStack(this));

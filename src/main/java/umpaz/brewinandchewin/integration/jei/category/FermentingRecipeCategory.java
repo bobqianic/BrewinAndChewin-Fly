@@ -17,7 +17,7 @@ import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.resources.language.I18n;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponentPatch;
@@ -184,7 +184,7 @@ public class FermentingRecipeCategory implements IRecipeCategory<KegFermentingPo
     }
 
     @Override
-    public void draw(KegFermentingPouringRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphics guiGraphics, double mouseX, double mouseY) {
+    public void draw(KegFermentingPouringRecipe recipe, IRecipeSlotsView recipeSlotsView, GuiGraphicsExtractor guiGraphics, double mouseX, double mouseY) {
         background.draw(guiGraphics, 0, 0);
         arrow.draw(guiGraphics, 67, 10);
         leftBubble.draw(guiGraphics, 90, 3);
@@ -198,7 +198,7 @@ public class FermentingRecipeCategory implements IRecipeCategory<KegFermentingPo
         }
     }
 
-    private void drawTemperature(KegFermentingPouringRecipe recipe, GuiGraphics guiGraphics) {
+    private void drawTemperature(KegFermentingPouringRecipe recipe, GuiGraphicsExtractor guiGraphics) {
         int temperature = BnCTextUtils.getRotatingKegTemperature(recipe.getTemperature());
         if (temperature == 1) {
             cold.draw(guiGraphics, 25, 39);

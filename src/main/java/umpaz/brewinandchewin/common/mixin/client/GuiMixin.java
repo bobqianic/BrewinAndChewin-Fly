@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.Gui;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -38,9 +38,9 @@ public class GuiMixin {
     private boolean brewinandchewin$completedAbsorption = false;
 
     // TODO: Create an event for this overlay.
-    @WrapOperation(method = "renderHearts", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderHeart(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Gui$HeartType;IIZZZ)V", ordinal = 3))
+    @WrapOperation(method = "extractHearts", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractHeart(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Gui$HeartType;IIZZZ)V", ordinal = 3))
     private void brewinandchewin$renderTipsyHearts(Gui instance,
-                                                   GuiGraphics graphics,
+                                                   GuiGraphicsExtractor graphics,
                                                    Gui.HeartType heartType,
                                                    int heartX,
                                                    int heartY,
@@ -119,9 +119,9 @@ public class GuiMixin {
         }
     }
 
-    @WrapOperation(method = "renderHearts", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;renderHeart(Lnet/minecraft/client/gui/GuiGraphics;Lnet/minecraft/client/gui/Gui$HeartType;IIZZZ)V", ordinal = 1))
+    @WrapOperation(method = "extractHearts", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractHeart(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Gui$HeartType;IIZZZ)V", ordinal = 1))
     private void brewinandchewin$renderAbsorbingTipsyHearts(Gui instance,
-                                                            GuiGraphics graphics,
+                                                            GuiGraphicsExtractor graphics,
                                                             Gui.HeartType heartType,
                                                             int heartX,
                                                             int heartY,

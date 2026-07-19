@@ -2,7 +2,7 @@ package umpaz.brewinandchewin.client.gui;
 
 import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.ImageButton;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
@@ -16,7 +16,7 @@ import net.minecraft.network.chat.contents.PlainTextContents;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.player.Inventory;
-import net.minecraft.world.inventory.ClickType;
+import net.minecraft.world.inventory.ContainerInput;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.display.RecipeDisplay;
@@ -57,11 +57,9 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
     private boolean recipeBookEnabled;
 
     public KegScreen(KegMenu screenContainer, Inventory inv, Component titleIn) {
-        super(screenContainer, inv, titleIn);
+        super(screenContainer, inv, titleIn, 176, 166);
         this.leftPos = 0;
         this.topPos = 0;
-        this.imageWidth = 176;
-        this.imageHeight = 166;
         this.titleLabelX = 28;
     }
 
@@ -95,23 +93,21 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
     }
 
     @Override
-    public void render(GuiGraphics gui, final int mouseX, final int mouseY, float partialTicks) {
+    public void extractRenderState(GuiGraphicsExtractor gui, final int mouseX, final int mouseY, float partialTicks) {
         if (this.isRecipeBookVisible() && this.widthTooNarrow) {
-            this.renderBackground(gui, mouseX, mouseY, partialTicks);
-            this.recipeBookComponent.render(gui, mouseX, mouseY, partialTicks);
+            this.recipeBookComponent.extractRenderState(gui, mouseX, mouseY, partialTicks);
         } else {
-            super.render(gui, mouseX, mouseY, partialTicks);
+            super.extractRenderState(gui, mouseX, mouseY, partialTicks);
             if (this.recipeBookEnabled) {
-                this.recipeBookComponent.render(gui, mouseX, mouseY, partialTicks);
-                this.recipeBookComponent.renderGhostRecipe(gui, false);
+                this.recipeBookComponent.extractRenderState(gui, mouseX, mouseY, partialTicks);
+                this.recipeBookComponent.extractGhostRecipe(gui, false);
             }
         }
         blit(gui, this.leftPos + 119, this.topPos + 15, 176, 22, 27, 33);
-        this.renderTankTooltip(gui, mouseX, mouseY);
-        this.renderTemperatureTooltip(gui, mouseX, mouseY);
-        this.renderTooltip(gui, mouseX, mouseY);
+        this.extractTankTooltip(gui, mouseX, mouseY);
+        this.extractTemperatureTooltip(gui, mouseX, mouseY);
         if (this.recipeBookEnabled) {
-            this.recipeBookComponent.renderTooltip(gui, mouseX, mouseY, this.hoveredSlot);
+            this.recipeBookComponent.extractTooltip(gui, mouseX, mouseY, this.hoveredSlot);
         }
     }
 
@@ -123,7 +119,7 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
     }
 
 
-    private void renderTankTooltip(GuiGraphics gui, int mouseX, int mouseY) {
+    private void extractTankTooltip(GuiGraphicsExtractor gui, int mouseX, int mouseY) {
         KegFermentingRecipe ghostRecipe = getGhostRecipe();
         if (isHovering(120, 19, 24, 28, mouseX, mouseY) && !menu.kegTank.isEmpty() && (ghostRecipe == null || ghostRecipe.getResult().left().isPresent() && ghostRecipe.getResult().left().get().matches(menu.kegTank.getAbstractedFluid()))) {
             Component containerComponent = (BnCTextUtils.getTranslation("container.keg.served_in", FLUID_CONTAINER_COMPONENTS.computeIfAbsent(menu.kegTank.getAbstractedFluid().fluid(), fluid -> {
@@ -153,7 +149,7 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
         }
     }
 
-    private void renderTemperatureTooltip(GuiGraphics gui, int mouseX, int mouseY) {
+    private void extractTemperatureTooltip(GuiGraphicsExtractor gui, int mouseX, int mouseY) {
         KegFermentingRecipe ghostRecipe = getGhostRecipe();
         if (this.isHovering(35, 54, 42, 5, mouseX, mouseY)) {
             List<Component> tooltip = new ArrayList<>();
@@ -165,13 +161,18 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
     }
 
     @Override
-    protected void renderLabels(GuiGraphics gui, int mouseX, int mouseY) {
-        super.renderLabels(gui, mouseX, mouseY);
-        gui.drawString(this.font, this.playerInventoryTitle, 8, (this.imageHeight - 96 + 2), 4210752, false);
+    protected void extractLabels(GuiGraphicsExtractor gui, int mouseX, int mouseY) {
+        super.extractLabels(gui, mouseX, mouseY);
+        gui.text(this.font, this.playerInventoryTitle, 8, (this.imageHeight - 96 + 2), 4210752, false);
     }
 
     @Override
-    protected void renderBg(GuiGraphics gui, float partialTicks, int mouseX, int mouseY) {
+    public void extractBackground(GuiGraphicsExtractor gui, int mouseX, int mouseY, float partialTicks) {
+        super.extractBackground(gui, mouseX, mouseY, partialTicks);
+        if (this.isRecipeBookVisible() && this.widthTooNarrow) {
+            return;
+        }
+
         // Render UI background
         if (this.minecraft == null)
             return;
@@ -207,13 +208,13 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
             int pourCount = pouringRecipe.map(kegPouringRecipe -> (int) (Math.min(this.menu.kegTank.getFluidCapacity(), this.menu.kegTank.getAbstractedFluid().amount()) / kegPouringRecipe.getLoaderAmount())).orElse(1);
             itemDisplay.setCount(pourCount);
             if (!itemDisplay.isEmpty()) {
-                gui.renderItem(itemDisplay, this.leftPos + 124, this.topPos + 23);
-                gui.renderItemDecorations(minecraft.font, itemDisplay, this.leftPos + 124, this.topPos + 23);
+                gui.item(itemDisplay, this.leftPos + 124, this.topPos + 23);
+                gui.itemDecorations(minecraft.font, itemDisplay, this.leftPos + 124, this.topPos + 23);
             }
         }
     }
 
-    private void renderTemperatureBars(GuiGraphics gui) {
+    private void renderTemperatureBars(GuiGraphicsExtractor gui) {
         double temperature = getVisualRawKegTemperature();
         renderTemperatureBar(gui, COLD_BAR, 176, getColdFill(temperature), false);
         renderTemperatureBar(gui, CHILLY_BAR, 184, getChillyFill(temperature), false);
@@ -280,7 +281,7 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
         return Mth.clamp((temperature - warm) / (hot - warm), 0.0D, 1.0D);
     }
 
-    private void renderTemperatureBar(GuiGraphics gui, BnCRectangle bar, int textureX, double fill, boolean fillFromLeft) {
+    private void renderTemperatureBar(GuiGraphicsExtractor gui, BnCRectangle bar, int textureX, double fill, boolean fillFromLeft) {
         int width = Mth.clamp((int) Math.round(bar.width() * fill), 0, bar.width());
         if (width <= 0) {
             return;
@@ -311,7 +312,7 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
     }
 
     @Override
-    protected void slotClicked(Slot slot, int slotId, int mouseButton, ClickType clickType) {
+    protected void slotClicked(Slot slot, int slotId, int mouseButton, ContainerInput clickType) {
         super.slotClicked(slot, slotId, mouseButton, clickType);
         if (this.recipeBookEnabled) {
             this.recipeBookComponent.slotClicked(slot);
@@ -336,7 +337,7 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
         }
     }
 
-    private static void blit(GuiGraphics gui, int x, int y, int u, int v, int width, int height) {
+    private static void blit(GuiGraphicsExtractor gui, int x, int y, int u, int v, int width, int height) {
         gui.blit(RenderPipelines.GUI_TEXTURED, BACKGROUND_TEXTURE, x, y, (float) u, (float) v, width, height, 256, 256);
     }
 

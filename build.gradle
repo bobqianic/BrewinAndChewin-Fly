@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version "${loom_version}"
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'java-library'
     id 'maven-publish'
     id 'me.modmuss50.mod-publish-plugin' version "${mod_publish_plugin_version}"
@@ -103,50 +103,49 @@ sourceSets {
 
 dependencies {
     minecraft "com.mojang:minecraft:${minecraft_version}"
-    mappings loom.officialMojangMappings()
 
-    modImplementation "net.fabricmc:fabric-loader:${loader_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
-    modLocalRuntime "maven.modrinth:modmenu:${mod_menu_version}"
+    implementation "net.fabricmc:fabric-loader:${loader_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    runtimeOnly "maven.modrinth:modmenu:${mod_menu_version}"
 
     compileOnly "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
     annotationProcessor "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
     compileOnly "net.fabricmc:sponge-mixin:${fabric_mixin_version}"
     implementation 'org.jetbrains:annotations:24.1.0'
 
-    modImplementation("maven.modrinth:farmers-delight-refabricated:${farmers_delight_refabricated_version}") {
+    implementation("maven.modrinth:farmers-delight-refabricated:${farmers_delight_refabricated_version}") {
         exclude group: 'net.fabricmc'
     }
 
-    modCompileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
-    modLocalRuntime "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
-    modCompileOnly "maven.modrinth:appleskin:${appleskin_fabric_version_id}"
-    modLocalRuntime "maven.modrinth:appleskin:${appleskin_fabric_version_id}"
-    modCompileOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
+    compileOnly "mezz.jei:jei-${minecraft_version}-fabric-api:${jei_version}"
+    runtimeOnly "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
+    compileOnly "maven.modrinth:appleskin:${appleskin_fabric_version_id}"
+    runtimeOnly "maven.modrinth:appleskin:${appleskin_fabric_version_id}"
+    compileOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
         exclude group: 'net.fabricmc.fabric-api'
     }
-    modLocalRuntime("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
+    runtimeOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
         exclude group: 'net.fabricmc.fabric-api'
     }
 
-    modImplementation("com.github.Chocohead:Fabric-ASM:${fabric_asm_version}") {
+    implementation("com.github.Chocohead:Fabric-ASM:${fabric_asm_version}") {
         exclude group: 'net.fabricmc.fabric-api'
     }
     include("com.github.Chocohead:Fabric-ASM:${fabric_asm_version}") {
         exclude group: 'net.fabricmc.fabric-api'
     }
 
-    modCompileOnly "maven.modrinth:create-fly:${create_fly_version}"
-    modLocalRuntime "maven.modrinth:create-fly:${create_fly_version}"
+    compileOnly "maven.modrinth:create-fly:${create_fly_version}"
+    runtimeOnly "maven.modrinth:create-fly:${create_fly_version}"
 
-    modCompileOnly "maven.modrinth:styled-chat:${styled_chat_version}"
-    modCompileOnly "eu.pb4:placeholder-api:${pb4_placeholder_api_version}"
+    compileOnly "maven.modrinth:styled-chat:${styled_chat_version}"
+    compileOnly "eu.pb4:placeholder-api:${pb4_placeholder_api_version}"
 
-    modLocalRuntime "maven.modrinth:styled-chat:${styled_chat_version}"
-    modLocalRuntime "eu.pb4:predicate-api:${pb4_predicate_api_version}"
-    modLocalRuntime "eu.pb4:placeholder-api:${pb4_placeholder_api_version}"
-    modLocalRuntime "me.lucko:fabric-permissions-api:${permissions_api_version}"
-    modLocalRuntime "eu.pb4:player-data-api:${pb4_player_data_api_version}"
+    runtimeOnly "maven.modrinth:styled-chat:${styled_chat_version}"
+    runtimeOnly "eu.pb4:predicate-api:${pb4_predicate_api_version}"
+    runtimeOnly "eu.pb4:placeholder-api:${pb4_placeholder_api_version}"
+    runtimeOnly "me.lucko:fabric-permissions-api:${permissions_api_version}"
+    runtimeOnly "eu.pb4:player-data-api:${pb4_player_data_api_version}"
 }
 
 java {
@@ -224,7 +223,7 @@ publishing {
 }
 
 publishMods {
-    file = tasks.named('remapJar').flatMap { it.archiveFile }
+    file = tasks.named('jar').flatMap { it.archiveFile }
     modLoaders.add 'fabric'
     changelog = rootProject.file('CHANGELOG.md').text
     displayName = "v${mod_version} (Fabric ${minecraft_version})"

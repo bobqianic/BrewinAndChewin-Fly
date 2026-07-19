@@ -494,24 +494,24 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
     }
 
     private void spawnFlameParticles(ServerLevel serverLevel, List<BlockPos> heatedPositions) {
-        if (serverLevel.random.nextInt(4) != 0) {
+        if (serverLevel.getRandom().nextInt(4) != 0) {
             return;
         }
-        BlockPos pos = heatedPositions.get(serverLevel.random.nextInt(heatedPositions.size()));
-        double x = pos.getX() + 0.5D + (serverLevel.random.nextDouble() * 0.8D - 0.4D);
-        double y = pos.getY() + 0.35D + serverLevel.random.nextDouble() * 0.9D;
-        double z = pos.getZ() + 0.5D + (serverLevel.random.nextDouble() * 0.8D - 0.4D);
+        BlockPos pos = heatedPositions.get(serverLevel.getRandom().nextInt(heatedPositions.size()));
+        double x = pos.getX() + 0.5D + (serverLevel.getRandom().nextDouble() * 0.8D - 0.4D);
+        double y = pos.getY() + 0.35D + serverLevel.getRandom().nextDouble() * 0.9D;
+        double z = pos.getZ() + 0.5D + (serverLevel.getRandom().nextDouble() * 0.8D - 0.4D);
         serverLevel.sendParticles(ParticleTypes.FLAME, x, y, z, 1, 0.02D, 0.04D, 0.02D, 0.005D);
     }
 
     private void spawnSteamParticles(ServerLevel serverLevel) {
-        if (serverLevel.random.nextInt(10) != 0) {
+        if (serverLevel.getRandom().nextInt(10) != 0) {
             return;
         }
         BlockPos pos = getRandomKegPosition(serverLevel);
-        double x = pos.getX() + 0.5D + (serverLevel.random.nextDouble() * 0.5D - 0.25D);
-        double y = pos.getY() + 0.85D + serverLevel.random.nextDouble() * 0.45D;
-        double z = pos.getZ() + 0.5D + (serverLevel.random.nextDouble() * 0.5D - 0.25D);
+        double x = pos.getX() + 0.5D + (serverLevel.getRandom().nextDouble() * 0.5D - 0.25D);
+        double y = pos.getY() + 0.85D + serverLevel.getRandom().nextDouble() * 0.45D;
+        double z = pos.getZ() + 0.5D + (serverLevel.getRandom().nextDouble() * 0.5D - 0.25D);
         serverLevel.sendParticles(ModParticleTypes.STEAM.get(), x, y, z, 2, 0.05D, 0.05D, 0.05D, 0.01D);
     }
 
@@ -520,7 +520,7 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
         for (BlockPos offset : getKegFootprintOffsets()) {
             positions.add(worldPosition.offset(offset));
         }
-        return positions.get(serverLevel.random.nextInt(positions.size()));
+        return positions.get(serverLevel.getRandom().nextInt(positions.size()));
     }
 
     public Optional<RecipeHolder<KegFermentingRecipe>> getRecipeWithoutTemperature() {
@@ -731,7 +731,7 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
 
         Optional<KegPouringRecipe> recipe = getPouringRecipe(slotIn);
         if (recipe.isPresent() && (fluidTank.isEmpty() || recipe.get().matchesFluid(slotIn, fluidTank.getAbstractedFluid()))) { // if the recipe is present and the fluid is empty or the same
-            ItemStack resultItem = recipe.get().assemble(recipeWrapper, level.registryAccess());
+            ItemStack resultItem = recipe.get().assemble(recipeWrapper);
             if (ItemStack.isSameItem(slotIn, recipe.get().getContainer(resultItem)) && // if container is same
                     recipe.get().getLoaderAmount() <= fluidTank.getAbstractedFluid().amount() && // the amount is LTE the fluid amount
                     (!inGui || inventory.getStackInSlot(OUTPUT_SLOT).isEmpty() || ItemStack.isSameItemSameComponents(resultItem, inventory.getStackInSlot(OUTPUT_SLOT)))) { // the output slot can accept this itemaccept this item
@@ -1149,7 +1149,7 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
                     boolean fluidCheck = false;
                     if (r.isStrict() && ItemStack.isSameItemSameComponents(r.getContainer(), slot) || !r.isStrict() && (r.getContainer().getItem() == slot.getItem()))
                         containerCheck = true;
-                    if (!containerCheck && r.canFill() && (r.isStrict() && ItemStack.isSameItemSameComponents(r.assemble(recipeWrapper, level.registryAccess()), slot) || !r.isStrict() && r.assemble(recipeWrapper, level.registryAccess()).getItem() == slot.getItem()))
+                    if (!containerCheck && r.canFill() && (r.isStrict() && ItemStack.isSameItemSameComponents(r.assemble(recipeWrapper), slot) || !r.isStrict() && r.assemble(recipeWrapper).getItem() == slot.getItem()))
                         resultCheck = true;
                     if (recipeWrapper.getFluid().isEmpty() || r.matchesFluid(slot, recipeWrapper.getFluid()))
                         fluidCheck = true;

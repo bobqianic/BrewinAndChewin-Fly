@@ -113,7 +113,7 @@ public abstract class LivingEntityMixin {
 
     @ModifyReturnValue(method = "canBeAffected", at = @At("RETURN"))
     private boolean brewinandchewin$intoxicationImmunity(boolean original, MobEffectInstance mobEffectInstance) {
-        if (((LivingEntity)(Object)this).getType().is(BnCTags.EntityTypes.IMMUNE_TO_INTOXICATION) && mobEffectInstance.getEffect().is(BnCEffects.INTOXICATION))
+        if (((LivingEntity)(Object)this).getType().builtInRegistryHolder().is(BnCTags.EntityTypes.IMMUNE_TO_INTOXICATION) && mobEffectInstance.getEffect().is(BnCEffects.INTOXICATION))
             return false;
         return original;
     }

@@ -2,6 +2,7 @@ package umpaz.brewinandchewin.fabric.container;
 
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariant;
 import net.fabricmc.fabric.api.transfer.v1.fluid.base.SingleFluidStorage;
+import net.fabricmc.fabric.api.transfer.v1.storage.base.SingleVariantStorage;
 import net.fabricmc.fabric.api.transfer.v1.transaction.Transaction;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.component.DataComponentPatch;
@@ -39,7 +40,7 @@ public class KegFluidTankFabric extends SingleFluidStorage implements Abstracted
     @Override
     public AbstractedFluidStack getAbstractedFluid() {
         normalizeStorageState();
-        return new AbstractedFluidStack(variant.getFluid(), getAmount(), variant.getComponentMap(), FluidUnit.DROPLET, new AmountedFluidVariant(variant, getAmount(), FluidUnit.DROPLET));
+        return new AbstractedFluidStack(variant.getFluid(), getAmount(), variant.getComponents(), FluidUnit.DROPLET, new AmountedFluidVariant(variant, getAmount(), FluidUnit.DROPLET));
     }
 
     @Override
@@ -83,7 +84,7 @@ public class KegFluidTankFabric extends SingleFluidStorage implements Abstracted
             if (!simulate)
                 t.commit();
             t.close();
-            return new AbstractedFluidStack(variant.getFluid(), newFill, variant.getComponentMap(), FluidUnit.DROPLET, new AmountedFluidVariant(variant, newFill, FluidUnit.DROPLET));
+            return new AbstractedFluidStack(variant.getFluid(), newFill, variant.getComponents(), FluidUnit.DROPLET, new AmountedFluidVariant(variant, newFill, FluidUnit.DROPLET));
         } catch (Exception e) {
             BrewinAndChewin.LOG.error("Failed to fill keg with {} of fluid {}.", fluidStack.fluid(), fluidStack.unit().shortFormat(String.valueOf(fluidStack.unit().convertToLoader(fluidStack.amount()))));
         }
@@ -98,7 +99,7 @@ public class KegFluidTankFabric extends SingleFluidStorage implements Abstracted
             Transaction t = Transaction.openOuter();
             FluidVariant extractedVariant = variant;
             long extractedAmount = extract(extractedVariant, newMax, t);
-            AbstractedFluidStack stack = new AbstractedFluidStack(extractedVariant.getFluid(), extractedAmount, extractedVariant.getComponentMap(), FluidUnit.DROPLET, new AmountedFluidVariant(extractedVariant, extractedAmount, FluidUnit.DROPLET));
+            AbstractedFluidStack stack = new AbstractedFluidStack(extractedVariant.getFluid(), extractedAmount, extractedVariant.getComponents(), FluidUnit.DROPLET, new AmountedFluidVariant(extractedVariant, extractedAmount, FluidUnit.DROPLET));
             if (!simulate)
                 t.commit();
             t.close();
@@ -113,7 +114,7 @@ public class KegFluidTankFabric extends SingleFluidStorage implements Abstracted
 
     @Override
     public void readFromNbt(CompoundTag tag, HolderLookup.Provider provider) {
-        readData(TagValueInput.create(ProblemReporter.DISCARDING, provider, tag));
+        SingleVariantStorage.readValue(this, FluidVariant.CODEC, FluidVariant::blank, TagValueInput.create(ProblemReporter.DISCARDING, provider, tag));
         normalizeLoadedAmount();
     }
 
@@ -121,7 +122,7 @@ public class KegFluidTankFabric extends SingleFluidStorage implements Abstracted
     public CompoundTag writeToNbt(HolderLookup.Provider provider) {
         normalizeStorageState();
         TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, provider);
-        writeData(output);
+        SingleVariantStorage.writeValue(this, FluidVariant.CODEC, output);
         return output.buildResult();
     }
 

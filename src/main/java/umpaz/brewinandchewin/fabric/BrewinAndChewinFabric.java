@@ -6,6 +6,7 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerEntityEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.networking.v1.*;
 import net.fabricmc.fabric.api.recipe.v1.sync.RecipeSynchronization;
+import net.fabricmc.fabric.api.registry.FlammableBlockRegistry;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidStorage;
 import net.fabricmc.fabric.api.transfer.v1.fluid.FluidVariantAttributes;
 import net.fabricmc.fabric.api.transfer.v1.item.ItemStorage;
@@ -19,8 +20,6 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.block.ComposterBlock;
-import net.minecraft.world.level.block.FireBlock;
-import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import umpaz.brewinandchewin.common.block.KegBlock;
@@ -186,16 +185,16 @@ public class BrewinAndChewinFabric implements ModInitializer {
     }
 
     private static void registerNetwork() {
-        PayloadTypeRegistry.playS2C().register(ClearKegFluidContainerComponentsClientboundPacket.TYPE, ClearKegFluidContainerComponentsClientboundPacket.STREAM_CODEC);
-        PayloadTypeRegistry.playS2C().register(MakeNextPlayerChatTipsyClientboundPacket.TYPE, MakeNextPlayerChatTipsyClientboundPacket.STREAM_CODEC);
-        PayloadTypeRegistry.playS2C().register(SendRecipeBookValuesClientboundPacket.TYPE, SendRecipeBookValuesClientboundPacket.STREAM_CODEC);
-        PayloadTypeRegistry.playS2C().register(SyncConfigClientboundPacket.TYPE, SyncConfigClientboundPacket.STREAM_CODEC);
-        PayloadTypeRegistry.playS2C().register(SyncNumbedHeartsClientboundPacket.TYPE, SyncNumbedHeartsClientboundPacket.STREAM_CODEC);
-        PayloadTypeRegistry.playS2C().register(SyncRagingStacksClientboundPacket.TYPE, SyncRagingStacksClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(ClearKegFluidContainerComponentsClientboundPacket.TYPE, ClearKegFluidContainerComponentsClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(MakeNextPlayerChatTipsyClientboundPacket.TYPE, MakeNextPlayerChatTipsyClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(SendRecipeBookValuesClientboundPacket.TYPE, SendRecipeBookValuesClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(SyncConfigClientboundPacket.TYPE, SyncConfigClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(SyncNumbedHeartsClientboundPacket.TYPE, SyncNumbedHeartsClientboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.clientboundPlay().register(SyncRagingStacksClientboundPacket.TYPE, SyncRagingStacksClientboundPacket.STREAM_CODEC);
 
-        PayloadTypeRegistry.playC2S().register(JEITransferKegRecipeServerboundPacket.TYPE, JEITransferKegRecipeServerboundPacket.STREAM_CODEC);
-        PayloadTypeRegistry.playC2S().register(EMIFillFermentingRecipeServerboundPacket.TYPE, EMIFillFermentingRecipeServerboundPacket.STREAM_CODEC);
-        PayloadTypeRegistry.playC2S().register(EMIFillPouringRecipeServerboundPacket.TYPE, EMIFillPouringRecipeServerboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(JEITransferKegRecipeServerboundPacket.TYPE, JEITransferKegRecipeServerboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(EMIFillFermentingRecipeServerboundPacket.TYPE, EMIFillFermentingRecipeServerboundPacket.STREAM_CODEC);
+        PayloadTypeRegistry.serverboundPlay().register(EMIFillPouringRecipeServerboundPacket.TYPE, EMIFillPouringRecipeServerboundPacket.STREAM_CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(JEITransferKegRecipeServerboundPacket.TYPE, (payload, context) -> payload.handle(context.player()));
         ServerPlayNetworking.registerGlobalReceiver(EMIFillFermentingRecipeServerboundPacket.TYPE, (payload, context) -> payload.handle(context.player()));
@@ -218,9 +217,10 @@ public class BrewinAndChewinFabric implements ModInitializer {
     }
 
     private static void registerFlammables() {
-        ((FireBlock) Blocks.FIRE).setFlammable(BnCBlocks.KEG, 3, 5);
-        ((FireBlock) Blocks.FIRE).setFlammable(BnCBlocks.LARGE_KEG, 3, 5);
-        ((FireBlock) Blocks.FIRE).setFlammable(BnCBlocks.HEATING_CASK, 5, 8);
+        FlammableBlockRegistry registry = FlammableBlockRegistry.getDefaultInstance();
+        registry.add(BnCBlocks.KEG, 3, 5);
+        registry.add(BnCBlocks.LARGE_KEG, 3, 5);
+        registry.add(BnCBlocks.HEATING_CASK, 5, 8);
     }
 
     private static void registerFluidAttributeHandlers() {

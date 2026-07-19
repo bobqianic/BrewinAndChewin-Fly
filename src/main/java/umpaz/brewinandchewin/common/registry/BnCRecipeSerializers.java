@@ -9,8 +9,8 @@ import umpaz.brewinandchewin.common.crafting.KegPouringRecipe;
 import umpaz.brewinandchewin.common.crafting.KegFermentingRecipe;
 
 public class BnCRecipeSerializers {
-    public static final RecipeSerializer<KegFermentingRecipe> FERMENTING = new KegFermentingRecipe.Serializer();
-    public static final RecipeSerializer<KegPouringRecipe> KEG_POURING = new KegPouringRecipe.Serializer();
+    public static final RecipeSerializer<KegFermentingRecipe> FERMENTING = new RecipeSerializer<>(KegFermentingRecipe.Serializer.CODEC, KegFermentingRecipe.Serializer.STREAM_CODEC);
+    public static final RecipeSerializer<KegPouringRecipe> KEG_POURING = new RecipeSerializer<>(KegPouringRecipe.Serializer.CODEC, KegPouringRecipe.Serializer.STREAM_CODEC);
     public static final RecipeSerializer<CreatePotionPouringRecipe> CREATE_POTION_POURING = createCreatePotionPouringRecipe();
 
     public static void registerAll() {
@@ -22,7 +22,7 @@ public class BnCRecipeSerializers {
 
     private static RecipeSerializer<CreatePotionPouringRecipe> createCreatePotionPouringRecipe() {
         if (BrewinAndChewin.getHelper().isModLoaded("create"))
-            return new CreatePotionPouringRecipe.Serializer();
+            return new RecipeSerializer<>(CreatePotionPouringRecipe.Serializer.CODEC, CreatePotionPouringRecipe.Serializer.STREAM_CODEC);
         return null;
     }
 }

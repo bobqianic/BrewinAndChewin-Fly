@@ -34,6 +34,10 @@ public class BnCItems {
         return new Item.Properties().setId(key(name));
     }
 
+    private static Item registerEarly(String name, Item item) {
+        return Registry.register(BuiltInRegistries.ITEM, BrewinAndChewin.asResource(name), item);
+    }
+
     private static Item bucketProperties(String name, Fluid fluid) {
         return new BnCBucketItem(fluid, itemProperties(name).stacksTo(1).craftRemainder(Items.BUCKET));
     }
@@ -47,7 +51,12 @@ public class BnCItems {
     }
 
     public static void registerWithTab(String name, Item item, @Nullable String requiredMod) {
-        Registry.register(BuiltInRegistries.ITEM, BrewinAndChewin.asResource(name), item);
+        var id = BrewinAndChewin.asResource(name);
+        if (!BuiltInRegistries.ITEM.containsKey(id)) {
+            Registry.register(BuiltInRegistries.ITEM, id, item);
+        } else if (BuiltInRegistries.ITEM.getValue(id) != item) {
+            throw new IllegalStateException("Item " + id + " was registered with a different instance");
+        }
         if (requiredMod == null || BrewinAndChewin.getHelper().isModLoaded(requiredMod))
             CREATIVE_TAB_ITEMS.add(item);
     }
@@ -58,7 +67,7 @@ public class BnCItems {
     public static final Item ICE_CRATE = new BlockItem(BnCBlocks.ICE_CRATE, itemProperties("ice_crate"));
     public static final Item COASTER = new BlockItem(BnCBlocks.COASTER, itemProperties("coaster"));
 
-    public static final Item TANKARD = new Item(itemProperties("tankard"));
+    public static final Item TANKARD = registerEarly("tankard", new Item(itemProperties("tankard")));
 
     public static final Item BEER = new BoozeItem(() -> BnCFluids.BEER, itemProperties("beer")
             .stacksTo(16).craftRemainder(BnCItems.TANKARD).food(BnCFoods.BEER, BnCFoods.BEER_CONSUMABLE));

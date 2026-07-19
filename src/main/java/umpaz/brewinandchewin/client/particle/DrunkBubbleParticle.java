@@ -54,7 +54,7 @@ public class DrunkBubbleParticle extends SingleQuadParticle {
          particle.setAlpha(0.6F);
          particle.setColor(typeIn.getColor().x, typeIn.getColor().y, typeIn.getColor().z);
          particle.scale(typeIn.getScale());
-         particle.setSprite(this.spriteSet.get(level.random));
+         particle.setSprite(this.spriteSet.get(level.getRandom()));
          return particle;
       }
    }

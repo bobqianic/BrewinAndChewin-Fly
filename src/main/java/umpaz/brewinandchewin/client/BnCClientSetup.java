@@ -4,7 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.mojang.serialization.JsonOps;
-import net.minecraft.client.color.block.BlockColor;
+import net.fabricmc.fabric.api.client.rendering.v1.BlockTintsFactory;
 import net.minecraft.client.gui.screens.inventory.tooltip.ClientTooltipComponent;
 import net.minecraft.client.particle.ParticleResources;
 import net.minecraft.client.renderer.blockentity.BlockEntityRendererProvider;
@@ -62,10 +62,9 @@ public class BnCClientSetup {
         consumer.accept(BnCFluidItemDisplays.Loader.INSTANCE);
     }
 
-    public static void registerColorHandlers(BiConsumer<BlockColor, Block> consumer) {
-        consumer.accept((state, level, pos, pTintIndex) -> {
+    public static void registerColorHandlers(BiConsumer<BlockTintsFactory, Block> consumer) {
+        consumer.accept((state, level, pos, output) -> {
             if (level != null && pos != null && level.getBlockEntity(pos) instanceof CoasterBlockEntity blockEntity) {
-                int tintIndex = -1;
                 int count = (int) blockEntity.getItems().stream().filter(i -> !i.isEmpty()).count();
                 for (int i = 0; i < count; i++) {
                     ItemStack stack = blockEntity.getItems().get(i);
@@ -81,15 +80,12 @@ public class BnCClientSetup {
                                 }
                             }
                             if (color != -1) {
-                                ++tintIndex;
-                                if (tintIndex == pTintIndex)
-                                    return color;
+                                output.add(color);
                             }
                         }
                     }
                 }
             }
-            return -1;
         }, BnCBlocks.COASTER);
     }
 

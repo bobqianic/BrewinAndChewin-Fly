@@ -1,6 +1,6 @@
 package umpaz.brewinandchewin.client.gui;
 
-import net.minecraft.client.gui.GuiGraphics;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.gui.components.WidgetSprites;
 import net.minecraft.client.gui.screens.recipebook.GhostSlots;
 import net.minecraft.client.gui.screens.recipebook.RecipeCollection;
@@ -74,13 +74,13 @@ public class KegRecipeBookComponent extends RecipeBookComponent<KegMenu> {
     }
 
     @Override
-    public void renderTooltip(GuiGraphics gui, int mouseX, int mouseY, @Nullable Slot slot) {
-        super.renderTooltip(gui, mouseX, mouseY, slot);
+    public void extractTooltip(GuiGraphicsExtractor gui, int mouseX, int mouseY, @Nullable Slot slot) {
+        super.extractTooltip(gui, mouseX, mouseY, slot);
     }
 
     @Override
-    public void renderGhostRecipe(GuiGraphics guiGraphics, boolean isBiggerResultSlot) {
-        super.renderGhostRecipe(guiGraphics, isBiggerResultSlot);
+    public void extractGhostRecipe(GuiGraphicsExtractor guiGraphics, boolean isBiggerResultSlot) {
+        super.extractGhostRecipe(guiGraphics, isBiggerResultSlot);
     }
 
     @Nullable

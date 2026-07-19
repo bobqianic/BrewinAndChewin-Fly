@@ -9,6 +9,7 @@ import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.ItemStackTemplate;
 import net.minecraft.world.item.alchemy.PotionContents;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import umpaz.brewinandchewin.BrewinAndChewin;
@@ -20,13 +21,13 @@ import umpaz.brewinandchewin.common.utility.KegRecipeWrapper;
 import java.util.Optional;
 
 public class CreatePotionPouringRecipe extends KegPouringRecipe {
-    public CreatePotionPouringRecipe(Optional<ItemStack> container, ItemStack result, long amount, Optional<FluidUnit> unit, boolean canFill) {
+    public CreatePotionPouringRecipe(Optional<ItemStackTemplate> container, ItemStackTemplate result, long amount, Optional<FluidUnit> unit, boolean canFill) {
         super(new AbstractedFluidStack(BrewinAndChewin.getHelper().getCreatePotionFluid(), amount), container, result, unit, false, canFill);
     }
 
     @Override
-    public ItemStack assemble(KegRecipeWrapper recipeWrapper, HolderLookup.Provider provider) {
-        ItemStack stack = super.getResultItem(provider).copy();
+    public ItemStack assemble(KegRecipeWrapper recipeWrapper) {
+        ItemStack stack = super.assemble(recipeWrapper).copy();
         AbstractedFluidStack fluidStack = recipeWrapper.getFluid();
         if (fluidStack.components().has(DataComponents.POTION_CONTENTS) && fluidStack.components().get(DataComponents.POTION_CONTENTS) != PotionContents.EMPTY)
             stack.set(DataComponents.POTION_CONTENTS, fluidStack.components().get(DataComponents.POTION_CONTENTS));
@@ -55,21 +56,19 @@ public class CreatePotionPouringRecipe extends KegPouringRecipe {
         return (RecipeSerializer) BnCRecipeSerializers.CREATE_POTION_POURING;
     }
 
-    public static class Serializer implements RecipeSerializer<CreatePotionPouringRecipe> {
+    public static class Serializer {
         public static final MapCodec<CreatePotionPouringRecipe> CODEC = RecordCodecBuilder.mapCodec(inst -> inst.group(
-                ItemStack.CODEC.optionalFieldOf("container").forGetter(KegPouringRecipe::getRawContainer),
-                ItemStack.CODEC.fieldOf("output").forGetter(KegPouringRecipe::getOutput),
+                ItemStackTemplate.CODEC.optionalFieldOf("container").forGetter(KegPouringRecipe::getRawContainer),
+                ItemStackTemplate.CODEC.fieldOf("output").forGetter(KegPouringRecipe::getOutputTemplate),
                 Codec.LONG.fieldOf("fluid_amount").forGetter(CreatePotionPouringRecipe::getFluidAmount),
                 FluidUnit.CODEC.optionalFieldOf("unit").forGetter(KegPouringRecipe::getRawUnit),
                 Codec.BOOL.optionalFieldOf("can_fill", true).forGetter(KegPouringRecipe::canFill)
         ).apply(inst, CreatePotionPouringRecipe::new));
         public static final StreamCodec<RegistryFriendlyByteBuf, CreatePotionPouringRecipe> STREAM_CODEC = StreamCodec.of(Serializer::toNetwork, Serializer::fromNetwork);
 
-        public Serializer() {}
-
         public static CreatePotionPouringRecipe fromNetwork(RegistryFriendlyByteBuf buf) {
-            Optional<ItemStack> container = ByteBufCodecs.optional(ItemStack.STREAM_CODEC).decode(buf);
-            ItemStack output = ItemStack.STREAM_CODEC.decode(buf);
+            Optional<ItemStackTemplate> container = ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).decode(buf);
+            ItemStackTemplate output = ItemStackTemplate.STREAM_CODEC.decode(buf);
             long amount = buf.readLong();
             Optional<FluidUnit> unit = ByteBufCodecs.optional(FluidUnit.STREAM_CODEC).decode(buf);
             boolean canFill = buf.readBoolean();
@@ -77,21 +76,12 @@ public class CreatePotionPouringRecipe extends KegPouringRecipe {
         }
 
         public static void toNetwork(RegistryFriendlyByteBuf buf, CreatePotionPouringRecipe recipe) {
-            ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(buf, recipe.getRawContainer());
-            ItemStack.STREAM_CODEC.encode(buf, recipe.getOutput());
+            ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode(buf, recipe.getRawContainer());
+            ItemStackTemplate.STREAM_CODEC.encode(buf, recipe.getOutputTemplate());
             buf.writeLong(recipe.getFluidAmount());
             ByteBufCodecs.optional(FluidUnit.STREAM_CODEC).encode(buf, recipe.getRawUnit());
             ByteBufCodecs.BOOL.encode(buf, recipe.canFill());
         }
 
-        @Override
-        public MapCodec<CreatePotionPouringRecipe> codec() {
-            return CODEC;
-        }
-
-        @Override
-        public StreamCodec<RegistryFriendlyByteBuf, CreatePotionPouringRecipe> streamCodec() {
-            return STREAM_CODEC;
-        }
     }
 }

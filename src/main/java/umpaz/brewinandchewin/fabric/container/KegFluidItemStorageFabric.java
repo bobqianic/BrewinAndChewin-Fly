@@ -59,7 +59,7 @@ public class KegFluidItemStorageFabric implements AbstractedFluidTank {
         for (StorageView<FluidVariant> view : storage.nonEmptyViews()) {
             FluidVariant variant = view.getResource();
             AmountedFluidVariant amounted = new AmountedFluidVariant(variant, view.getAmount(), FluidUnit.DROPLET);
-            return new AbstractedFluidStack(variant.getFluid(), view.getAmount(), variant.getComponentMap(), FluidUnit.DROPLET, amounted);
+            return new AbstractedFluidStack(variant.getFluid(), view.getAmount(), variant.getComponents(), FluidUnit.DROPLET, amounted);
         }
         return AbstractedFluidStack.EMPTY;
     }
@@ -96,7 +96,7 @@ public class KegFluidItemStorageFabric implements AbstractedFluidTank {
                     t.commit();
                 if (newFill <= 0)
                     return AbstractedFluidStack.EMPTY;
-                return new AbstractedFluidStack(variant.getFluid(), newFill, variant.getComponentMap(), FluidUnit.DROPLET, new AmountedFluidVariant(variant, newFill, FluidUnit.DROPLET));
+                return new AbstractedFluidStack(variant.getFluid(), newFill, variant.getComponents(), FluidUnit.DROPLET, new AmountedFluidVariant(variant, newFill, FluidUnit.DROPLET));
             }
         }
         return AbstractedFluidStack.EMPTY;
@@ -116,7 +116,7 @@ public class KegFluidItemStorageFabric implements AbstractedFluidTank {
 
                 FluidVariant variant = fluidView.getResource();
                 long extractedAmount = storage.extract(variant, unit.convertToLoader(maxDrain), t);
-                AbstractedFluidStack stack = new AbstractedFluidStack(variant.getFluid(), extractedAmount, variant.getComponentMap(), FluidUnit.DROPLET, new AmountedFluidVariant(variant, extractedAmount, FluidUnit.DROPLET));
+                AbstractedFluidStack stack = new AbstractedFluidStack(variant.getFluid(), extractedAmount, variant.getComponents(), FluidUnit.DROPLET, new AmountedFluidVariant(variant, extractedAmount, FluidUnit.DROPLET));
                 if (!simulate)
                     t.commit();
                 return stack;
