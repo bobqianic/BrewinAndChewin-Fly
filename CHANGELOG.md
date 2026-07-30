@@ -1,3 +1,3 @@
-# 4.4.6-fly
+# 4.4.7-fly
 
-- Initial Brewin' And Chewin' Fly release for Minecraft 1.21.11.
+- Fixed a Fabric startup crash with Farmer's Delight 3.6.11 by creating the fog particle type through Fabric API instead of Minecraft's protected constructor ([#1](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/1)).
