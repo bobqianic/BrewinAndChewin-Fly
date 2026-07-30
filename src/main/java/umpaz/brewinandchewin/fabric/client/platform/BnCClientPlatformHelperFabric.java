@@ -2,7 +2,7 @@ package umpaz.brewinandchewin.fabric.client.platform;
 
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.fabric.api.client.model.loading.v1.FabricModelManager;
-import net.fabricmc.fabric.api.recipe.v1.FabricRecipeManager;
+import net.fabricmc.fabric.api.recipe.v1.FabricRecipeAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientPacketListener;
@@ -73,13 +73,14 @@ public class BnCClientPlatformHelperFabric implements BnCClientPlatformHelper {
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public <T extends Recipe<?>> List<RecipeHolder<T>> getSynchronizedRecipes(RecipeType<T> recipeType) {
         ClientPacketListener connection = Minecraft.getInstance().getConnection();
         if (connection == null) {
             return List.of();
         }
         List<RecipeHolder<T>> results = new ArrayList<>();
-        for (RecipeHolder<?> recipe : ((FabricRecipeManager) connection.recipes()).getSynchronizedRecipes().recipes()) {
+        for (RecipeHolder<?> recipe : ((FabricRecipeAccess) connection.recipes()).getSynchronizedRecipes().recipes()) {
             if (recipe.value().getType() == recipeType) {
                 results.add((RecipeHolder<T>) recipe);
             }

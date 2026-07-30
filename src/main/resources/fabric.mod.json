@@ -28,6 +28,7 @@
     "brewinandchewin.mixins.json",
     "brewinandchewin.fabric.mixins.json"
   ],
+  "accessWidener": "${mod_id}.accesswidener",
   "depends": {
     "fabricloader": "${fabric_loader_range}",
     "fabric-api": "*",
