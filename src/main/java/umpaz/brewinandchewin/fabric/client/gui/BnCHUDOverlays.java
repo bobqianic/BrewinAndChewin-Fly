@@ -49,7 +49,7 @@ public class BnCHUDOverlays {
         public abstract void render(GuiGraphicsExtractor gui, DeltaTracker delta);
 
         public boolean shouldRenderOverlay(Minecraft minecraft, Player player, GuiGraphicsExtractor gui, DeltaTracker delta) {
-            return !minecraft.options.hideGui && minecraft.gameMode != null && minecraft.gameMode.canHurtPlayer();
+            return !minecraft.gui.hud.isHidden() && minecraft.gameMode != null && minecraft.gameMode.canHurtPlayer();
         }
     }
 
@@ -119,7 +119,7 @@ public class BnCHUDOverlays {
     }
 
     public static void drawIntoxicationOverlay(Player player, Minecraft minecraft, GuiGraphicsExtractor graphics, int right, int top) {
-        int ticks = minecraft.gui.getGuiTicks();
+        int ticks = minecraft.gui.hud.getGuiTicks();
         Random rand = new Random();
         rand.setSeed(ticks * 312871L);
 

@@ -4,8 +4,8 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 import com.llamalad7.mixinextras.sugar.Local;
 import net.minecraft.client.Minecraft;
-import net.minecraft.client.gui.Gui;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
+import net.minecraft.client.gui.Hud;
 import net.minecraft.client.renderer.RenderPipelines;
 import net.minecraft.util.ARGB;
 import net.minecraft.util.Mth;
@@ -23,7 +23,7 @@ import umpaz.brewinandchewin.common.registry.BnCEffects;
 
 import java.util.Random;
 
-@Mixin(Gui.class)
+@Mixin(Hud.class)
 public class GuiMixin {
     @Shadow @Final
     private Minecraft minecraft;
@@ -38,10 +38,10 @@ public class GuiMixin {
     private boolean brewinandchewin$completedAbsorption = false;
 
     // TODO: Create an event for this overlay.
-    @WrapOperation(method = "extractHearts", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractHeart(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Gui$HeartType;IIZZZ)V", ordinal = 3))
-    private void brewinandchewin$renderTipsyHearts(Gui instance,
+    @WrapOperation(method = "extractHearts", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractHeart(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Hud$HeartType;IIZZZ)V", ordinal = 3))
+    private void brewinandchewin$renderTipsyHearts(Hud instance,
                                                    GuiGraphicsExtractor graphics,
-                                                   Gui.HeartType heartType,
+                                                   Hud.HeartType heartType,
                                                    int heartX,
                                                    int heartY,
                                                    boolean hardcore,
@@ -67,7 +67,7 @@ public class GuiMixin {
             return;
         }
 
-        int ticks = minecraft.gui.getGuiTicks();
+        int ticks = minecraft.gui.hud.getGuiTicks();
         Random rand = new Random();
         rand.setSeed(ticks * 312871L);
 
@@ -119,10 +119,10 @@ public class GuiMixin {
         }
     }
 
-    @WrapOperation(method = "extractHearts", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Gui;extractHeart(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Gui$HeartType;IIZZZ)V", ordinal = 1))
-    private void brewinandchewin$renderAbsorbingTipsyHearts(Gui instance,
+    @WrapOperation(method = "extractHearts", at = @At(value = "INVOKE", target = "Lnet/minecraft/client/gui/Hud;extractHeart(Lnet/minecraft/client/gui/GuiGraphicsExtractor;Lnet/minecraft/client/gui/Hud$HeartType;IIZZZ)V", ordinal = 1))
+    private void brewinandchewin$renderAbsorbingTipsyHearts(Hud instance,
                                                             GuiGraphicsExtractor graphics,
-                                                            Gui.HeartType heartType,
+                                                            Hud.HeartType heartType,
                                                             int heartX,
                                                             int heartY,
                                                             boolean hardcore,
@@ -145,7 +145,7 @@ public class GuiMixin {
             return;
         }
 
-        int ticks = minecraft.gui.getGuiTicks();
+        int ticks = minecraft.gui.hud.getGuiTicks();
         Random rand = new Random();
         rand.setSeed(ticks * 312871L);
 

@@ -46,7 +46,7 @@ public class BnCBlocks {
     public static final Block TEMPORARY_WATER = new TemporaryWaterBlock(
             blockProperties("temporary_water", Blocks.WATER).noCollision());
 
-    public static final Block COASTER = new CoasterBlock(blockProperties("coaster", Blocks.BROWN_CARPET).sound(SoundType.WOOD).instabreak().dynamicShape());
+    public static final Block COASTER = new CoasterBlock(blockProperties("coaster", Blocks.CARPET.brown()).sound(SoundType.WOOD).instabreak().dynamicShape());
 
     //Cheese
     public static final Block UNRIPE_FLAXEN_CHEESE_WHEEL = new

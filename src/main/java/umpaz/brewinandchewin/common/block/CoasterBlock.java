@@ -49,7 +49,7 @@ public class CoasterBlock extends BaseEntityBlock {
     }
 
     public CoasterBlock() {
-        this(Properties.ofFullCopy(Blocks.BROWN_CARPET).sound(SoundType.WOOD).instabreak().dynamicShape());
+        this(Properties.ofFullCopy(Blocks.CARPET.brown()).sound(SoundType.WOOD).instabreak().dynamicShape());
     }
 
     @Override

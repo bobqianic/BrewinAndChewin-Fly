@@ -11,9 +11,6 @@
   "icon": "assets/brewinandchewin/icon.png",
   "environment": "*",
   "entrypoints": {
-    "mm:early_risers": [
-      "umpaz.brewinandchewin.fabric.BrewinAndChewinASM"
-    ],
     "main": [
       "umpaz.brewinandchewin.fabric.BrewinAndChewinFabric"
     ],
@@ -28,11 +25,10 @@
     "brewinandchewin.mixins.json",
     "brewinandchewin.fabric.mixins.json"
   ],
-  "accessWidener": "${mod_id}.accesswidener",
+  "accessWidener": "${mod_id}.classtweaker",
   "depends": {
     "fabricloader": "${fabric_loader_range}",
     "fabric-api": "*",
-    "mm": "*",
     "minecraft": "${fabric_minecraft_version_range}",
     "java": ">=${java_version}",
     "farmersdelight": "${farmers_delight_refabricated_range}"

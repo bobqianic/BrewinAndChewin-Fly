@@ -1,6 +1,6 @@
 # Brewin' And Chewin' Fly
 
-**Brewin' And Chewin' Fly** is a Fabric fork of [Brewin' And Chewin'](https://github.com/ChefsDelights/BrewinAndChewin?) for Minecraft 26.1.2.
+**Brewin' And Chewin' Fly** is a Fabric fork of [Brewin' And Chewin'](https://github.com/ChefsDelights/BrewinAndChewin?) for Minecraft 26.2.
 
 This fork keeps the original `brewinandchewin` mod id for world, resource-pack, datapack, and recipe compatibility.
 
@@ -9,7 +9,7 @@ This fork keeps the original `brewinandchewin` mod id for world, resource-pack, 
 - Fermenting and brewing addon content for Farmer's Delight.
 - Optional Create-Fly filling recipes for Brewin' And Chewin' drinks.
 - Existing Brewin' And Chewin' ids remain stable for pack compatibility.
-- Fabric 26.1.2 dependency metadata and build output are named for the fork.
+- Fabric 26.2 dependency metadata and build output are named for the fork.
 
 ## What's New
 
@@ -36,7 +36,7 @@ This fork keeps the original `brewinandchewin` mod id for world, resource-pack, 
 
 ## Gradle
 
-Use the full Modrinth version string, for example `4.4.7-fly+26.1.2-fabric`.
+Use the full Modrinth version string, for example `4.4.7-fly+26.2-fabric`.
 
 ```groovy
 repositories {

@@ -689,7 +689,7 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
             deferFluidExtraction = true;
             keg.fluidTank.setAbstractedFluid(scaleFluid(recipe.getResult().left().get(), scale));
             if (!keg.level.isClientSide()) {
-                Vec3 center = keg.getBlockPos().getCenter();
+                Vec3 center = Vec3.atCenterOf(keg.getBlockPos());
                 keg.level.playSound(null, center.x(), center.y(), center.z(), SoundEvents.BREWING_STAND_BREW, SoundSource.BLOCKS, 0.6f, 0.8f);
             }
         }

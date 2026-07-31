@@ -47,20 +47,10 @@ repositories {
         }
     }
 
-    exclusiveContent {
-        forRepository {
-            maven {
-                url = 'https://jitpack.io'
-            }
-        }
-        filter {
-            includeGroup 'com.github.Chocohead'
-        }
-    }
 }
 
 loom {
-    def aw = file("src/main/resources/${mod_id}.accesswidener")
+    def aw = file("src/main/resources/${mod_id}.classtweaker")
     if (aw.exists()) {
         accessWidenerPath = aw
     }
@@ -125,13 +115,6 @@ dependencies {
         exclude group: 'net.fabricmc.fabric-api'
     }
     runtimeOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
-        exclude group: 'net.fabricmc.fabric-api'
-    }
-
-    implementation("com.github.Chocohead:Fabric-ASM:${fabric_asm_version}") {
-        exclude group: 'net.fabricmc.fabric-api'
-    }
-    include("com.github.Chocohead:Fabric-ASM:${fabric_asm_version}") {
         exclude group: 'net.fabricmc.fabric-api'
     }
 

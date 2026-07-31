@@ -1,26 +1,19 @@
 package umpaz.brewinandchewin.fabric.client.platform;
 
-import com.mojang.blaze3d.vertex.PoseStack;
 import net.fabricmc.fabric.api.client.model.loading.v1.FabricModelManager;
 import net.fabricmc.fabric.api.recipe.v1.FabricRecipeAccess;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphicsExtractor;
 import net.minecraft.client.multiplayer.ClientPacketListener;
-import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.client.renderer.RenderPipelines;
-import net.minecraft.client.renderer.block.BlockAndTintGetter;
 import net.minecraft.client.renderer.block.FluidModel;
 import net.minecraft.client.renderer.block.dispatch.BlockStateModel;
-import net.minecraft.client.renderer.rendertype.RenderType;
 import net.minecraft.client.renderer.texture.TextureAtlasSprite;
-import net.minecraft.core.BlockPos;
 import net.minecraft.resources.Identifier;
 import net.minecraft.util.ARGB;
-import net.minecraft.util.RandomSource;
 import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeType;
-import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.material.FluidState;
 import umpaz.brewinandchewin.common.utility.AbstractedFluidStack;
 import umpaz.brewinandchewin.fabric.client.BrewinAndChewinFabricClient;
@@ -36,10 +29,6 @@ public class BnCClientPlatformHelperFabric implements BnCClientPlatformHelper {
                 ? ((FabricModelManager) Minecraft.getInstance().getModelManager()).getModel(BrewinAndChewinFabricClient.COASTER_MODEL_KEYS.get(modelId))
                 : null;
         return model != null ? model : Minecraft.getInstance().getModelManager().getBlockStateModelSet().missingModel();
-    }
-
-    @Override
-    public void tesselateCoasterModel(BlockAndTintGetter level, Identifier modelId, BlockState state, BlockPos pos, PoseStack poseStack, MultiBufferSource buffer, RandomSource random, long seed, int packedOverlay, int tintIndex, RenderType renderType) {
     }
 
     @Override

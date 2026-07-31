@@ -108,7 +108,7 @@ public class BrewinAndChewinFabricClient implements ClientModInitializer {
                     MutableComponent boundChat = BnCClientTextUtils.getStyledChatPrefix(bound, bound.decorate(Component.literal("")).copy());
                     MutableComponent newMessage = tipsyMessage.decoratedContent().copy().withStyle(bound.chatType().value().chat().style());
 
-                    Minecraft.getInstance().gui.getChat().addPlayerMessage(boundChat.append(newMessage.copy().withStyle(bound.chatType().value().chat().style())), tipsyMessage.signature(), GuiMessageTag.chatModified(chatMessage.signedContent()));
+                    Minecraft.getInstance().gui.hud.getChat().addPlayerMessage(boundChat.append(newMessage.copy().withStyle(bound.chatType().value().chat().style())), tipsyMessage.signature(), GuiMessageTag.chatModified(chatMessage.signedContent()));
                     Minecraft.getInstance().getNarrator().sayChatQueued(boundChat.append(newMessage.copy().withStyle(bound.chatType().value().narration().style())));
 
                     if (BnCClientTextUtils.clearDelayAmount <= 0) {

@@ -37,7 +37,7 @@ public class TipsyDrunkRendererMixin {
         if (player != null && player.hasEffect(BnCEffects.TIPSY)) {
             float distortionScale = minecraft.options.screenEffectScale().get().floatValue();
             if (distortionScale > 0) {
-                float ticks = ((LevelRendererAccessor)minecraft.levelRenderer).brewinandchewin$getTicks() + delta.getGameTimeDeltaPartialTick(false);
+                float ticks = minecraft.level.getGameTime() + delta.getGameTimeDeltaPartialTick(false);
                 int strength = Math.min(player.getEffect(BnCEffects.TIPSY).getAmplifier(), 11);
                 float scaledStrength = strength * distortionScale;
 
@@ -59,20 +59,20 @@ public class TipsyDrunkRendererMixin {
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/LevelRenderer;renderLevel(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZLnet/minecraft/client/renderer/chunk/ChunkSectionsToRender;)V"
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V"
         ),
         index = 3
     )
     private CameraRenderState brewinandchewin$cullWithTipsySpin(CameraRenderState cameraState, @Local(argsOnly = true) DeltaTracker delta) {
         PoseStack pose = new PoseStack();
         if (brewinandchewin$applyTipsySpin(pose, delta)) {
-            float fovForCulling = Math.max(minecraft.gameRenderer.getMainCamera().getFov(), minecraft.options.fov().get().intValue());
+            float fovForCulling = Math.max(minecraft.gameRenderer.mainCamera().getFov(), minecraft.options.fov().get().intValue());
             Matrix4f projectionMatrixForCulling = new Matrix4f().perspective(
                 fovForCulling * Mth.DEG_TO_RAD,
                 (float)minecraft.getWindow().getWidth() / minecraft.getWindow().getHeight(),
                 0.05F,
                 cameraState.depthFar,
-                RenderSystem.getDevice().isZZeroToOne()
+                RenderSystem.getDevice().getDeviceInfo().isZZeroToOne()
             );
             projectionMatrixForCulling.mul(pose.last().pose());
 
