@@ -1451,11 +1451,9 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
 
     private AbstractedFluidTank createFluidTank() {
         return BrewinAndChewin.getHelper().createKegTank(getKegCapacity(), () -> {
-            AbstractedItemHandler handler = KegBlockEntity.this.inventory;
-            if (!getLevel().isClientSide() && !currentlyOperating && !deferFluidExtraction) {
-                List<ItemStack> out = KegBlockEntity.this.extractInGui(handler.getStackInSlot(CONTAINER_SLOT), handler.getSlotLimit(OUTPUT_SLOT));
-                if (!out.isEmpty())
-                    handler.insertItem(OUTPUT_SLOT, out.get(0), false);
+            if (!getLevel().isClientSide() && !currentlyOperating) {
+                // A loader may invoke this callback while its fluid transaction is still closing.
+                deferFluidExtraction = true;
             }
             inventoryChanged();
             checkNewRecipe = true;
