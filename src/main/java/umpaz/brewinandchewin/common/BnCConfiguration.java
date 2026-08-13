@@ -357,7 +357,7 @@ public class BnCConfiguration {
         }
 
         public record RecipeBook(boolean enabled) {
-            public static final RecipeBook DEFAULT = new RecipeBook(true);
+            public static final RecipeBook DEFAULT = new RecipeBook(false);
         }
     }
 
