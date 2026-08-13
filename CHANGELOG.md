@@ -1,3 +1,4 @@
-# 4.4.8-fly
+# 4.4.9-fly
 
-- Fixed a dedicated-server crash when Create pumps fluid from a Keg containing a fluid container ([#3](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/3)).
+- Fixed the missing Advancements screen background texture ([#4](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/4)).
+- Disabled the Keg recipe book to prevent unrelated crafting recipes from appearing ([#5](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/5)).
