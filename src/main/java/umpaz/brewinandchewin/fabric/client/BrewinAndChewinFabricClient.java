@@ -135,7 +135,8 @@ public class BrewinAndChewinFabricClient implements ClientModInitializer {
         ClientPlayNetworking.registerGlobalReceiver(ClearKegFluidContainerComponentsClientboundPacket.TYPE, (payload, context) -> payload.handle());
         ClientPlayNetworking.registerGlobalReceiver(MakeNextPlayerChatTipsyClientboundPacket.TYPE, (payload, context) -> payload.handle());
         ClientPlayNetworking.registerGlobalReceiver(SendRecipeBookValuesClientboundPacket.TYPE, (payload, context) -> payload.handle());
-        ClientPlayNetworking.registerGlobalReceiver(SyncConfigClientboundPacket.TYPE, (payload, context) -> payload.handle());
+        ClientPlayNetworking.registerGlobalReceiver(SyncConfigClientboundPacket.TYPE, (payload, context) ->
+                Minecraft.getInstance().execute(() -> BnCConfiguration.applySyncedCommonConfig(payload.common())));
         ClientPlayNetworking.registerGlobalReceiver(SyncNumbedHeartsClientboundPacket.TYPE, (payload, context) -> payload.handle());
         ClientPlayNetworking.registerGlobalReceiver(SyncRagingStacksClientboundPacket.TYPE, (payload, context) -> payload.handle());
         ClientPlayConnectionEvents.DISCONNECT.register((handler, client) -> BnCConfiguration.resetSyncedCommonConfig());

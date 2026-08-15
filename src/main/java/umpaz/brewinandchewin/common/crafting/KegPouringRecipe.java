@@ -251,7 +251,7 @@ public class KegPouringRecipe implements Recipe<KegRecipeWrapper> {
 
         public static void toNetwork(RegistryFriendlyByteBuf buf, KegPouringRecipe recipe) {
             PouringFluid.STREAM_CODEC.encode(buf, recipe.getSerializedFluid());
-            ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(buf, recipe.getRawContainer());
+            ByteBufCodecs.optional(ItemStack.STREAM_CODEC).encode(buf, Optional.of(recipe.getContainer()));
             ItemStack.STREAM_CODEC.encode(buf, recipe.getOutput());
             ByteBufCodecs.optional(FluidUnit.STREAM_CODEC).encode(buf, recipe.getRawUnit());
             ByteBufCodecs.BOOL.encode(buf, recipe.isStrict());

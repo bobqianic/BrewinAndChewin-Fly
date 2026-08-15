@@ -24,6 +24,9 @@
   ],
   "client": [
     "client.ChatListenerMixin",
+    "client.GhostSlotsInvoker",
+    "client.RecipeBookComponentAccessor",
+    "client.RecipeCollectionAccessor",
     "client.GuiMixin",
     "client.LevelRendererAccessor",
     "client.LevelRendererMixin",

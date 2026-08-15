@@ -11,6 +11,7 @@
     "RecipeBookSettingsMixin"
   ],
   "client": [
+    "client.ClientRecipeBookMixin",
     "client.EntityRendererMixin",
     "client.GameRendererMixin",
     "client.GuiMixin",
