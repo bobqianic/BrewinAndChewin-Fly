@@ -977,7 +977,7 @@ public class KegBlockEntity extends SyncedBlockEntity implements MenuProvider, N
         return ItemStack.EMPTY;
     }
 
-    private ItemStack getBucketForFluid(AbstractedFluidStack kegFluid) {
+    public ItemStack getBucketForFluid(AbstractedFluidStack kegFluid) {
         AbstractedFluidStack fillFluid = getBucketFillFluid(kegFluid);
         if (fillFluid.isEmpty()) {
             return ItemStack.EMPTY;

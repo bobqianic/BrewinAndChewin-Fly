@@ -24,9 +24,12 @@
   ],
   "client": [
     "client.ChatListenerMixin",
+    "client.GhostSlotsInvoker",
     "client.GuiMixin",
     "client.LevelRendererAccessor",
     "client.LevelRendererMixin",
+    "client.RecipeBookComponentAccessor",
+    "client.RecipeCollectionAccessor",
     "client.TipsyDrunkRendererMixin",
     "client.TipsySignRendererMixin",
     "client.integration.appleskin.HUDOverlayHandlerMixin"

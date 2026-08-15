@@ -76,7 +76,7 @@ public class CreatePotionPouringRecipe extends KegPouringRecipe {
         }
 
         public static void toNetwork(RegistryFriendlyByteBuf buf, CreatePotionPouringRecipe recipe) {
-            ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode(buf, recipe.getRawContainer());
+            ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode(buf, Optional.of(recipe.getContainerTemplate()));
             ItemStackTemplate.STREAM_CODEC.encode(buf, recipe.getOutputTemplate());
             buf.writeLong(recipe.getFluidAmount());
             ByteBufCodecs.optional(FluidUnit.STREAM_CODEC).encode(buf, recipe.getRawUnit());

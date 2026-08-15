@@ -83,7 +83,7 @@ public class KegPouringRecipe implements Recipe<KegRecipeWrapper> {
     }
 
     public ItemStack getContainer() {
-        return this.container.map(ItemStackTemplate::create).orElseGet(() -> output.item().value().getCraftingRemainder().create());
+        return getContainerTemplate().create();
     }
 
     public ItemStack getContainer(ItemStack stack) {
@@ -91,7 +91,7 @@ public class KegPouringRecipe implements Recipe<KegRecipeWrapper> {
     }
 
     private Item getContainerItem() {
-        return this.container.map(template -> template.item().value()).orElseGet(() -> output.item().value().getCraftingRemainder().item().value());
+        return getContainerTemplate().item().value();
     }
 
     public Optional<FluidUnit> getRawUnit() {
@@ -114,6 +114,14 @@ public class KegPouringRecipe implements Recipe<KegRecipeWrapper> {
 
     public Optional<ItemStackTemplate> getRawContainer(){
         return this.container;
+    }
+
+    /**
+     * Returns the explicit container, or the output item's crafting remainder when the recipe omits one.
+     * Network synchronization uses this resolved value so the receiving side never has to infer it.
+     */
+    public ItemStackTemplate getContainerTemplate() {
+        return this.container.orElseGet(() -> this.output.item().value().getCraftingRemainder());
     }
 
     public ItemStack getOutput(){
@@ -261,7 +269,7 @@ public class KegPouringRecipe implements Recipe<KegRecipeWrapper> {
 
         public static void toNetwork(RegistryFriendlyByteBuf buf, KegPouringRecipe recipe) {
             PouringFluid.STREAM_CODEC.encode(buf, recipe.getSerializedFluid());
-            ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode(buf, recipe.getRawContainer());
+            ByteBufCodecs.optional(ItemStackTemplate.STREAM_CODEC).encode(buf, Optional.of(recipe.getContainerTemplate()));
             ItemStackTemplate.STREAM_CODEC.encode(buf, recipe.getOutputTemplate());
             ByteBufCodecs.optional(FluidUnit.STREAM_CODEC).encode(buf, recipe.getRawUnit());
             ByteBufCodecs.BOOL.encode(buf, recipe.isStrict());

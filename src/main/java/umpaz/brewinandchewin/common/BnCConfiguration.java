@@ -11,9 +11,10 @@ import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 public class BnCConfiguration {
-    public static final int CONFIG_VERSION = 2;
+    public static final int CONFIG_VERSION = 3;
     private static final int CLIENT_CONFIG_VERSION = 2;
     private static final String COMMON_CONFIG_FILE = "brewinandchewin-common.toml";
     private static final String CLIENT_CONFIG_FILE = "brewinandchewin-client.toml";
@@ -44,7 +45,7 @@ public class BnCConfiguration {
     }
 
     private static Common loadCommon(Path path) {
-        ReadState state = readVersioned(path, CONFIG_VERSION);
+        ReadState state = readVersioned(path, CONFIG_VERSION, 2);
         Common common = new Common(
                 new Common.Root(
                         readInt(state, "root.levelChatScramble", Common.DEFAULT.root().levelChatScramble(), 1, 10),
@@ -62,7 +63,9 @@ public class BnCConfiguration {
                         readBoolean(state, "keg.kegDimTemp", Common.DEFAULT.keg().dimTemp())
                 ),
                 new Common.RecipeBook(
-                        readBoolean(state, "recipe_book.enableRecipeBookKeg", Common.DEFAULT.recipeBook().enabled())
+                        state.sourceVersion() == 2
+                                ? Common.DEFAULT.recipeBook().enabled()
+                                : readBoolean(state, "recipe_book.enableRecipeBookKeg", Common.DEFAULT.recipeBook().enabled())
                 )
         );
 
@@ -89,9 +92,9 @@ public class BnCConfiguration {
         return client;
     }
 
-    private static ReadState readVersioned(Path path, int configVersion) {
+    private static ReadState readVersioned(Path path, int configVersion, int... compatibleVersions) {
         if (!Files.exists(path)) {
-            return new ReadState(Map.of(), true);
+            return new ReadState(Map.of(), true, null);
         }
 
         Map<String, String> values;
@@ -99,16 +102,19 @@ public class BnCConfiguration {
             values = readToml(path);
         } catch (IOException ex) {
             BrewinAndChewin.LOG.warn("Failed to read Brewin' And Chewin' config {}, using defaults.", path, ex);
-            return new ReadState(Map.of(), true);
+            return new ReadState(Map.of(), true, null);
         }
 
         Integer version = parseInteger(values.get("version"));
-        if (version == null || version != configVersion) {
-            BrewinAndChewin.LOG.info("Ignoring old or incompatible Brewin' And Chewin' config {} and writing version {} defaults.", path.getFileName(), configVersion);
-            return new ReadState(Map.of(), true);
+        if (version != null && version == configVersion) {
+            return new ReadState(values, false, version);
         }
-
-        return new ReadState(values, false);
+        if (version != null && IntStream.of(compatibleVersions).anyMatch(compatibleVersion -> compatibleVersion == version)) {
+            BrewinAndChewin.LOG.info("Migrating Brewin' And Chewin' config {} from version {} to version {}.", path.getFileName(), version, configVersion);
+            return new ReadState(values, true, version);
+        }
+        BrewinAndChewin.LOG.info("Ignoring old or incompatible Brewin' And Chewin' config {} and writing version {} defaults.", path.getFileName(), configVersion);
+        return new ReadState(Map.of(), true, null);
     }
 
     private static Map<String, String> readToml(Path path) throws IOException {
@@ -312,10 +318,12 @@ public class BnCConfiguration {
     private static final class ReadState {
         private final Map<String, String> values;
         private boolean needsSave;
+        private final Integer sourceVersion;
 
-        private ReadState(Map<String, String> values, boolean needsSave) {
+        private ReadState(Map<String, String> values, boolean needsSave, Integer sourceVersion) {
             this.values = values;
             this.needsSave = needsSave;
+            this.sourceVersion = sourceVersion;
         }
 
         private Map<String, String> values() {
@@ -324,6 +332,10 @@ public class BnCConfiguration {
 
         private boolean needsSave() {
             return needsSave;
+        }
+
+        private Integer sourceVersion() {
+            return sourceVersion;
         }
 
         private void markNeedsSave() {
@@ -357,7 +369,7 @@ public class BnCConfiguration {
         }
 
         public record RecipeBook(boolean enabled) {
-            public static final RecipeBook DEFAULT = new RecipeBook(false);
+            public static final RecipeBook DEFAULT = new RecipeBook(true);
         }
     }
 
