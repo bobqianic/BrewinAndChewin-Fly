@@ -25,6 +25,9 @@
   "client": [
     "client.ChatListenerMixin",
     "client.ClientLevelMixin",
+    "client.GhostSlotsInvoker",
+    "client.RecipeBookComponentAccessor",
+    "client.RecipeCollectionAccessor",
     "client.GuiMixin",
     "client.TipsyDrunkRendererMixin",
     "client.TipsySignRendererMixin",

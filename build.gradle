@@ -82,7 +82,6 @@ sourceSets {
         java {
             exclude 'umpaz/brewinandchewin/integration/emi/**'
             exclude 'umpaz/brewinandchewin/common/mixin/client/ModelBakeryAccessor.java'
-            exclude 'umpaz/brewinandchewin/common/mixin/client/RecipeBookComponentAccessor.java'
         }
         resources {
             srcDir 'src/generated/resources'

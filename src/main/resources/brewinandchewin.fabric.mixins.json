@@ -12,6 +12,7 @@
     "RecipeBookSettingsMixin"
   ],
   "client": [
+    "client.ClientRecipeBookMixin",
     "client.EntityRendererMixin",
     "client.GuiMixin",
     "client.TipsyMouseHandlerMixin"

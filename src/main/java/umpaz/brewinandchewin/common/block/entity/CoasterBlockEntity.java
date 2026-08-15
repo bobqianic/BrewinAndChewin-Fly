@@ -105,6 +105,7 @@ public class CoasterBlockEntity extends SyncedBlockEntity {
     private static boolean canPlaceOnCoaster(ItemStack stack) {
         return stack.has(DataComponents.FOOD)
                 || stack.has(DataComponents.CONSUMABLE)
+                || stack.is(BnCItems.TANKARD)
                 || stack.is(BnCCompatTags.FOODS_EDIBLE_WHEN_PLACED);
     }
 

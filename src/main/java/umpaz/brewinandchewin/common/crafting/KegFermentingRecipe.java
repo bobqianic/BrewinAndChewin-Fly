@@ -6,11 +6,14 @@ import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
+import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.ByteBufCodecs;
 import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemStackTemplate;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.crafting.CraftingInput;
 import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.PlacementInfo;
@@ -18,6 +21,9 @@ import net.minecraft.world.item.crafting.Recipe;
 import net.minecraft.world.item.crafting.RecipeBookCategory;
 import net.minecraft.world.item.crafting.RecipeSerializer;
 import net.minecraft.world.item.crafting.RecipeType;
+import net.minecraft.world.item.crafting.display.RecipeDisplay;
+import net.minecraft.world.item.crafting.display.ShapelessCraftingRecipeDisplay;
+import net.minecraft.world.item.crafting.display.SlotDisplay;
 import net.minecraft.world.level.Level;
 import umpaz.brewinandchewin.client.recipebook.BnCRecipeBookCategories;
 import umpaz.brewinandchewin.client.recipebook.FermentingBookCategory;
@@ -133,6 +139,9 @@ public class KegFermentingRecipe implements Recipe<KegRecipeWrapper> {
 
         for (int j = 0; j < INPUT_SLOTS; ++j) {
             ItemStack itemstack = inv.getItem(j);
+            if (!this.acceptsIngredient(itemstack)) {
+                return false;
+            }
             if (!itemstack.isEmpty()) {
                 inputs.add(itemstack);
             } else
@@ -140,7 +149,19 @@ public class KegFermentingRecipe implements Recipe<KegRecipeWrapper> {
         }
         CraftingInput input = CraftingInput.of(2, 2, inputs);
         return input.size() == 1 && inputItems.size() == 1 ? inputItems.getFirst().test(input.getItem(0)) : input.stackedContents().canCraft(this, null) &&
-                (fluidIngredient.isEmpty() && inv.getFluid().isEmpty() || fluidIngredient.isPresent() && !inv.getFluid().isEmpty() && fluidIngredient.get().ingredient().matches(inv.getFluid()) && inv.getFluid().amount() % fluidIngredient.get().amount() == 0);
+                 (fluidIngredient.isEmpty() && inv.getFluid().isEmpty() || fluidIngredient.isPresent() && !inv.getFluid().isEmpty() && fluidIngredient.get().ingredient().matches(inv.getFluid()) && inv.getFluid().amount() % fluidIngredient.get().amount() == 0);
+    }
+
+    public boolean acceptsIngredient(ItemStack stack) {
+        if (stack.isEmpty()) {
+            return true;
+        }
+        for (Ingredient ingredient : this.inputItems) {
+            if (!ingredient.isEmpty() && ingredient.test(stack)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public ItemStack getResultItem(HolderLookup.Provider registryAccess) {
@@ -151,6 +172,34 @@ public class KegFermentingRecipe implements Recipe<KegRecipeWrapper> {
             return BnCRecipeUtils.getPouredItemFromFluid(new AbstractedFluidStack(result.left().get().fluid(), kegConfig.capacity(), result.left().get().components(), kegConfig.capacityUnit(), null));
         }
         return ItemStack.EMPTY;
+    }
+
+    @Override
+    public List<RecipeDisplay> display() {
+        return List.of(new ShapelessCraftingRecipeDisplay(
+                this.inputItems.stream()
+                        .filter(ingredient -> !ingredient.isEmpty())
+                        .map(Ingredient::display)
+                        .toList(),
+                new SlotDisplay.ItemStackSlotDisplay(getRecipeBookResult()),
+                new SlotDisplay.ItemSlotDisplay(BnCItems.KEG)
+        ));
+    }
+
+    private ItemStackTemplate getRecipeBookResult() {
+        return this.result.map(fluid -> {
+            var fluidId = BuiltInRegistries.FLUID.getKey(fluid.fluid());
+            Item displayItem = BuiltInRegistries.ITEM.containsKey(fluidId)
+                    ? BuiltInRegistries.ITEM.getValue(fluidId)
+                    : fluid.fluid().getBucket();
+            if (displayItem == null || displayItem == Items.AIR) {
+                displayItem = fluid.fluid().getBucket();
+            }
+            if (displayItem == Items.AIR) {
+                displayItem = BnCItems.TANKARD;
+            }
+            return new ItemStackTemplate(displayItem);
+        }, template -> template);
     }
 
     @Override
