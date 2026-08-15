@@ -1,4 +1,5 @@
-# 4.4.9-fly
+# 4.5.0-fly
 
-- Fixed the missing Advancements screen background texture ([#4](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/4)).
-- Disabled the Keg recipe book to prevent unrelated crafting recipes from appearing ([#5](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/5)).
+- Fixed Keg pouring-recipe synchronization disconnects ([#7](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/7)).
+- Restored the Keg recipe book with correct search, previews, liquid requirements, ingredient validation, and Large Keg behavior ([#8](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/8)).
+- Allowed empty Tankards on Coasters ([#9](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/9)).

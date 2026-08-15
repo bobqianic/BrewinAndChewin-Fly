@@ -1,6 +1,7 @@
 package umpaz.brewinandchewin.fabric;
 
 import com.chocohead.mm.api.ClassTinkerers;
+import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
@@ -9,6 +10,7 @@ import umpaz.brewinandchewin.common.registry.BnCItems;
 import java.util.function.Supplier;
 
 public class BrewinAndChewinASM implements Runnable {
+    private static final String RECIPE_BOOK_TYPE_INTERMEDIARY = "net.minecraft.class_5421";
     public static final String FERMENTING_RECIPE_BOOK_TYPE = "BREWINANDCHEWIN_FERMENTING";
     public static final String FERMENTING_SEARCH_RECIPE_BOOK_CATEGORY = "BREWINANDCHEWIN_FERMENTING_SEARCH";
     public static final String FERMENTING_DRINKS_RECIPE_BOOK_CATEGORY = "BREWINANDCHEWIN_FERMENTING_DRINKS";
@@ -16,7 +18,9 @@ public class BrewinAndChewinASM implements Runnable {
 
     @Override
     public void run() {
-        ClassTinkerers.enumBuilder("net.minecraft.world.inventory.RecipeBookType")
+        String recipeBookType = FabricLoader.getInstance().getMappingResolver()
+                .mapClassName("intermediary", RECIPE_BOOK_TYPE_INTERMEDIARY);
+        ClassTinkerers.enumBuilder(recipeBookType)
                 .addEnum(FERMENTING_RECIPE_BOOK_TYPE)
                 .build();
     }

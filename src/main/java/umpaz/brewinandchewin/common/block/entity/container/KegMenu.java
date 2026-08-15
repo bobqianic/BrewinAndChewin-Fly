@@ -198,9 +198,16 @@ public class KegMenu extends RecipeBookMenu
     @Override
     public RecipeBookMenu.PostPlaceAction handlePlacement(boolean placeAll, boolean isCreative, RecipeHolder<?> recipe, ServerLevel level, Inventory playerInventory) {
         RecipeHolder<KegFermentingRecipe> recipeHolder = (RecipeHolder)recipe;
-        KegPlaceRecipe.handleFluidPlacement(this, level.recipeAccess(), playerInventory, recipeHolder, placeAll);
+        if (!this.returnRejectedIngredients(playerInventory, recipeHolder.value())) {
+            return RecipeBookMenu.PostPlaceAction.PLACE_GHOST_RECIPE;
+        }
 
-        return ServerPlaceRecipe.placeRecipe(new ServerPlaceRecipe.CraftingMenuAccess<>() {
+        int scale = this.getFermentationScale();
+        if (!this.hasAvailableIngredients(playerInventory, recipeHolder, scale)) {
+            return RecipeBookMenu.PostPlaceAction.PLACE_GHOST_RECIPE;
+        }
+
+        ServerPlaceRecipe.CraftingMenuAccess<KegFermentingRecipe> placementAccess = new ServerPlaceRecipe.CraftingMenuAccess<>() {
             @Override
             public void fillCraftSlotsStackedContents(StackedItemContents stackedItemContents) {
                 KegMenu.this.fillCraftSlotsStackedContents(stackedItemContents);
@@ -213,9 +220,95 @@ public class KegMenu extends RecipeBookMenu
 
             @Override
             public boolean recipeMatches(RecipeHolder<KegFermentingRecipe> recipe) {
-                return KegMenu.this.recipeMatches(recipe);
+                return scale > 1
+                        ? KegMenu.this.hasIngredientsInGrid(recipe, 1)
+                        : KegMenu.this.recipeMatches(recipe);
             }
-        }, getGridWidth(), getGridHeight(), this.slots.subList(0, getGridWidth() * getGridHeight()), this.slots.subList(0, getGridWidth() * getGridHeight()), playerInventory, recipeHolder, placeAll, isCreative);
+        };
+
+        KegPlaceRecipe.handleFluidPlacement(this, level.recipeAccess(), playerInventory, recipeHolder, placeAll);
+        RecipeBookMenu.PostPlaceAction action;
+        if (scale <= 1 || placeAll) {
+            action = this.placeRecipeItems(placementAccess, playerInventory, recipeHolder, placeAll, isCreative);
+        } else {
+            action = RecipeBookMenu.PostPlaceAction.NOTHING;
+            for (int attempt = 0; attempt < scale && !this.hasIngredientsInGrid(recipeHolder, scale); ++attempt) {
+                action = this.placeRecipeItems(placementAccess, playerInventory, recipeHolder, false, isCreative);
+                if (action == RecipeBookMenu.PostPlaceAction.PLACE_GHOST_RECIPE) {
+                    break;
+                }
+            }
+        }
+
+        if (!this.hasIngredientsInGrid(recipeHolder, scale) || !this.hasRequiredFluid(recipeHolder.value())) {
+            return RecipeBookMenu.PostPlaceAction.PLACE_GHOST_RECIPE;
+        }
+        return action;
+    }
+
+    private boolean returnRejectedIngredients(Inventory playerInventory, KegFermentingRecipe recipe) {
+        int gridSize = this.getGridWidth() * this.getGridHeight();
+        boolean allReturned = true;
+        for (int i = 0; i < gridSize; ++i) {
+            if (!recipe.acceptsIngredient(this.getSlot(i).getItem())) {
+                this.quickMoveStack(playerInventory.player, i);
+                if (!recipe.acceptsIngredient(this.getSlot(i).getItem())) {
+                    allReturned = false;
+                }
+            }
+        }
+        return allReturned;
+    }
+
+    private RecipeBookMenu.PostPlaceAction placeRecipeItems(ServerPlaceRecipe.CraftingMenuAccess<KegFermentingRecipe> placementAccess,
+                                                             Inventory playerInventory,
+                                                             RecipeHolder<KegFermentingRecipe> recipe,
+                                                             boolean placeAll,
+                                                             boolean isCreative) {
+        int gridSize = this.getGridWidth() * this.getGridHeight();
+        return ServerPlaceRecipe.placeRecipe(
+                placementAccess,
+                this.getGridWidth(),
+                this.getGridHeight(),
+                this.slots.subList(0, gridSize),
+                this.slots.subList(0, gridSize),
+                playerInventory,
+                recipe,
+                placeAll,
+                isCreative
+        );
+    }
+
+    private boolean hasAvailableIngredients(Inventory playerInventory, RecipeHolder<KegFermentingRecipe> recipe, int count) {
+        StackedItemContents available = new StackedItemContents();
+        playerInventory.fillStackedContents(available);
+        this.fillCraftSlotsStackedContents(available);
+        return available.canCraft(recipe.value(), count, null);
+    }
+
+    private boolean hasIngredientsInGrid(RecipeHolder<KegFermentingRecipe> recipe, int count) {
+        for (int i = 0; i < this.getGridWidth() * this.getGridHeight(); ++i) {
+            if (!recipe.value().acceptsIngredient(this.inventory.getStackInSlot(i))) {
+                return false;
+            }
+        }
+        StackedItemContents contents = new StackedItemContents();
+        this.fillCraftSlotsStackedContents(contents);
+        return contents.canCraft(recipe.value(), count, null);
+    }
+
+    private boolean hasRequiredFluid(KegFermentingRecipe recipe) {
+        if (recipe.getFluidIngredient().isEmpty()) {
+            return this.kegTank.isEmpty();
+        }
+
+        var requiredFluid = recipe.getFluidIngredient().orElseThrow();
+        var tankFluid = this.kegTank.getAbstractedFluid();
+        long requiredAmount = requiredFluid.loaderAmount() * this.getFermentationScale();
+        long tankAmount = tankFluid.unit().convertToLoader(tankFluid.amount());
+        return requiredFluid.ingredient().matches(tankFluid)
+                && tankAmount >= requiredAmount
+                && tankAmount % requiredAmount == 0;
     }
 
     @Override

@@ -4,6 +4,7 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.ImageButton;
+import net.minecraft.client.gui.screens.Screen;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.gui.screens.recipebook.RecipeBookComponent;
 import net.minecraft.client.gui.screens.recipebook.RecipeUpdateListener;
@@ -27,6 +28,7 @@ import umpaz.brewinandchewin.client.utility.BnCClientRecipeUtils;
 import umpaz.brewinandchewin.client.utility.BnCRectangle;
 import umpaz.brewinandchewin.common.BnCConfiguration;
 import umpaz.brewinandchewin.common.BnCRecipeBookTypes;
+import umpaz.brewinandchewin.common.block.entity.KegBlockEntity;
 import umpaz.brewinandchewin.common.block.entity.container.KegMenu;
 import umpaz.brewinandchewin.client.utility.BnCFluidItemDisplays;
 import umpaz.brewinandchewin.common.crafting.KegFermentingRecipe;
@@ -51,6 +53,11 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
     public static final BnCRectangle HOT_BAR = new BnCRectangle(69, 55, 8, 4);
     private static final BnCRectangle LEFT_BUBBLE = new BnCRectangle(109, 44, 9, 24);
     private static final BnCRectangle RIGHT_BUBBLE = new BnCRectangle(147, 44, 9, 24);
+    private static final BnCRectangle PRODUCT_AREA = new BnCRectangle(120, 19, 24, 28);
+    private static final int PRODUCT_X = 124;
+    private static final int PRODUCT_Y = 23;
+    private static final int GHOST_BACKGROUND_COLOR = 0x30FF0000;
+    private static final int GHOST_OVERLAY_COLOR = 0x30FFFFFF;
 
     private final KegRecipeBookComponent recipeBookComponent = new KegRecipeBookComponent(this.menu);
     private boolean widthTooNarrow;
@@ -103,7 +110,6 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
             super.render(gui, mouseX, mouseY, partialTicks);
             if (this.recipeBookEnabled) {
                 this.recipeBookComponent.render(gui, mouseX, mouseY, partialTicks);
-                this.recipeBookComponent.renderGhostRecipe(gui, false);
             }
         }
         blit(gui, this.leftPos + 119, this.topPos + 15, 176, 22, 27, 33);
@@ -112,6 +118,16 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
         this.renderTooltip(gui, mouseX, mouseY);
         if (this.recipeBookEnabled) {
             this.recipeBookComponent.renderTooltip(gui, mouseX, mouseY, this.hoveredSlot);
+        }
+    }
+
+    @Override
+    protected void renderSlots(GuiGraphics gui, int mouseX, int mouseY) {
+        super.renderSlots(gui, mouseX, mouseY);
+        if (this.recipeBookEnabled) {
+            this.recipeBookComponent.renderMissingSlotOverlays(gui);
+            gui.nextStratum();
+            this.recipeBookComponent.renderGhostRecipe(gui, false);
         }
     }
 
@@ -125,7 +141,17 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
 
     private void renderTankTooltip(GuiGraphics gui, int mouseX, int mouseY) {
         KegFermentingRecipe ghostRecipe = getGhostRecipe();
-        if (isHovering(120, 19, 24, 28, mouseX, mouseY) && !menu.kegTank.isEmpty() && (ghostRecipe == null || ghostRecipe.getResult().left().isPresent() && ghostRecipe.getResult().left().get().matches(menu.kegTank.getAbstractedFluid()))) {
+        if (!isHovering(120, 19, 24, 28, mouseX, mouseY)) {
+            return;
+        }
+        if (ghostRecipe != null) {
+            ItemStack product = getDisplayedProduct().item();
+            if (!product.isEmpty()) {
+                gui.setComponentTooltipForNextFrame(this.font, Screen.getTooltipFromItem(this.minecraft, product), mouseX, mouseY);
+            }
+            return;
+        }
+        if (!menu.kegTank.isEmpty()) {
             Component containerComponent = (BnCTextUtils.getTranslation("container.keg.served_in", FLUID_CONTAINER_COMPONENTS.computeIfAbsent(menu.kegTank.getAbstractedFluid().fluid(), fluid -> {
                 MutableComponent component = MutableComponent.create(PlainTextContents.EMPTY).withStyle(ChatFormatting.GRAY);
                 int amountAdded = 0;
@@ -192,25 +218,89 @@ public class KegScreen extends AbstractContainerScreen<KegMenu> implements Recip
 
         renderTemperatureBars(gui);
 
-        AbstractedFluidStack fluidStack = this.menu.kegTank.getAbstractedFluid();
-        KegFermentingRecipe ghostRecipe = getGhostRecipe();
-        if (!fluidStack.isEmpty() && (ghostRecipe == null || ghostRecipe.getFluidIngredient().isEmpty() && menu.kegTank.isEmpty() || ghostRecipe.getFluidIngredient().isPresent() && ghostRecipe.getFluidIngredient().get().ingredient().matches(fluidStack))) {
-            if (BnCConfiguration.CLIENT_CONFIG.get().renderFluidInKeg())
-                BrewinAndChewinClient.getHelper().renderFluidInKeg(fluidStack, gui, leftPos + 120, topPos + 19, 1.0F, menu.kegTank.getFluidCapacity());
-
-            ItemStack itemDisplay = BnCFluidItemDisplays.getFluidItemDisplay(Minecraft.getInstance().level.registryAccess(), fluidStack).copy();
-            Optional<KegPouringRecipe> pouringRecipe = getPouringRecipes().stream().sorted(Comparator.comparing(KegPouringRecipe::isStrict)).filter(kegPouringRecipe -> {
-                if (kegPouringRecipe.isStrict())
-                    return ItemStack.isSameItemSameComponents(itemDisplay, kegPouringRecipe.getResultItem(minecraft.level.registryAccess()));
-                return ItemStack.isSameItem(itemDisplay, kegPouringRecipe.getResultItem(minecraft.level.registryAccess()));
-            }).findFirst();
-            int pourCount = pouringRecipe.map(kegPouringRecipe -> (int) (Math.min(this.menu.kegTank.getFluidCapacity(), this.menu.kegTank.getAbstractedFluid().amount()) / kegPouringRecipe.getLoaderAmount())).orElse(1);
-            itemDisplay.setCount(pourCount);
-            if (!itemDisplay.isEmpty()) {
-                gui.renderItem(itemDisplay, this.leftPos + 124, this.topPos + 23);
-                gui.renderItemDecorations(minecraft.font, itemDisplay, this.leftPos + 124, this.topPos + 23);
-            }
+        DisplayedProduct displayedProduct = getDisplayedProduct();
+        int productAreaX = this.leftPos + PRODUCT_AREA.x();
+        int productAreaY = this.topPos + PRODUCT_AREA.y();
+        if (displayedProduct.missing()) {
+            gui.fill(
+                    productAreaX,
+                    productAreaY,
+                    productAreaX + PRODUCT_AREA.width(),
+                    productAreaY + PRODUCT_AREA.height(),
+                    GHOST_BACKGROUND_COLOR
+            );
         }
+
+        AbstractedFluidStack fluidStack = displayedProduct.fluid();
+        if (!fluidStack.isEmpty() && BnCConfiguration.CLIENT_CONFIG.get().renderFluidInKeg()) {
+            BrewinAndChewinClient.getHelper().renderFluidInKeg(fluidStack, gui, leftPos + 120, topPos + 19, displayedProduct.missing() ? 0.45F : 1.0F, menu.kegTank.getFluidCapacity());
+        }
+
+        ItemStack itemDisplay = displayedProduct.item();
+        if (!itemDisplay.isEmpty()) {
+            int x = this.leftPos + PRODUCT_X;
+            int y = this.topPos + PRODUCT_Y;
+            if (displayedProduct.missing()) {
+                gui.renderFakeItem(itemDisplay, x, y);
+                gui.fill(x, y, x + 16, y + 16, GHOST_OVERLAY_COLOR);
+            } else {
+                gui.renderItem(itemDisplay, x, y);
+            }
+            gui.renderItemDecorations(minecraft.font, itemDisplay, x, y);
+        }
+    }
+
+    private DisplayedProduct getDisplayedProduct() {
+        KegFermentingRecipe ghostRecipe = getGhostRecipe();
+        if (ghostRecipe == null) {
+            AbstractedFluidStack tankFluid = this.menu.kegTank.getAbstractedFluid();
+            return new DisplayedProduct(tankFluid, getFluidDisplayItem(tankFluid), false);
+        }
+
+        int scale = this.menu.getFermentationScale();
+        if (ghostRecipe.getResult().left().isPresent()) {
+            AbstractedFluidStack result = scaleFluid(ghostRecipe.getResult().left().orElseThrow(), scale);
+            AbstractedFluidStack tankFluid = this.menu.kegTank.getAbstractedFluid();
+            boolean missing = !result.matches(tankFluid)
+                    || tankFluid.unit().convertToLoader(tankFluid.amount()) < result.unit().convertToLoader(result.amount());
+            return new DisplayedProduct(result, getFluidDisplayItem(result), missing);
+        }
+
+        ItemStack result = ghostRecipe.getResult().right().orElseThrow().copy();
+        result.setCount((int) Math.min(Integer.MAX_VALUE, (long) result.getCount() * scale));
+        ItemStack output = this.menu.getSlot(KegBlockEntity.OUTPUT_SLOT).getItem();
+        boolean missing = !ItemStack.isSameItemSameComponents(result, output) || output.getCount() < result.getCount();
+        return new DisplayedProduct(AbstractedFluidStack.EMPTY, result, missing);
+    }
+
+    private ItemStack getFluidDisplayItem(AbstractedFluidStack fluidStack) {
+        if (fluidStack.isEmpty() || this.minecraft.level == null) {
+            return ItemStack.EMPTY;
+        }
+
+        ItemStack itemDisplay = BnCFluidItemDisplays.getFluidItemDisplay(this.minecraft.level.registryAccess(), fluidStack).copy();
+        Optional<KegPouringRecipe> pouringRecipe = getPouringRecipes().stream().sorted(Comparator.comparing(KegPouringRecipe::isStrict)).filter(kegPouringRecipe -> {
+            if (kegPouringRecipe.isStrict())
+                return ItemStack.isSameItemSameComponents(itemDisplay, kegPouringRecipe.getResultItem(minecraft.level.registryAccess()));
+            return ItemStack.isSameItem(itemDisplay, kegPouringRecipe.getResultItem(minecraft.level.registryAccess()));
+        }).findFirst();
+        long displayedAmount = fluidStack.unit().convertToLoader(fluidStack.amount());
+        long count = pouringRecipe.map(kegPouringRecipe -> Math.min(this.menu.kegTank.getFluidCapacity(), displayedAmount) / kegPouringRecipe.getLoaderAmount()).orElse(1L);
+        itemDisplay.setCount((int) Math.min(Integer.MAX_VALUE, Math.max(1L, count)));
+        return itemDisplay;
+    }
+
+    private static AbstractedFluidStack scaleFluid(AbstractedFluidStack fluid, int scale) {
+        return new AbstractedFluidStack(
+                fluid.fluid(),
+                fluid.amount() * scale,
+                fluid.components(),
+                fluid.unit(),
+                null
+        );
+    }
+
+    private record DisplayedProduct(AbstractedFluidStack fluid, ItemStack item, boolean missing) {
     }
 
     private void renderTemperatureBars(GuiGraphics gui) {
