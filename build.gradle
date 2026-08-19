@@ -146,6 +146,13 @@ dependencies {
     modLocalRuntime "eu.pb4:placeholder-api:${pb4_placeholder_api_version}"
     modLocalRuntime "me.lucko:fabric-permissions-api:${permissions_api_version}"
     modLocalRuntime "eu.pb4:player-data-api:${pb4_player_data_api_version}"
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.11.4'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.11.4'
+}
+
+tasks.named('test', Test).configure {
+    useJUnitPlatform()
 }
 
 java {
