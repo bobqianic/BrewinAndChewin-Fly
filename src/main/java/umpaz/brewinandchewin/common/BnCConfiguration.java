@@ -63,7 +63,7 @@ public class BnCConfiguration {
                         readBoolean(state, "keg.kegDimTemp", Common.DEFAULT.keg().dimTemp())
                 ),
                 new Common.RecipeBook(
-                        state.sourceVersion() == 2
+                        Integer.valueOf(2).equals(state.sourceVersion())
                                 ? Common.DEFAULT.recipeBook().enabled()
                                 : readBoolean(state, "recipe_book.enableRecipeBookKeg", Common.DEFAULT.recipeBook().enabled())
                 )
