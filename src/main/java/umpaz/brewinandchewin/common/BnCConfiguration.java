@@ -106,10 +106,10 @@ public class BnCConfiguration {
         }
 
         Integer version = parseInteger(values.get("version"));
-        if (version != null && version == configVersion) {
+        if (Integer.valueOf(configVersion).equals(version)) {
             return new ReadState(values, false, version);
         }
-        if (version != null && IntStream.of(compatibleVersions).anyMatch(compatibleVersion -> compatibleVersion == version)) {
+        if (IntStream.of(compatibleVersions).anyMatch(compatibleVersion -> Integer.valueOf(compatibleVersion).equals(version))) {
             BrewinAndChewin.LOG.info("Migrating Brewin' And Chewin' config {} from version {} to version {}.", path.getFileName(), version, configVersion);
             return new ReadState(values, true, version);
         }
