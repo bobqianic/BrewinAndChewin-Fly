@@ -63,7 +63,7 @@ public class BnCConfiguration {
                         readBoolean(state, "keg.kegDimTemp", Common.DEFAULT.keg().dimTemp())
                 ),
                 new Common.RecipeBook(
-                        state.sourceVersion() == 2
+                        Integer.valueOf(2).equals(state.sourceVersion())
                                 ? Common.DEFAULT.recipeBook().enabled()
                                 : readBoolean(state, "recipe_book.enableRecipeBookKeg", Common.DEFAULT.recipeBook().enabled())
                 )
@@ -93,23 +93,22 @@ public class BnCConfiguration {
     }
 
     private static ReadState readVersioned(Path path, int configVersion, int... compatibleVersions) {
-        if (!Files.exists(path)) {
-            return new ReadState(Map.of(), true, null);
-        }
-
         Map<String, String> values;
         try {
+            if (!Files.exists(path)) {
+                return new ReadState(Map.of(), true, null);
+            }
             values = readToml(path);
-        } catch (IOException ex) {
+        } catch (IOException | SecurityException ex) {
             BrewinAndChewin.LOG.warn("Failed to read Brewin' And Chewin' config {}, using defaults.", path, ex);
             return new ReadState(Map.of(), true, null);
         }
 
         Integer version = parseInteger(values.get("version"));
-        if (version != null && version == configVersion) {
+        if (Integer.valueOf(configVersion).equals(version)) {
             return new ReadState(values, false, version);
         }
-        if (version != null && IntStream.of(compatibleVersions).anyMatch(compatibleVersion -> compatibleVersion == version)) {
+        if (version != null && IntStream.of(compatibleVersions).anyMatch(compatibleVersion -> Integer.valueOf(compatibleVersion).equals(version))) {
             BrewinAndChewin.LOG.info("Migrating Brewin' And Chewin' config {} from version {} to version {}.", path.getFileName(), version, configVersion);
             return new ReadState(values, true, version);
         }
@@ -246,7 +245,7 @@ public class BnCConfiguration {
         try {
             Files.createDirectories(path.getParent());
             Files.writeString(path, content, StandardCharsets.UTF_8);
-        } catch (IOException ex) {
+        } catch (IOException | SecurityException ex) {
             BrewinAndChewin.LOG.warn("Failed to write Brewin' And Chewin' config {}.", path, ex);
         }
     }
