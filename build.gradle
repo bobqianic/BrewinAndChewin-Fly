@@ -202,6 +202,86 @@ tasks.named('jar', Jar).configure {
     }
 }
 
+def defaultReleaseJar = tasks.named('jar', Jar).flatMap { it.archiveFile }
+def suppliedReleaseJar = providers.gradleProperty('releaseArtifact').map { layout.projectDirectory.file(it) }
+def releaseJar = suppliedReleaseJar.orElse(defaultReleaseJar)
+
+tasks.register('verifyReleaseJar') {
+    group = 'verification'
+    description = 'Validates the metadata and referenced classes in the exact release JAR.'
+
+    if (!suppliedReleaseJar.isPresent()) {
+        dependsOn tasks.named('jar')
+    }
+    inputs.file(releaseJar)
+    inputs.file(rootProject.file('CHANGELOG.md'))
+    inputs.property('expectedModVersion', mod_version)
+
+    doLast {
+        def archive = releaseJar.get().asFile
+        if (!archive.isFile()) {
+            throw new GradleException("Release JAR does not exist: ${archive}")
+        }
+
+        new java.util.zip.ZipFile(archive).withCloseable { zip ->
+            def requireEntry = { String name ->
+                def entry = zip.getEntry(name)
+                if (entry == null) {
+                    throw new GradleException("Release JAR is missing ${name}")
+                }
+                entry
+            }
+            def readJson = { String name ->
+                def entry = requireEntry(name)
+                zip.getInputStream(entry).withCloseable { stream ->
+                    new groovy.json.JsonSlurper().parseText(stream.getText('UTF-8'))
+                }
+            }
+            def requireClass = { String owner, String className ->
+                String resource = className.split('::', 2)[0].replace('.', '/') + '.class'
+                if (zip.getEntry(resource) == null) {
+                    throw new GradleException("${owner} references missing class ${className}")
+                }
+            }
+
+            def metadata = readJson('fabric.mod.json')
+            if (metadata.version != mod_version) {
+                throw new GradleException("fabric.mod.json version ${metadata.version} does not match ${mod_version}")
+            }
+
+            requireEntry(metadata.accessWidener.toString())
+            metadata.entrypoints.each { type, entrypoints ->
+                entrypoints.each { entrypoint ->
+                    String className = entrypoint instanceof Map ? entrypoint.value : entrypoint
+                    requireClass("fabric.mod.json entrypoint ${type}", className)
+                }
+            }
+
+            metadata.mixins.each { declaredConfig ->
+                String configName = declaredConfig instanceof Map ? declaredConfig.config : declaredConfig
+                def mixinConfig = readJson(configName)
+                String mixinPackage = mixinConfig['package'].toString()
+                ['mixins', 'client', 'server'].each { section ->
+                    (mixinConfig[section] ?: []).each { mixin ->
+                        requireClass(configName, "${mixinPackage}.${mixin}")
+                    }
+                }
+            }
+        }
+
+        String expectedHeading = "# ${mod_version}"
+        String actualHeading = rootProject.file('CHANGELOG.md').readLines('UTF-8').first()
+        if (actualHeading != expectedHeading) {
+            throw new GradleException("CHANGELOG.md must start with '${expectedHeading}', found '${actualHeading}'")
+        }
+    }
+}
+
+tasks.named('check').configure {
+    dependsOn tasks.named('validateAccessWidener')
+    dependsOn tasks.named('verifyReleaseJar')
+}
+
 publishing {
     publications {
         create('mavenJava', MavenPublication) {
@@ -212,7 +292,7 @@ publishing {
 }
 
 publishMods {
-    file = tasks.named('jar').flatMap { it.archiveFile }
+    file = releaseJar
     modLoaders.add 'fabric'
     changelog = rootProject.file('CHANGELOG.md').text
     displayName = "v${mod_version} (Fabric ${minecraft_version})"
@@ -230,6 +310,22 @@ publishMods {
             optional 'jei'
             optional 'appleskin'
             optional 'styled-chat'
+        }
+    }
+}
+
+tasks.named('publishMods').configure {
+    dependsOn tasks.named('check')
+}
+
+tasks.named('publishModrinth').configure {
+    dependsOn tasks.named('check')
+    doFirst {
+        String expectedTag = "v${mod_version}+${minecraft_version}-fabric"
+        if (System.getenv('GITHUB_ACTIONS') != 'true'
+                || System.getenv('GITHUB_REF_TYPE') != 'tag'
+                || System.getenv('GITHUB_REF_NAME') != expectedTag) {
+            throw new GradleException("Modrinth publishing is restricted to the GitHub Actions tag ${expectedTag}")
         }
     }
 }

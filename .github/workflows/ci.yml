@@ -1,0 +1,175 @@
+name: CI and Modrinth Release
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref_type != 'tag' }}
+
+jobs:
+  wrapper-validation:
+    name: Wrapper validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate Gradle wrapper
+        uses: gradle/actions/wrapper-validation@v4
+
+  build:
+    name: Build and verify
+    needs: wrapper-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Build, test, and validate release artifact
+        shell: bash
+        run: |
+          chmod +x gradlew
+          ./gradlew clean check --stacktrace --console=plain
+
+      - name: Record artifact checksum
+        shell: bash
+        run: |
+          mapfile -t jars < <(find build/libs -maxdepth 1 -type f -name '*.jar' ! -name '*-sources.jar')
+          if [[ ${#jars[@]} -ne 1 ]]; then
+            echo "Expected exactly one release JAR, found ${#jars[@]}" >&2
+            exit 1
+          fi
+          jar_dir=$(dirname "${jars[0]}")
+          jar_name=$(basename "${jars[0]}")
+          (cd "$jar_dir" && sha256sum "$jar_name" > "$jar_name.sha256")
+
+      - name: Upload verified release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-jar
+          path: |
+            build/libs/*.jar
+            build/libs/*.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports-${{ github.run_id }}
+          path: |
+            build/reports/tests/
+            build/test-results/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  server-smoke:
+    name: Dedicated server smoke test
+    needs: wrapper-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Launch dedicated server through mod initialization
+        shell: bash
+        run: |
+          set -o pipefail
+          chmod +x gradlew
+          mkdir -p build/ci
+          timeout 5m ./gradlew runServer --args nogui --stacktrace --console=plain | tee build/ci/server-smoke.log
+          grep -F "You need to agree to the EULA" build/ci/server-smoke.log
+
+      - name: Upload server smoke log
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-smoke-${{ github.run_id }}
+          path: build/ci/server-smoke.log
+          if-no-files-found: ignore
+          retention-days: 14
+
+  publish-modrinth:
+    name: Publish verified JAR to Modrinth
+    if: github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
+    needs:
+      - build
+      - server-smoke
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: modrinth-production
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java 25
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "25"
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Download verified release artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: release-jar
+          path: release
+
+      - name: Validate release tag and checksum
+        shell: bash
+        run: |
+          mod_version=$(sed -n 's/^mod_version=//p' gradle.properties)
+          minecraft_version=$(sed -n 's/^minecraft_version=//p' gradle.properties)
+          expected_tag="v${mod_version}+${minecraft_version}-fabric"
+          if [[ "$GITHUB_REF_NAME" != "$expected_tag" ]]; then
+            echo "Release tag must be $expected_tag, got $GITHUB_REF_NAME" >&2
+            exit 1
+          fi
+          (cd release && sha256sum -c ./*.sha256)
+
+      - name: Publish the verified JAR
+        shell: bash
+        env:
+          MODRINTH_TOKEN: ${{ secrets.MODRINTH_TOKEN }}
+        run: |
+          chmod +x gradlew
+          mapfile -t jars < <(find release -maxdepth 1 -type f -name '*.jar')
+          if [[ ${#jars[@]} -ne 1 ]]; then
+            echo "Expected exactly one verified release JAR, found ${#jars[@]}" >&2
+            exit 1
+          fi
+          ./gradlew check publishMods -PreleaseArtifact="${jars[0]}" --stacktrace --console=plain
