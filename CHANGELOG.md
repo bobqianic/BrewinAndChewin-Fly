@@ -1,3 +1,3 @@
-# 4.5.1-fly
+# 4.5.2-fly
 
-- Fixed a startup crash when loading older or missing configuration files ([#11](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/11)).
+- Restored registration of the Keg recipe-book type ([#12](https://github.com/bobqianic/BrewinAndChewin-Fly/issues/12))

@@ -130,6 +130,7 @@ dependencies {
     runtimeOnly "eu.pb4:player-data-api:${pb4_player_data_api_version}"
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
 java {
