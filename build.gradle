@@ -106,6 +106,9 @@ dependencies {
 
     modImplementation "net.fabricmc:fabric-loader:${loader_version}"
     modImplementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
+    if (providers.gradleProperty('compatibility_fabric_version').isPresent()) {
+        modLocalRuntime "net.fabricmc.fabric-api:fabric-api:${providers.gradleProperty('compatibility_fabric_version').get()}"
+    }
     modLocalRuntime "com.terraformersmc:modmenu:${mod_menu_version}"
 
     compileOnly "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
