@@ -1,6 +1,6 @@
 # Release Process
 
-Modrinth releases are published only by `.github/workflows/ci.yml` after wrapper validation, the build and exact-JAR verification, and the dedicated-server smoke test pass.
+Modrinth releases are published only by `.github/workflows/ci.yml` after wrapper validation, the build and exact-JAR verification, the dedicated-server smoke test, and the Farmer's Delight compatibility matrix pass.
 
 ## One-Time GitHub Setup
 
@@ -11,6 +11,7 @@ Modrinth releases are published only by `.github/workflows/ci.yml` after wrapper
    - `Wrapper validation`
    - `Build and verify`
    - `Dedicated server smoke test`
+   - `Farmer's Delight compatibility`
 
 ## Prepare a Release
 
@@ -25,6 +26,6 @@ Modrinth releases are published only by `.github/workflows/ci.yml` after wrapper
 
 5. Push the tag. Do not run the Gradle publishing tasks locally.
 
-Branch pushes and pull requests build, test, verify the release JAR, and run the server smoke test, but they never publish. Only a matching tag push can enter the protected `modrinth-production` environment.
+Branch pushes and pull requests build, test, verify the release JAR, run the server smoke test, and launch both a server and headless client against up to five current compatible Farmer's Delight releases, but they never publish. Only a matching tag push can enter the protected `modrinth-production` environment.
 
 The tag job downloads the exact JAR and SHA-256 checksum produced by `Build and verify`, validates both, and revalidates that downloaded JAR through Gradle. Before upload it checks Modrinth for the release version. An existing version with the same JAR hash is treated as already published; an existing version with a different hash fails the release.
