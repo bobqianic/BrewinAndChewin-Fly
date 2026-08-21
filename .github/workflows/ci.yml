@@ -231,6 +231,7 @@ jobs:
         env:
           FARMERS_DELIGHT_ID: ${{ matrix.farmers_delight.id }}
           FARMERS_DELIGHT_VERSION: ${{ matrix.farmers_delight.number }}
+          COMPATIBILITY_LOADER_VERSION: "0.19.3"
           ALSOFT_DRIVERS: "null"
           LIBGL_ALWAYS_SOFTWARE: "1"
           MESA_LOADER_DRIVER_OVERRIDE: llvmpipe
@@ -296,11 +297,12 @@ jobs:
             return 1
           }
 
+          loader="-Ploader_version=${COMPATIBILITY_LOADER_VERSION}"
           dependency="-Pfarmers_delight_refabricated_version=${FARMERS_DELIGHT_ID}"
           smoke_launch server 'Done (' \
-            ./gradlew "$dependency" runServer --args nogui --stacktrace --console=plain
+            ./gradlew "$loader" "$dependency" runServer --args nogui --stacktrace --console=plain
           smoke_launch client 'Sound engine started' \
-            xvfb-run -a ./gradlew "$dependency" runClient --stacktrace --console=plain
+            xvfb-run -a ./gradlew "$loader" "$dependency" runClient --stacktrace --console=plain
 
       - name: Upload compatibility logs
         if: always()
