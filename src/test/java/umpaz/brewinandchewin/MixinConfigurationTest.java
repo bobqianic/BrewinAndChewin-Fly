@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class MixinConfigurationTest {
     @Test
@@ -45,6 +46,15 @@ class MixinConfigurationTest {
         for (var element : metadata.getAsJsonArray("mixins")) {
             assertMixinClassesExist(element.getAsString());
         }
+    }
+
+    // Minecraft 26.2 requires this enum mixin to remain in the Fabric mixin configuration.
+    @Test
+    void fabricRecipeBookTypeMixinRemainsConfigured() throws IOException {
+        JsonArray mixins = readJson("brewinandchewin.fabric.mixins.json").getAsJsonArray("mixins");
+        assertTrue(mixins.asList().stream()
+                        .anyMatch(element -> element.getAsString().equals("RecipeBookTypeMixin")),
+                "Fabric mixin configuration must apply RecipeBookTypeMixin");
     }
 
     private static void assertMixinClassesExist(String configName) throws IOException {

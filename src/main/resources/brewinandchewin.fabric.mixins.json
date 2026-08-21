@@ -8,6 +8,7 @@
     "LivingEntityMixin",
     "PlayerMixin",
     "PreventTaggedEffectRemovalMixin",
+    "RecipeBookTypeMixin",
     "RecipeBookSettingsMixin"
   ],
   "client": [

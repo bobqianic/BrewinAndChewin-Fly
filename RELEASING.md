@@ -1,6 +1,6 @@
 # Release Process
 
-Modrinth releases are published only by `.github/workflows/ci.yml` after the build, artifact validation, and dedicated-server smoke jobs pass.
+Modrinth releases are published only by `.github/workflows/ci.yml` after the build, artifact validation, dedicated-server smoke, and Farmer's Delight compatibility jobs pass.
 
 ## One-Time GitHub Setup
 
@@ -11,6 +11,7 @@ Modrinth releases are published only by `.github/workflows/ci.yml` after the bui
    - `Wrapper validation`
    - `Build and verify`
    - `Dedicated server smoke test`
+   - `Farmer's Delight compatibility`
 5. Restrict release-tag creation and `modrinth-production` deployment approval to maintainers.
 
 ## Release
