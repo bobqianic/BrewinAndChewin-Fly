@@ -1,6 +1,6 @@
 # Release Process
 
-Modrinth releases are published only by `.github/workflows/ci.yml` after the wrapper validation, build verification, and dedicated-server smoke jobs pass.
+Modrinth releases are published only by `.github/workflows/ci.yml` after the wrapper validation, build verification, dedicated-server smoke, and Farmer's Delight compatibility jobs pass.
 
 ## One-Time GitHub Setup
 
@@ -10,7 +10,10 @@ Modrinth releases are published only by `.github/workflows/ci.yml` after the wra
    - `Wrapper validation`
    - `Build and verify`
    - `Dedicated server smoke test`
+   - `Farmer's Delight compatibility`
 4. Restrict release-tag creation and `modrinth-production` deployment approval to maintainers.
+
+The stable `Farmer's Delight compatibility` check covers the newest compatible stable Farmer's Delight Refabricated releases discovered from Modrinth for this branch, up to five versions. Require that aggregate check rather than the individual versioned matrix jobs.
 
 Do not store the token as a repository secret, Gradle property, workflow literal, or local file.
 

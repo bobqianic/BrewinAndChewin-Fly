@@ -127,6 +127,215 @@ jobs:
           if-no-files-found: ignore
           retention-days: 14
 
+  farmers-delight-versions:
+    name: Discover Farmer's Delight versions
+    needs: wrapper-validation
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      versions: ${{ steps.versions.outputs.versions }}
+      java_version: ${{ steps.versions.outputs.java_version }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Select the newest compatible stable releases
+        id: versions
+        shell: bash
+        run: |
+          set -euo pipefail
+          minecraft_version=$(sed -n 's/^minecraft_version=//p' gradle.properties)
+          java_version=$(sed -n 's/^java_version=//p' gradle.properties)
+          dependency_range=$(sed -n 's/^farmers_delight_refabricated_range=//p' gradle.properties)
+
+          if [[ -z "$minecraft_version" || -z "$java_version" ]]; then
+            echo "Minecraft and Java versions must be declared in gradle.properties" >&2
+            exit 1
+          fi
+          if [[ "$dependency_range" != ">="* ]]; then
+            echo "Unsupported Farmer's Delight version range: $dependency_range" >&2
+            exit 1
+          fi
+          minimum_version=${dependency_range#>=}
+
+          response=$(curl --fail-with-body --silent --show-error --retry 3 --get \
+            --header "User-Agent: BrewinAndChewin-Fly-GitHub-Actions/${GITHUB_REPOSITORY}" \
+            --data-urlencode 'loaders=["fabric"]' \
+            --data-urlencode "game_versions=[\"${minecraft_version}\"]" \
+            'https://api.modrinth.com/v2/project/farmers-delight-refabricated/version')
+
+          selected=()
+          while IFS=$'\t' read -r version_id version_number; do
+            oldest=$(printf '%s\n' "$minimum_version" "$version_number" \
+              | sort --version-sort | head -n 1)
+            if [[ "$oldest" == "$minimum_version" ]]; then
+              selected+=("${version_id}"$'\t'"${version_number}")
+            fi
+            if [[ ${#selected[@]} -eq 5 ]]; then
+              break
+            fi
+          done < <(jq -r '
+            sort_by(.date_published) | reverse | .[]
+            | select(.version_type == "release")
+            | [.id, .version_number]
+            | @tsv
+          ' <<< "$response")
+
+          if [[ ${#selected[@]} -eq 0 ]]; then
+            echo "Modrinth returned no stable Fabric releases for Minecraft $minecraft_version in range $dependency_range" >&2
+            exit 1
+          fi
+
+          versions=$(printf '%s\n' "${selected[@]}" | jq -Rsc '
+            split("\n")[:-1]
+            | map(split("\t") | {id: .[0], number: .[1]})
+          ')
+          {
+            echo "### Farmer's Delight compatibility matrix"
+            echo
+            echo "Minecraft: \`$minecraft_version\`; declared range: \`$dependency_range\`"
+            echo
+            printf '%s\n' "${selected[@]}" | awk -F '\t' '{ printf "- `%s` (`%s`)\n", $2, $1 }'
+          } >> "$GITHUB_STEP_SUMMARY"
+          echo "Selected Farmer's Delight releases: $versions"
+          echo "versions=$versions" >> "$GITHUB_OUTPUT"
+          echo "java_version=$java_version" >> "$GITHUB_OUTPUT"
+
+  farmers-delight-compatibility:
+    name: Farmer's Delight ${{ matrix.farmers_delight.number }} compatibility
+    needs:
+      - wrapper-validation
+      - farmers-delight-versions
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      max-parallel: 5
+      matrix:
+        farmers_delight: ${{ fromJSON(needs.farmers-delight-versions.outputs.versions) }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Java ${{ needs.farmers-delight-versions.outputs.java_version }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ needs.farmers-delight-versions.outputs.java_version }}
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Launch server and client
+        shell: bash
+        env:
+          FARMERS_DELIGHT_ID: ${{ matrix.farmers_delight.id }}
+          FARMERS_DELIGHT_VERSION: ${{ matrix.farmers_delight.number }}
+          ALSOFT_DRIVERS: "null"
+          LIBGL_ALWAYS_SOFTWARE: "1"
+          MESA_LOADER_DRIVER_OVERRIDE: llvmpipe
+        run: |
+          set -euo pipefail
+          chmod +x gradlew
+          mkdir -p build/ci run
+          touch build/ci/server.log build/ci/client.log
+          printf 'eula=true\n' > run/eula.txt
+
+          active_pid=''
+          stop_process_group() {
+            if [[ -n "$active_pid" ]] && kill -0 -- "-$active_pid" 2>/dev/null; then
+              kill -TERM -- "-$active_pid" 2>/dev/null || true
+              for _ in {1..20}; do
+                if ! kill -0 -- "-$active_pid" 2>/dev/null; then
+                  break
+                fi
+                sleep 0.5
+              done
+              if kill -0 -- "-$active_pid" 2>/dev/null; then
+                kill -KILL -- "-$active_pid" 2>/dev/null || true
+              fi
+            fi
+            if [[ -n "$active_pid" ]]; then
+              wait "$active_pid" 2>/dev/null || true
+            fi
+            active_pid=''
+          }
+          trap stop_process_group EXIT
+
+          smoke_launch() {
+            local name=$1
+            local marker=$2
+            shift 2
+            local log="build/ci/${name}.log"
+
+            setsid timeout --signal=TERM --kill-after=10s 5m "$@" > "$log" 2>&1 &
+            active_pid=$!
+            while kill -0 "$active_pid" 2>/dev/null; do
+              if grep -Fq "$marker" "$log"; then
+                loaded_version=$(awk '
+                  $1 == "-" && $2 == "farmersdelight" { print $3; exit }
+                ' "$log")
+                if [[ "$loaded_version" != "$FARMERS_DELIGHT_VERSION"
+                      && "$loaded_version" != "$FARMERS_DELIGHT_VERSION+"* ]]; then
+                  echo "$name loaded Farmer's Delight '$loaded_version'; expected '$FARMERS_DELIGHT_VERSION'" >&2
+                  cat "$log"
+                  return 1
+                fi
+                stop_process_group
+                cat "$log"
+                return 0
+              fi
+              sleep 2
+            done
+
+            local launch_status=0
+            wait "$active_pid" || launch_status=$?
+            active_pid=''
+            echo "$name exited with status $launch_status before readiness marker: $marker" >&2
+            cat "$log"
+            return 1
+          }
+
+          dependency="-Pfarmers_delight_refabricated_version=${FARMERS_DELIGHT_ID}"
+          smoke_launch server 'Done (' \
+            ./gradlew "$dependency" runServer --args nogui --stacktrace --console=plain
+          smoke_launch client 'Sound engine started' \
+            xvfb-run -a ./gradlew "$dependency" runClient --stacktrace --console=plain
+
+      - name: Upload compatibility logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: farmers-delight-${{ matrix.farmers_delight.id }}-${{ github.run_id }}
+          path: |
+            build/ci/server.log
+            build/ci/client.log
+            run/logs/
+            run/crash-reports/
+          if-no-files-found: ignore
+          retention-days: 14
+
+  farmers-delight-compatibility-gate:
+    name: Farmer's Delight compatibility
+    if: always()
+    needs:
+      - farmers-delight-versions
+      - farmers-delight-compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    steps:
+      - name: Confirm compatibility matrix passed
+        shell: bash
+        env:
+          DISCOVERY_RESULT: ${{ needs.farmers-delight-versions.result }}
+          MATRIX_RESULT: ${{ needs.farmers-delight-compatibility.result }}
+        run: |
+          if [[ "$DISCOVERY_RESULT" != "success" || "$MATRIX_RESULT" != "success" ]]; then
+            echo "Version discovery: $DISCOVERY_RESULT; compatibility matrix: $MATRIX_RESULT" >&2
+            exit 1
+          fi
+          echo "All Farmer's Delight compatibility checks passed."
+
   publish-modrinth:
     name: Publish verified JAR to Modrinth
     if: github.event_name == 'push' && github.ref_type == 'tag' && startsWith(github.ref_name, 'v')
@@ -134,6 +343,7 @@ jobs:
       - wrapper-validation
       - build
       - server-smoke
+      - farmers-delight-compatibility-gate
     runs-on: ubuntu-latest
     timeout-minutes: 15
     environment: modrinth-production
