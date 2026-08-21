@@ -15,7 +15,7 @@ import net.minecraft.world.level.storage.loot.predicates.LootItemCondition;
 import umpaz.brewinandchewin.BrewinAndChewin;
 import umpaz.brewinandchewin.common.block.CheeseWheelBlock;
 import umpaz.brewinandchewin.common.block.PizzaBlock;
-import vectorwing.farmersdelight.common.tag.CommonTags;
+import vectorwing.farmersdelight.common.tag.ModTags;
 import vectorwing.farmersdelight.refabricated.LootModifier;
 
 // TODO: Port Me!
@@ -40,7 +40,7 @@ public class BnCSlicingModifier extends LootModifier
                 generatedLoot.add(new ItemStack(slice, servings + 1));
             } else if (targetBlock instanceof CheeseWheelBlock) {
                 int servings = state.getValue(CheeseWheelBlock.SERVINGS);
-                if (servings == 3 && !context.getParameter(LootContextParams.TOOL).is(CommonTags.TOOLS_KNIFE)) {
+                if (servings == 3 && !context.getParameter(LootContextParams.TOOL).is(ModTags.KNIVES)) {
                     generatedLoot.add(new ItemStack(targetBlock.asItem()));
                 } else {
                     generatedLoot.add(new ItemStack(slice, servings + 1));
