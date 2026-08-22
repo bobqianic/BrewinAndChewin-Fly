@@ -122,6 +122,7 @@
   "brewinandchewin.container.keg.hot": "Sıcak",
 
   "brewinandchewin.block.feast.use_knife": "Bunu kesmek için bir Bıçak gerekli.",
+  "farmersdelight.block.feast.use_container": "Bunu yemek için %s gerekli",
 
   "death.attack.brewinandchewin.cardiacArrest": "%1$s yaralandığını sonunda hatırladı",
   "death.attack.brewinandchewin.cardiacArrest.player": "%1$s, %2$s tarafından kalp krizi geçirdi",

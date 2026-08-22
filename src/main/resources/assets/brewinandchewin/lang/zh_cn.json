@@ -142,6 +142,7 @@
   "brewinandchewin.container.keg.hot": "炎热",
 
   "brewinandchewin.block.feast.use_knife": "你需要一把刀来切割它.",
+  "farmersdelight.block.feast.use_container": "你需要一个%s以食用它。",
 
   "death.attack.brewinandchewin.cardiacArrest": "%1$s回想神伤",
   "death.attack.brewinandchewin.cardiacArrest.player": "%1$s因%2$s而心脏骤停",
