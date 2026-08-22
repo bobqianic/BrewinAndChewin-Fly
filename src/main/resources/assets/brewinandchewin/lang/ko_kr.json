@@ -126,6 +126,7 @@
   "brewinandchewin.container.keg.hot": "뜨거움",
 
   "brewinandchewin.block.feast.use_knife": "이걸 자르려면 식칼이 필요합니다.",
+  "farmersdelight.block.feast.use_container": "이 음식은 %s이(가) 필요합니다.",
 
   "death.attack.brewinandchewin.cardiacArrest": "%1$s이(가) 자신이 공격받았다는 사실을 기억해냈습니다.",
   "death.attack.brewinandchewin.cardiacArrest.player": "%1$s는 %2$s에 의해 심장마비에 빠졌습니다.",
