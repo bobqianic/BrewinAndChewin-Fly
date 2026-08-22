@@ -122,6 +122,7 @@
   "brewinandchewin.container.keg.hot": "Hot",
 
   "brewinandchewin.block.feast.use_knife": "You need a Knife to cut this.",
+  "farmersdelight.block.feast.use_container": "You need a %s to eat this.",
 
   "death.attack.brewinandchewin.cardiacArrest": "%1$s remembered they got hurt",
   "death.attack.brewinandchewin.cardiacArrest.player": "%1$s was sent into cardiac arrest by %2$s",

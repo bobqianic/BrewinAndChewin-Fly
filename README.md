@@ -36,7 +36,7 @@ This fork keeps the original `brewinandchewin` mod id for world, resource-pack, 
 
 ## Gradle
 
-Use the full Modrinth version string, for example `4.5.0-fly+1.21.11-fabric`.
+Use the full Modrinth version string, for example `4.5.4-fly+1.21.11-fabric`.
 
 ```groovy
 repositories {
