@@ -50,7 +50,7 @@ public class AreaLocationCheckCondition implements LootItemCondition {
 
     @Override
     public boolean test(LootContext context) {
-        Vec3 vec3 = context.getOptionalParameter(LootContextParams.ORIGIN);
+        Vec3 vec3 = context.getOptional(LootContextParams.ORIGIN);
         if (vec3 == null) {
             return false;
         }
@@ -96,7 +96,7 @@ public class AreaLocationCheckCondition implements LootItemCondition {
     }
 
     private static <T> void copyParameter(LootParams.Builder paramBuilder, LootParams originalParams, ContextKey<T> key) {
-        T value = ((LootParamsAccessor) originalParams).brewinandchewin$getParams().getOptional(key);
+        T value = ((LootParamsAccessor) originalParams).brewinandchewin$getParams().get(key);
         if (value != null) {
             paramBuilder.withParameter(key, value);
         }

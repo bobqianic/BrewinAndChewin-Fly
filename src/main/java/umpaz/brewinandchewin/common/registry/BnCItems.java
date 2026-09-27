@@ -10,6 +10,7 @@ import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.item.component.Consumable;
+import net.minecraft.world.level.storage.loot.providers.number.ints.ContextIntProviders;
 import net.minecraft.world.level.material.Fluid;
 import org.jetbrains.annotations.Nullable;
 import umpaz.brewinandchewin.BrewinAndChewin;
@@ -141,16 +142,16 @@ public class BnCItems {
     public static final Item FIERY_FONDUE = new ConsumableItem(itemProperties("fiery_fondue").stacksTo(16).food(BnCFoods.FIERY_FONDUE, BnCFoods.FIERY_FONDUE_CONSUMABLE).craftRemainder(Items.BOWL), true);
 
     public static final Item PIZZA = new BlockItem(BnCBlocks.PIZZA, itemProperties("pizza").stacksTo(1));
-    public static final Item QUICHE = new BlockItem(BnCBlocks.QUICHE, itemProperties("quiche"));
+    public static final Item QUICHE = new BlockItem(BnCBlocks.QUICHE, itemProperties("quiche").compostable(ContextIntProviders.COMPOSTABLE_ALWAYS_ADD_ONE));
 
     public static final Item PIZZA_SLICE = new Item(itemProperties("pizza_slice").food(BnCFoods.PIZZA_SLICE));
-    public static final Item QUICHE_SLICE = new Item(itemProperties("quiche_slice").food(BnCFoods.QUICHE_SLICE, BnCFoods.FAST_FOOD));
+    public static final Item QUICHE_SLICE = new Item(itemProperties("quiche_slice").food(BnCFoods.QUICHE_SLICE, BnCFoods.FAST_FOOD).compostable(ContextIntProviders.COMPOSTABLE_MEDIUM_HIGH));
 
     public static final Item HAM_AND_CHEESE_SANDWICH = new Item(itemProperties("ham_and_cheese_sandwich").food(BnCFoods.HAM_AND_CHEESE_SANDWICH));
 
-    public static final Item KIMCHI = new ConsumableItem(itemProperties("kimchi").food(BnCFoods.KIMCHI));
+    public static final Item KIMCHI = new ConsumableItem(itemProperties("kimchi").food(BnCFoods.KIMCHI).compostable(ContextIntProviders.COMPOSTABLE_LOW_MEDIUM));
     public static final Item JERKY = new ConsumableItem(itemProperties("jerky").food(BnCFoods.JERKY, BnCFoods.FAST_FOOD));
-    public static final Item PICKLED_PICKLES = new ConsumableItem(itemProperties("pickled_pickles").food(BnCFoods.PICKLED_PICKLES));
+    public static final Item PICKLED_PICKLES = new ConsumableItem(itemProperties("pickled_pickles").food(BnCFoods.PICKLED_PICKLES).compostable(ContextIntProviders.COMPOSTABLE_LOW_MEDIUM));
     public static final Item KIPPERS = new ConsumableItem(itemProperties("kippers").food(BnCFoods.KIPPERS));
     public static final Item COCOA_FUDGE = new ConsumableItem(itemProperties("cocoa_fudge").food(BnCFoods.COCOA_FUDGE, BnCFoods.COCOA_FUDGE_CONSUMABLE));
 

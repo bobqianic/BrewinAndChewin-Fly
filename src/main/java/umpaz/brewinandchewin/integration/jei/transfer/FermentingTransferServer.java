@@ -375,7 +375,7 @@ public class FermentingTransferServer {
             ItemStack remainder = stowItem(inventorySlots, itemStack);
             if (!remainder.isEmpty()) {
                 if (!player.getInventory().add(remainder)) {
-                    player.drop(remainder, false);
+                player.drop(remainder, false, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
             }
         }

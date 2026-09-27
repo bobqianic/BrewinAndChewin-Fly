@@ -1,6 +1,5 @@
 package umpaz.brewinandchewin.common.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -36,7 +35,6 @@ import umpaz.brewinandchewin.common.utility.CoasterModelCollisionShapes;
 import java.util.List;
 
 public class CoasterBlock extends BaseEntityBlock {
-    public static final MapCodec<CoasterBlock> CODEC = MapCodec.unit(CoasterBlock::new);
     public static final IntegerProperty ROTATION = BlockStateProperties.ROTATION_16;
     public static final IntegerProperty SIZE = IntegerProperty.create("size", 0, 4);
     public static final BooleanProperty INVISIBLE = BooleanProperty.create("invisible");
@@ -50,11 +48,6 @@ public class CoasterBlock extends BaseEntityBlock {
 
     public CoasterBlock() {
         this(Properties.ofFullCopy(Blocks.CARPET.brown()).sound(SoundType.WOOD).instabreak().dynamicShape());
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

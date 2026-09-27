@@ -54,7 +54,7 @@ public final class KegPlaceRecipe {
                 int slot = i;
                 blockEntity.extractInGui(stack, stack.getCount()).forEach(result -> {
                     if (!inventory.add(inventory.getItem(slot).isEmpty() ? slot : inventory.getSlotWithRemainingSpace(result), result)) {
-                        inventory.player.drop(result, false);
+                        inventory.player.drop(result, false, net.minecraft.util.Prediction.SERVER_ONLY);
                     }
                 });
             }
@@ -96,7 +96,7 @@ public final class KegPlaceRecipe {
             List<ItemStack> inserted = blockEntity.extractInGui(insertItem.output, insertItem.maxInsert);
             inserted.forEach(stack -> {
                 if (!inventory.add(inventory.getItem(insertItem.slot).isEmpty() ? insertItem.slot : inventory.getSlotWithRemainingSpace(stack), stack)) {
-                    inventory.player.drop(stack, false);
+                    inventory.player.drop(stack, false, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
             });
         }

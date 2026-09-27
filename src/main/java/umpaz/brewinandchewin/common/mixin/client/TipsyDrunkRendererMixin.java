@@ -1,6 +1,5 @@
 package umpaz.brewinandchewin.common.mixin.client;
 
-import com.llamalad7.mixinextras.sugar.Local;
 import com.mojang.blaze3d.systems.RenderSystem;
 import com.mojang.blaze3d.vertex.PoseStack;
 import net.minecraft.client.DeltaTracker;
@@ -27,8 +26,8 @@ public class TipsyDrunkRendererMixin {
     Minecraft minecraft;
 
     @ModifyVariable(method = "renderLevel", at = @At(value = "INVOKE", target = "Lorg/joml/Matrix4f;mul(Lorg/joml/Matrix4fc;)Lorg/joml/Matrix4f;"))
-    private PoseStack brewinandchewin$renderTipsySpin(PoseStack pose, @Local(argsOnly = true) DeltaTracker delta) {
-        brewinandchewin$applyTipsySpin(pose, delta);
+    private PoseStack brewinandchewin$renderTipsySpin(PoseStack pose) {
+        brewinandchewin$applyTipsySpin(pose, minecraft.getDeltaTracker());
         return pose;
     }
 
@@ -59,13 +58,13 @@ public class TipsyDrunkRendererMixin {
         method = "renderLevel",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;Lnet/minecraft/client/DeltaTracker;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lorg/joml/Matrix4fc;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V"
+            target = "Lnet/minecraft/client/renderer/LevelRenderer;render(Lcom/mojang/blaze3d/resource/GraphicsResourceAllocator;ZLnet/minecraft/client/renderer/state/level/CameraRenderState;Lcom/mojang/renderpearl/api/buffers/GpuBufferSlice;Lorg/joml/Vector4f;ZZ)V"
         ),
-        index = 3
+        index = 2
     )
-    private CameraRenderState brewinandchewin$cullWithTipsySpin(CameraRenderState cameraState, @Local(argsOnly = true) DeltaTracker delta) {
+    private CameraRenderState brewinandchewin$cullWithTipsySpin(CameraRenderState cameraState) {
         PoseStack pose = new PoseStack();
-        if (brewinandchewin$applyTipsySpin(pose, delta)) {
+        if (brewinandchewin$applyTipsySpin(pose, minecraft.getDeltaTracker())) {
             float fovForCulling = Math.max(minecraft.gameRenderer.mainCamera().getFov(), minecraft.options.fov().get().intValue());
             Matrix4f projectionMatrixForCulling = new Matrix4f().perspective(
                 fovForCulling * Mth.DEG_TO_RAD,

@@ -1,6 +1,5 @@
 package umpaz.brewinandchewin.common.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -24,8 +23,6 @@ import java.util.Map;
 import java.util.Set;
 
 public class LargeKegBlock extends KegBlock {
-    public static final MapCodec<LargeKegBlock> CODEC = simpleCodec(LargeKegBlock::new);
-
     private static final VoxelShape SHAPE_NORTH = Shapes.or(
             Block.box(2.0D, 4.0D, 0.0D, 30.0D, 32.0D, 32.0D),
             Block.box(24.0D, 0.0D, 26.0D, 30.0D, 4.0D, 32.0D),
@@ -53,11 +50,6 @@ public class LargeKegBlock extends KegBlock {
 
     public LargeKegBlock(BlockBehaviour.Properties properties) {
         super(properties);
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

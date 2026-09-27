@@ -1,15 +1,15 @@
 # Brewin' And Chewin' Fly
 
-**Brewin' And Chewin' Fly** is a Fabric fork of [Brewin' And Chewin'](https://github.com/ChefsDelights/BrewinAndChewin?) for Minecraft 26.2.
+**Brewin' And Chewin' Fly** is a Fabric fork of [Brewin' And Chewin'](https://github.com/ChefsDelights/BrewinAndChewin) for Minecraft 26.3.
 
 This fork keeps the original `brewinandchewin` mod id for world, resource-pack, datapack, and recipe compatibility.
 
 ## Features
 
 - Fermenting and brewing addon content for Farmer's Delight.
-- Optional Create-Fly filling recipes for Brewin' And Chewin' drinks.
+- Create-Fly filling recipes for Brewin' And Chewin' drinks when a compatible Create-Fly release is available.
 - Existing Brewin' And Chewin' ids remain stable for pack compatibility.
-- Fabric 26.2 dependency metadata and build output are named for the fork.
+- Fabric 26.3 dependency metadata and build output are named for the fork.
 
 ## What's New
 
@@ -29,14 +29,14 @@ This fork keeps the original `brewinandchewin` mod id for world, resource-pack, 
 
 ## Optional Compatibility
 
-- [Create-Fly](https://modrinth.com/mod/create-fly), published on Modrinth Maven as `maven.modrinth:create-fly`
 - JEI
 - AppleSkin
-- Styled Chat
+
+Create-Fly support is on hold until a Minecraft 26.3 version is available. The integration remains in the source for a later release.
 
 ## Gradle
 
-Use the full Modrinth version string, for example `4.5.4-fly+26.2-fabric`.
+Use the full Modrinth version string, for example `4.5.5-fly+26.3-fabric`.
 
 ```groovy
 repositories {
@@ -48,8 +48,6 @@ repositories {
 
 dependencies {
     modImplementation "maven.modrinth:brewinandchewin-fly:${bnc_fly_version}"
-    modCompileOnly "maven.modrinth:create-fly:${create_fly_version}"
-    modLocalRuntime "maven.modrinth:create-fly:${create_fly_version}"
 }
 ```
 

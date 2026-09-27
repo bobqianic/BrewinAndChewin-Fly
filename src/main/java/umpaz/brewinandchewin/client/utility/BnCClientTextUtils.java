@@ -145,9 +145,7 @@ public class BnCClientTextUtils {
         int minScrambleAmplifier = BnCConfiguration.COMMON_CONFIG.get().root().levelSignScramble();
 
         if (player.hasEffect(BnCEffects.TIPSY) && player.getEffect(BnCEffects.TIPSY).getAmplifier() >= minScrambleAmplifier) {
-            for (int i = 0; i < 4; i++) {
-                signText = signText.setMessage(i, modifyComponents(signText.getMessage(i, false), 0L));
-            }
+            signText = signText.asMutable().modifyLines(component -> modifyComponents(component, 0L)).asImmutable();
         }
         return signText;
     }

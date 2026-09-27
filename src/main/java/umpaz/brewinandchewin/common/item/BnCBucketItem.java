@@ -99,7 +99,7 @@ public class BnCBucketItem extends BucketItem {
             return emptyBucket;
         }
         if (consumer instanceof Player player && !player.getInventory().add(emptyBucket)) {
-            player.drop(emptyBucket, false);
+            player.drop(emptyBucket, false, net.minecraft.util.Prediction.SERVER_ONLY);
         }
         return result;
     }

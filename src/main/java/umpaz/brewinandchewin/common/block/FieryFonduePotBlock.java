@@ -94,7 +94,7 @@ public class FieryFonduePotBlock extends Block {
                 heldStack.shrink(1);
             }
             if (!player.getInventory().add(fondue)) {
-                player.drop(fondue, false);
+                player.drop(fondue, false, net.minecraft.util.Prediction.SERVER_ONLY);
             }
             BlockState newState = level.getBlockState(pos).getValue(LEVEL) > 1 ? state.setValue(LEVEL, servings - 1) : Blocks.CAULDRON.defaultBlockState();
             level.setBlock(pos, newState, 3);

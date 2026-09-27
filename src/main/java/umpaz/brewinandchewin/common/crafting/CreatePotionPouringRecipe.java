@@ -37,12 +37,10 @@ public class CreatePotionPouringRecipe extends KegPouringRecipe {
     @Override
     public AbstractedFluidStack getFluid(ItemStack container) {
         AbstractedFluidStack fluidStack = super.getFluid(container);
-        DataComponentPatch.Builder patch = DataComponentPatch.builder();
-        for (var entry : container.getComponentsPatch().entrySet())
-            patch.set((DataComponentType<Object>) entry.getKey(), entry.getValue().get());
+        PatchedDataComponentMap components = PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, container.getComponentsPatch());
         if (container.has(DataComponents.POTION_CONTENTS) && container.get(DataComponents.POTION_CONTENTS) != PotionContents.EMPTY)
-            patch.set(DataComponents.POTION_CONTENTS, container.get(DataComponents.POTION_CONTENTS));
-        return new AbstractedFluidStack(fluidStack.fluid(), fluidStack.amount(), PatchedDataComponentMap.fromPatch(DataComponentMap.EMPTY, patch.build()), getUnit());
+            components.set(DataComponents.POTION_CONTENTS, container.get(DataComponents.POTION_CONTENTS));
+        return new AbstractedFluidStack(fluidStack.fluid(), fluidStack.amount(), components, getUnit());
     }
 
     @Override

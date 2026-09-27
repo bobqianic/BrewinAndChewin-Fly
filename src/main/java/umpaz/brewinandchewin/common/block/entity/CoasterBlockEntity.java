@@ -71,7 +71,7 @@ public class CoasterBlockEntity extends SyncedBlockEntity {
             if (player.isShiftKeyDown() && !state.getValue(INVISIBLE)) {
                 ItemStack coaster = new ItemStack(BnCItems.COASTER);
                 if (!player.getAbilities().instabuild && !player.addItem(coaster)) {
-                    player.drop(coaster, false);
+                    player.drop(coaster, false, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
                 level.playSound(null, pos, SoundEvents.WOOL_BREAK, SoundSource.BLOCKS);
                 level.setBlockAndUpdate(pos, state.setValue(CoasterBlock.INVISIBLE, true));
@@ -79,7 +79,7 @@ public class CoasterBlockEntity extends SyncedBlockEntity {
             }
             ItemStack storedStack = inventory.get(itemIndex);
             if (!player.getAbilities().instabuild && !player.addItem(storedStack)) {
-                player.drop(storedStack, false);
+                player.drop(storedStack, false, net.minecraft.util.Prediction.SERVER_ONLY);
             }
             BlockState replaceWith = state.getValue(INVISIBLE) ? Blocks.AIR.defaultBlockState() : state.setValue(CoasterBlock.SIZE, 0);
             level.setBlockAndUpdate(pos, replaceWith);

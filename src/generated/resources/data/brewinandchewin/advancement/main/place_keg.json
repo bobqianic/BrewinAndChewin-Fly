@@ -3,23 +3,19 @@
   "criteria": {
     "placed_keg": {
       "conditions": {
-        "location": [
-          {
-            "block": "brewinandchewin:keg",
-            "condition": "minecraft:block_state_property"
-          }
-        ]
+        "location": {
+          "type": "minecraft:match_block",
+          "blocks": "brewinandchewin:keg"
+        }
       },
       "trigger": "minecraft:placed_block"
     },
     "placed_large_keg": {
       "conditions": {
-        "location": [
-          {
-            "block": "brewinandchewin:large_keg",
-            "condition": "minecraft:block_state_property"
-          }
-        ]
+        "location": {
+          "type": "minecraft:match_block",
+          "blocks": "brewinandchewin:large_keg"
+        }
       },
       "trigger": "minecraft:placed_block"
     }

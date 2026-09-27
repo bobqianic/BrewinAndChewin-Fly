@@ -45,7 +45,9 @@ public class NullTrueBlockStateCondition implements LootItemCondition {
     }
 
     public boolean test(LootContext context) {
-        BlockState blockState = context.getParameter(LootContextParams.BLOCK_STATE);
+        BlockState blockState = context.getOptional(LootContextParams.BLOCK_STATE);
+        if (blockState == null)
+            return true;
         return matchers.stream().allMatch(propertyMatcher -> propertyMatcher.match(blockState.getBlock().getStateDefinition(), blockState));
     }
 

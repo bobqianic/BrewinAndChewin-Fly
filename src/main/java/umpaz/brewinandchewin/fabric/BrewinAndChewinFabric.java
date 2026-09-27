@@ -19,7 +19,6 @@ import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
-import net.minecraft.world.level.block.ComposterBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import umpaz.brewinandchewin.common.block.KegBlock;
@@ -66,7 +65,6 @@ public class BrewinAndChewinFabric implements ModInitializer {
         registerContents();
         registerNetwork();
         registerConfigSync();
-        registerCompostables();
         registerFlammables();
         registerFluidAttributeHandlers();
         registerKegBlockInteractions();
@@ -207,13 +205,6 @@ public class BrewinAndChewinFabric implements ModInitializer {
                 sender.sendPacket(new SyncConfigClientboundPacket(BnCConfiguration.getLocalCommonConfig()));
             }
         });
-    }
-
-    private static void registerCompostables() {
-        ComposterBlock.COMPOSTABLES.put(BnCItems.KIMCHI, 0.5F);
-        ComposterBlock.COMPOSTABLES.put(BnCItems.PICKLED_PICKLES, 0.5F);
-        ComposterBlock.COMPOSTABLES.put(BnCItems.QUICHE_SLICE, 0.85F);
-        ComposterBlock.COMPOSTABLES.put(BnCItems.QUICHE, 1.0F);
     }
 
     private static void registerFlammables() {

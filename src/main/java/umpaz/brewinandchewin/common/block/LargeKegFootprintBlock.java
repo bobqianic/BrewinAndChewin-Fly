@@ -1,6 +1,5 @@
 package umpaz.brewinandchewin.common.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -42,7 +41,6 @@ import umpaz.brewinandchewin.common.registry.BnCItems;
 import java.util.List;
 
 public class LargeKegFootprintBlock extends BaseEntityBlock implements WorldlyContainerHolder {
-    public static final MapCodec<LargeKegFootprintBlock> CODEC = simpleCodec(LargeKegFootprintBlock::new);
     public static final IntegerProperty OFFSET_X = IntegerProperty.create("offset_x", 0, 2);
     public static final IntegerProperty OFFSET_Y = IntegerProperty.create("offset_y", 0, 1);
     public static final IntegerProperty OFFSET_Z = IntegerProperty.create("offset_z", 0, 2);
@@ -56,11 +54,6 @@ public class LargeKegFootprintBlock extends BaseEntityBlock implements WorldlyCo
                 .setValue(OFFSET_X, 1)
                 .setValue(OFFSET_Y, 0)
                 .setValue(OFFSET_Z, 1));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override

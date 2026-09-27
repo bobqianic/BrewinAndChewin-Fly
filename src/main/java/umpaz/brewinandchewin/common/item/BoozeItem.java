@@ -99,7 +99,7 @@ public class BoozeItem extends Item {
             if (consumer instanceof Player) {
                 player = (Player)consumer;
                 if (!((Player)consumer).getAbilities().instabuild && !player.getInventory().add(containerStack)) {
-                    player.drop(containerStack, false);
+                    player.drop(containerStack, false, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
             }
             return stack;

@@ -1,6 +1,5 @@
 package umpaz.brewinandchewin.common.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.sounds.SoundEvents;
@@ -53,7 +52,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 public class KegBlock extends BaseEntityBlock implements SimpleWaterloggedBlock {
-    public static final MapCodec<KegBlock> CODEC = simpleCodec(KegBlock::new);
     public static final EnumProperty<Direction> FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty VERTICAL = BooleanProperty.create("vertical");
     public static final BooleanProperty WATERLOGGED = BlockStateProperties.WATERLOGGED;
@@ -67,11 +65,6 @@ public class KegBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
     public KegBlock(BlockBehaviour.Properties properties) {
         super(properties);
         this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(VERTICAL, false).setValue(WATERLOGGED, false).setValue(HAS_LIQUID, false));
-    }
-
-    @Override
-    protected MapCodec<? extends BaseEntityBlock> codec() {
-        return CODEC;
     }
 
     @Override
@@ -101,7 +94,7 @@ public class KegBlock extends BaseEntityBlock implements SimpleWaterloggedBlock 
             if (handStack.isEmpty()) {
                 player.setItemInHand(hand, item);
             } else if (!player.getInventory().add(item)) {
-                player.drop(item, false);
+                player.drop(item, false, net.minecraft.util.Prediction.SERVER_ONLY);
             }
         }
     }

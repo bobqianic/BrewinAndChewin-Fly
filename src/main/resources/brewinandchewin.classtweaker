@@ -1,7 +1,6 @@
 classTweaker v2 official
 extend-enum net/minecraft/world/inventory/RecipeBookType BREWINANDCHEWIN_FERMENTING
 accessible class net/minecraft/client/gui/Hud$HeartType
-accessible method net/minecraft/client/gui/GuiGraphicsExtractor innerBlit (Lcom/mojang/blaze3d/pipeline/RenderPipeline;Lnet/minecraft/resources/Identifier;IIIIFFFFI)V
 accessible class net/minecraft/client/particle/ParticleResources$SpriteParticleRegistration
 accessible class net/minecraft/client/resources/model/ModelBakery$ModelBakerImpl
 accessible method net/minecraft/core/particles/SimpleParticleType <init> (Z)V

@@ -85,12 +85,12 @@ public record EMIFillFermentingRecipeServerboundPacket(int syncId,
                         if (gotten != stack.getCount()) {
                             if (gotten > 0) {
                                 stack.setCount(gotten);
-                                sender.getInventory().placeItemBackInInventory(stack);
+                        sender.getInventory().placeItemBackInInventory(stack, net.minecraft.util.Prediction.SERVER_ONLY);
                             }
                             break;
                         } else {
                             for (ItemStack items : kegMenu.blockEntity.extractInGui(stack, gotten))
-                                sender.getInventory().placeItemBackInInventory(items);
+                            sender.getInventory().placeItemBackInInventory(items, net.minecraft.util.Prediction.SERVER_ONLY);
                         }
                     }
                 }
@@ -114,12 +114,12 @@ public record EMIFillFermentingRecipeServerboundPacket(int syncId,
                         if (gotten != stack.getCount()) {
                             if (gotten > 0) {
                                 stack.setCount(gotten);
-                                sender.getInventory().placeItemBackInInventory(stack);
+                            sender.getInventory().placeItemBackInInventory(stack, net.minecraft.util.Prediction.SERVER_ONLY);
                             }
                             break;
                         } else {
                             for (ItemStack items : kegMenu.blockEntity.extractInGui(stack, gotten))
-                                sender.getInventory().placeItemBackInInventory(items);
+                            sender.getInventory().placeItemBackInInventory(items, net.minecraft.util.Prediction.SERVER_ONLY);
                         }
                     }
                 }
@@ -146,7 +146,7 @@ public record EMIFillFermentingRecipeServerboundPacket(int syncId,
                         if (gotten != stack.getCount()) {
                             if (gotten > 0) {
                                 stack.setCount(gotten);
-                                sender.getInventory().placeItemBackInInventory(stack);
+                        sender.getInventory().placeItemBackInInventory(stack, net.minecraft.util.Prediction.SERVER_ONLY);
                             }
                             break;
                         } else {
@@ -154,13 +154,13 @@ public record EMIFillFermentingRecipeServerboundPacket(int syncId,
                             if (s.mayPlace(stack) && stack.getCount() <= s.getMaxStackSize())
                                 s.setByPlayer(stack);
                             else
-                                sender.getInventory().placeItemBackInInventory(stack);
+                        sender.getInventory().placeItemBackInInventory(stack, net.minecraft.util.Prediction.SERVER_ONLY);
                         }
                     }
                 }
             } finally {
                 for (ItemStack stack : rubble) {
-                    sender.getInventory().placeItemBackInInventory(stack);
+                    sender.getInventory().placeItemBackInInventory(stack, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
             }
         });

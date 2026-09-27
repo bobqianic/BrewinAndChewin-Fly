@@ -96,6 +96,7 @@ dependencies {
     implementation "net.fabricmc:fabric-loader:${loader_version}"
     implementation "net.fabricmc.fabric-api:fabric-api:${fabric_version}"
     runtimeOnly "maven.modrinth:modmenu:${mod_menu_version}"
+    runtimeOnly "me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}"
 
     compileOnly "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
     annotationProcessor "io.github.llamalad7:mixinextras-common:${mixin_extras_version}"
@@ -110,24 +111,6 @@ dependencies {
     runtimeOnly "mezz.jei:jei-${minecraft_version}-fabric:${jei_version}"
     compileOnly "maven.modrinth:appleskin:${appleskin_fabric_version_id}"
     runtimeOnly "maven.modrinth:appleskin:${appleskin_fabric_version_id}"
-    compileOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
-        exclude group: 'net.fabricmc.fabric-api'
-    }
-    runtimeOnly("me.shedaniel.cloth:cloth-config-fabric:${cloth_config_version}") {
-        exclude group: 'net.fabricmc.fabric-api'
-    }
-
-    compileOnly "maven.modrinth:create-fly:${create_fly_version}"
-    runtimeOnly "maven.modrinth:create-fly:${create_fly_version}"
-
-    compileOnly "maven.modrinth:styled-chat:${styled_chat_version}"
-    compileOnly "eu.pb4:placeholder-api:${pb4_placeholder_api_version}"
-
-    runtimeOnly "maven.modrinth:styled-chat:${styled_chat_version}"
-    runtimeOnly "eu.pb4:predicate-api:${pb4_predicate_api_version}"
-    runtimeOnly "eu.pb4:placeholder-api:${pb4_placeholder_api_version}"
-    runtimeOnly "me.lucko:fabric-permissions-api:${permissions_api_version}"
-    runtimeOnly "eu.pb4:player-data-api:${pb4_player_data_api_version}"
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
@@ -155,7 +138,6 @@ def resourceProperties = [
         mod_description                     : mod_description,
         java_version                        : java_version,
         modrinth_page                       : modrinth_page,
-        create_fly_fabric_range             : create_fly_fabric_range,
         farmers_delight_refabricated_range  : farmers_delight_refabricated_range,
         HotCocoa                            : '$HotCocoa',
         MilkBottle                          : '$MilkBottle',
@@ -306,10 +288,8 @@ publishMods {
             minecraftVersions.add minecraft_version
             requires 'fabric-api'
             requires 'farmers-delight-refabricated'
-            optional 'create-fly'
             optional 'jei'
             optional 'appleskin'
-            optional 'styled-chat'
         }
     }
 }

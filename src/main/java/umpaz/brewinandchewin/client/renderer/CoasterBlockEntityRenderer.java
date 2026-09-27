@@ -76,7 +76,7 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
     public void submit(CoasterRenderState renderState, PoseStack poseStack, SubmitNodeCollector nodeCollector, CameraRenderState cameraRenderState) {
         poseStack.pushPose();
         poseStack.translate(0.5F, 0.5F, 0.5F);
-        poseStack.mulPose(Axis.YP.rotationDegrees(RotationSegment.convertToDegrees(renderState.coasterBlockState.getValue(CoasterBlock.ROTATION))));
+        poseStack.rotateDegrees(Axis.YP, RotationSegment.convertToDegrees(renderState.coasterBlockState.getValue(CoasterBlock.ROTATION)));
         poseStack.translate(-0.5F, -0.5F, -0.5F);
 
         if (!renderState.coasterBlockState.getValue(CoasterBlock.INVISIBLE)) {
@@ -113,7 +113,7 @@ public class CoasterBlockEntityRenderer implements BlockEntityRenderer<CoasterBl
             }
             poseStack.pushPose();
             poseStack.translate(0.5F, ITEM_Y_OFFSET, 0.5F);
-            poseStack.mulPose(Axis.XP.rotationDegrees(90.0F));
+            poseStack.rotateDegrees(Axis.XP, 90.0F);
             poseStack.scale(ITEM_SCALE, ITEM_SCALE, ITEM_SCALE);
             displayedItem.itemRenderState().submit(poseStack, nodeCollector, renderState.lightCoords, OverlayTexture.NO_OVERLAY, 0);
             poseStack.popPose();

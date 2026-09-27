@@ -70,14 +70,14 @@ public record EMIFillPouringRecipeServerboundPacket(int syncId, int action,
                     if (gotten != stack.getCount()) {
                         if (gotten > 0) {
                             stack.setCount(gotten);
-                            sender.getInventory().placeItemBackInInventory(stack);
+                        sender.getInventory().placeItemBackInInventory(stack, net.minecraft.util.Prediction.SERVER_ONLY);
                         }
                         break;
                     } else {
                         Slot s = menu.getSlot(KegBlockEntity.OUTPUT_SLOT);
                         for (ItemStack item : kegMenu.blockEntity.extractInGui(stack, gotten)) {
                             if (!tryInsertIntoOutputSlot(s, item)) {
-                                sender.getInventory().placeItemBackInInventory(item);
+                        sender.getInventory().placeItemBackInInventory(item, net.minecraft.util.Prediction.SERVER_ONLY);
                             }
                         }
                     }
@@ -89,7 +89,7 @@ public record EMIFillPouringRecipeServerboundPacket(int syncId, int action,
                 }
             } finally {
                 for (ItemStack stack : rubble) {
-                    sender.getInventory().placeItemBackInInventory(stack);
+                    sender.getInventory().placeItemBackInInventory(stack, net.minecraft.util.Prediction.SERVER_ONLY);
                 }
             }
         });

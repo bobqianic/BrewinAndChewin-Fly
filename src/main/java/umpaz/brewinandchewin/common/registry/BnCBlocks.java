@@ -26,7 +26,7 @@ public class BnCBlocks {
             blockProperties("large_keg", Blocks.OAK_PLANKS)
                     .noOcclusion()
                     .isSuffocating((state, level, pos) -> false)
-                    .isViewBlocking((state, level, pos) -> false));
+                    .isViewBlocking((state, level, pos, box) -> false));
 
     public static final Block LARGE_KEG_FOOTPRINT = new LargeKegFootprintBlock(
             blockProperties("large_keg_footprint", Blocks.OAK_PLANKS)
@@ -35,7 +35,7 @@ public class BnCBlocks {
                     .dynamicShape()
                     .overrideDescription("block.brewinandchewin.large_keg")
                     .isSuffocating((state, level, pos) -> false)
-                    .isViewBlocking((state, level, pos) -> false));
+                    .isViewBlocking((state, level, pos, box) -> false));
 
     public static final Block HEATING_CASK = new HeatingCaskBlock(
             blockProperties("heating_cask", Blocks.OAK_PLANKS));

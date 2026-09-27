@@ -6,6 +6,7 @@ import it.unimi.dsi.fastutil.objects.ObjectArrayList;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.Identifier;
 import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemInstance;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
@@ -33,7 +34,7 @@ public class BnCSlicingModifier extends LootModifier
 
     @Override
     protected ObjectArrayList<ItemStack> doApply(ObjectArrayList<ItemStack> generatedLoot, LootContext context) {
-        BlockState state = context.getOptionalParameter(LootContextParams.BLOCK_STATE);
+        BlockState state = context.getOptional(LootContextParams.BLOCK_STATE);
         if (state != null) {
             Block targetBlock = state.getBlock();
             if (targetBlock instanceof PizzaBlock) {
@@ -41,7 +42,8 @@ public class BnCSlicingModifier extends LootModifier
                 generatedLoot.add(new ItemStack(slice, servings + 1));
             } else if (targetBlock instanceof CheeseWheelBlock) {
                 int servings = state.getValue(CheeseWheelBlock.SERVINGS);
-                if (servings == 3 && !context.getParameter(LootContextParams.TOOL).is(ModTags.KNIVES)) {
+                ItemInstance tool = context.getOptional(LootContextParams.TOOL);
+                if (servings == 3 && (tool == null || !tool.is(ModTags.KNIVES))) {
                     generatedLoot.add(new ItemStack(targetBlock.asItem()));
                 } else {
                     generatedLoot.add(new ItemStack(slice, servings + 1));

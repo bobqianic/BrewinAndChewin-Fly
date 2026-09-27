@@ -1,6 +1,5 @@
 package umpaz.brewinandchewin.common.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.util.RandomSource;
@@ -16,16 +15,10 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 
 public class TemporaryWaterBlock extends Block {
-    public static final MapCodec<TemporaryWaterBlock> CODEC = simpleCodec(TemporaryWaterBlock::new);
     private static final int LIFETIME = 20;
 
     public TemporaryWaterBlock(Properties properties) {
         super(properties);
-    }
-
-    @Override
-    protected MapCodec<TemporaryWaterBlock> codec() {
-        return CODEC;
     }
 
     @Override

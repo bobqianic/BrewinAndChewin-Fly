@@ -32,8 +32,5 @@
     "minecraft": "${fabric_minecraft_version_range}",
     "java": ">=${java_version}",
     "farmersdelight": "${farmers_delight_refabricated_range}"
-  },
-  "suggests": {
-    "create": "${create_fly_fabric_range}"
   }
 }

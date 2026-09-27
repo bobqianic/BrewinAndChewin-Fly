@@ -1,27 +1,41 @@
 package umpaz.brewinandchewin.fabric.utility;
 
-import com.zurrtum.create.AllFluids;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.Identifier;
 import net.minecraft.world.level.material.FlowingFluid;
 import net.minecraft.world.level.material.Fluid;
 
 public class BnCCreateDelegate {
     public static Fluid getPotionSource() {
-        return AllFluids.POTION.getSource();
+        return getFluid("potion");
     }
 
     public static FlowingFluid getHoneySource() {
-        return (FlowingFluid) AllFluids.HONEY.getSource();
+        return getFlowingFluid("honey");
     }
 
     public static FlowingFluid getFlowingHoney() {
-        return (FlowingFluid) AllFluids.HONEY.getFlowing();
+        return getFlowingFluid("flowing_honey");
     }
 
     public static FlowingFluid getMilkSource() {
-        return (FlowingFluid) AllFluids.MILK.getSource();
+        return getFlowingFluid("milk");
     }
 
     public static FlowingFluid getFlowingMilk() {
-        return (FlowingFluid) AllFluids.MILK.getFlowing();
+        return getFlowingFluid("flowing_milk");
+    }
+
+    private static Fluid getFluid(String path) {
+        Identifier id = Identifier.fromNamespaceAndPath("create", path);
+        return BuiltInRegistries.FLUID.getOptional(id)
+                .orElseThrow(() -> new IllegalStateException("Create fluid is missing: " + id));
+    }
+
+    private static FlowingFluid getFlowingFluid(String path) {
+        Fluid fluid = getFluid(path);
+        if (fluid instanceof FlowingFluid flowingFluid)
+            return flowingFluid;
+        throw new IllegalStateException("Create fluid is not a flowing fluid: create:" + path);
     }
 }
