@@ -211,6 +211,8 @@ jobs:
           FARMERS_DELIGHT_VERSION: ${{ matrix.farmers_delight.number }}
           ALSOFT_DRIVERS: "null"
           LIBGL_ALWAYS_SOFTWARE: "1"
+          # Minecraft 26.3's sRGB framebuffer has no matching Xvfb GLX visual.
+          SDL_VIDEO_FORCE_EGL: "1"
         run: |
           set -euo pipefail
           chmod +x gradlew
