@@ -204,6 +204,12 @@ jobs:
       - name: Set up Gradle
         uses: gradle/actions/setup-gradle@v4
 
+      - name: Install software EGL runtime
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends libegl1 libgl1-mesa-dri
+          ldconfig -p | grep -F libEGL.so.1
+
       - name: Launch server and client
         shell: bash
         env:
@@ -255,6 +261,14 @@ jobs:
                 active_pid=''
                 echo "$name exited before reaching readiness marker: $marker" >&2
                 cat "$log"
+                return 1
+              fi
+              if [[ "$name" == client ]] &&
+                 grep -Fq 'Failed to create backend OpenGL' "$log" &&
+                 grep -Fq 'Failed to create backend Vulkan' "$log"; then
+                echo 'client could not initialize a graphics backend' >&2
+                stop_process_group
+                tail -n 120 "$log"
                 return 1
               fi
               sleep 2
